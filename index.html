@@ -204,7 +204,40 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .toggle input:checked+.toggle-slider{background:var(--pu);}
 .toggle input:checked+.toggle-slider:before{transform:translateX(20px);}
 
-/* ── EXPORT PANEL ── */
+/* ── IFRAME GENERATOR ── */
+.iframe-gen{background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(16,185,129,.08));
+  border:1.5px solid rgba(6,182,212,.35);border-radius:18px;padding:20px;}
+.iframe-gen .ig-title{font-family:var(--fp);font-size:10px;letter-spacing:2px;
+  color:var(--cy2);text-transform:uppercase;margin-bottom:14px;}
+.platform-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.ptab{background:var(--card);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--tx2);cursor:pointer;font-size:11px;font-weight:700;
+  padding:7px 14px;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.ptab:hover{border-color:var(--cy);}
+.ptab.active{background:rgba(6,182,212,.2);border-color:var(--cy);color:var(--cy2);}
+.code-box{position:relative;}
+.code-area{background:rgba(0,0,0,.45);border:1px solid rgba(6,182,212,.25);
+  border-radius:12px;color:#A5F3FC;font-family:'Courier New',monospace;font-size:11.5px;
+  line-height:1.7;padding:14px 16px;resize:none;width:100%;
+  min-height:90px;outline:none;white-space:pre;overflow-x:auto;}
+.copy-badge{position:absolute;top:8px;right:8px;background:rgba(6,182,212,.25);
+  border:1px solid var(--cy);border-radius:8px;color:var(--cy2);
+  cursor:pointer;font-size:10px;font-weight:800;padding:4px 10px;transition:all .2s;}
+.copy-badge:hover{background:var(--cy);color:#fff;}
+.ig-params{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px;}
+.ig-note{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);
+  border-radius:10px;padding:10px 14px;font-size:11px;color:#FDE68A;line-height:1.7;}
+.step-list{counter-reset:steps;display:flex;flex-direction:column;gap:6px;}
+.step-item{counter-increment:steps;display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.6;}
+.step-item::before{content:counter(steps);background:var(--cy);color:#000;
+  width:20px;height:20px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;margin-top:1px;}
+.step-item b{color:var(--cy2);}
+.platform-badge{display:inline-flex;align-items:center;gap:5px;border-radius:8px;
+  padding:3px 10px;font-size:10px;font-weight:800;margin-right:4px;}
+.pb-green{background:rgba(16,185,129,.2);color:var(--gr2);}
+.pb-yellow{background:rgba(245,158,11,.2);color:#FDE68A;}
+.pb-red{background:rgba(239,68,68,.2);color:#FCA5A5;}
 .export-card{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(236,72,153,.15));
   border:1px solid rgba(124,58,237,.4);border-radius:18px;padding:24px;text-align:center;}
 .export-icon{font-size:56px;margin-bottom:14px;}
@@ -958,46 +991,317 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 
 <!-- ═══ EXPORT ═══ -->
 <div id="panel-export" class="panel">
-  <div class="panel-title">📤 Экспорт игры</div>
+  <div class="panel-title">📤 Экспорт · Встраивание · iFrame</div>
 
+  <!-- Main export buttons -->
   <div class="export-card">
     <div class="export-icon">🚀</div>
     <div class="export-title">Готов к экспорту!</div>
-    <div class="export-sub" id="export-summary">Настройте параметры игры, добавьте контент и нажмите кнопку экспорта. Вы получите полноценный HTML-файл, который работает в любом браузере без интернета.</div>
+    <div class="export-sub" id="export-summary">Скачайте HTML-файл игры, сохраните конфиг или сгенерируйте iframe-код для встраивания на любую платформу.</div>
     <div class="export-btns">
       <button class="ebtn html" onclick="exportGame()">🎮 Скачать игру (HTML)</button>
-      <button class="ebtn json" onclick="exportConfig()">📋 Сохранить конфиг (JSON)</button>
-      <button class="ebtn copy" onclick="copyGameLink()">🔗 Создать ссылку</button>
+      <button class="ebtn json" onclick="exportConfig()">📋 Конфиг (JSON)</button>
+      <button class="ebtn copy" onclick="copyGameLink()">🔗 Скопировать ссылку</button>
     </div>
   </div>
 
+  <!-- ═══ IFRAME GENERATOR ═══ -->
+  <div class="iframe-gen">
+    <div class="ig-title">🔲 ГЕНЕРАТОР IFRAME — встраивание на любую платформу</div>
+
+    <!-- URL input -->
+    <div class="fgrp" style="margin-bottom:12px;">
+      <label class="lbl">🌐 URL вашей опубликованной игры</label>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <input type="url" id="iframe-url"
+          value="https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/"
+          placeholder="https://логин.github.io/репо/"
+          oninput="buildAllCodes()" style="flex:1;">
+        <button class="tbbtn" style="background:rgba(6,182,212,.2);border-color:var(--cy);color:var(--cy2);" onclick="buildAllCodes()">⟳ Обновить</button>
+      </div>
+    </div>
+
+    <!-- Size settings -->
+    <div class="ig-params">
+      <div class="fgrp">
+        <label class="lbl">Ширина</label>
+        <select id="iframe-w" onchange="buildAllCodes()">
+          <option value="100%">100% (на весь контейнер)</option>
+          <option value="800px">800px</option>
+          <option value="760px" selected>760px (рекомендуется)</option>
+          <option value="640px">640px</option>
+          <option value="480px">480px (мобильный)</option>
+          <option value="custom">Своя ширина...</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="lbl">Высота</label>
+        <select id="iframe-h" onchange="buildAllCodes()">
+          <option value="700px" selected>700px (рекомендуется)</option>
+          <option value="600px">600px</option>
+          <option value="800px">800px</option>
+          <option value="500px">500px</option>
+          <option value="100vh">100vh (полный экран)</option>
+          <option value="custom">Своя высота...</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="lbl">Скругление углов</label>
+        <select id="iframe-radius" onchange="buildAllCodes()">
+          <option value="16px">16px (мягкое)</option>
+          <option value="0px">0px (без скругления)</option>
+          <option value="8px">8px (небольшое)</option>
+          <option value="24px">24px (круглое)</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="lbl">Тень / Рамка</label>
+        <select id="iframe-shadow" onchange="buildAllCodes()">
+          <option value="box">Неоновая (пурпурная)</option>
+          <option value="soft">Мягкая тень</option>
+          <option value="none">Без рамки</option>
+          <option value="border">Только рамка</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="lbl">Прокрутка внутри</label>
+        <select id="iframe-scroll" onchange="buildAllCodes()">
+          <option value="no">Нет (no)</option>
+          <option value="auto">Авто</option>
+          <option value="yes">Да</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="lbl">Разрешения (allow)</label>
+        <select id="iframe-allow" onchange="buildAllCodes()">
+          <option value="full" selected>Все (аудио + полный экран)</option>
+          <option value="audio">Только аудио</option>
+          <option value="minimal">Минимальные</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Custom size row -->
+    <div class="row2" id="custom-size-row" style="display:none;margin-bottom:12px;">
+      <div class="fgrp"><label class="lbl">Своя ширина</label><input type="text" id="iframe-w-custom" placeholder="700px" oninput="buildAllCodes()"></div>
+      <div class="fgrp"><label class="lbl">Своя высота</label><input type="text" id="iframe-h-custom" placeholder="600px" oninput="buildAllCodes()"></div>
+    </div>
+
+    <!-- Platform tabs -->
+    <div class="platform-tabs">
+      <div class="ptab active" onclick="switchPlatform(this,'genially')" data-p="genially">🎨 Genially</div>
+      <div class="ptab" onclick="switchPlatform(this,'html')" data-p="html">🌐 HTML / сайт</div>
+      <div class="ptab" onclick="switchPlatform(this,'moodle')" data-p="moodle">🎓 Moodle / LMS</div>
+      <div class="ptab" onclick="switchPlatform(this,'google')" data-p="google">📊 Google Sites</div>
+      <div class="ptab" onclick="switchPlatform(this,'notion')" data-p="notion">📓 Notion</div>
+      <div class="ptab" onclick="switchPlatform(this,'tilda')" data-p="tilda">🎭 Tilda</div>
+      <div class="ptab" onclick="switchPlatform(this,'wordpress')" data-p="wordpress">🔵 WordPress</div>
+      <div class="ptab" onclick="switchPlatform(this,'ispring')" data-p="ispring">⚡ iSpring</div>
+    </div>
+
+    <!-- Code output -->
+    <div id="iframe-code-block">
+
+      <!-- GENIALLY -->
+      <div id="code-genially">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">Опубликуйте игру на <b>GitHub Pages</b> и скопируйте ваш URL</div>
+          <div class="step-item">В Genially откройте редактор → нажмите <b>«+» → Интерактивные элементы → Embed</b></div>
+          <div class="step-item">Вставьте URL или переключитесь на вкладку <b>«Код HTML»</b> и вставьте код ниже</div>
+          <div class="step-item">Растяните блок на весь слайд, выровняйте по центру → <b>Сохранить</b></div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label class="lbl" style="margin-bottom:6px;">📋 URL для вставки в поле Embed (рекомендуется):</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-url-only" rows="1" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-url-only')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div>
+          <label class="lbl" style="margin-bottom:6px;">📋 HTML-код для вкладки «Вставить HTML» в Genially:</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-genially-html" rows="5" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-genially-html')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          Genially поддерживает iFrame через HTTPS. Убедитесь, что ваш URL начинается с <b>https://</b>. GitHub Pages автоматически выдаёт HTTPS-адрес.
+        </div>
+      </div>
+
+      <!-- HTML -->
+      <div id="code-html" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">Скопируйте код ниже и вставьте в любое место вашей HTML-страницы</div>
+          <div class="step-item">Код работает в любом браузере: Chrome, Firefox, Safari, Edge, Opera</div>
+          <div class="step-item">Файл игры можно также разместить <b>локально</b> — укажите путь вместо URL</div>
+        </div>
+        <div class="code-box">
+          <textarea class="code-area" id="code-html-full" rows="8" readonly></textarea>
+          <span class="copy-badge" onclick="copyCode('code-html-full')">⎘ Копировать</span>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Все браузеры</span>
+          Протестировано в Chrome 90+, Firefox 88+, Safari 14+, Edge 90+.
+          Для локального файла используйте <code style="color:var(--cy2);">src="./игра.html"</code>
+        </div>
+      </div>
+
+      <!-- MOODLE -->
+      <div id="code-moodle" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">В курсе Moodle: <b>Добавить элемент → Страница</b> или <b>Текстовый блок</b></div>
+          <div class="step-item">В редакторе нажмите <b>«Источник HTML» (&lt;/&gt;)</b></div>
+          <div class="step-item">Вставьте код ниже и сохраните страницу</div>
+          <div class="step-item">Разрешите <b>iFrame</b> в настройках фильтра Moodle (если заблокировано администратором)</div>
+        </div>
+        <div class="code-box">
+          <textarea class="code-area" id="code-moodle-html" rows="7" readonly></textarea>
+          <span class="copy-badge" onclick="copyCode('code-moodle-html')">⎘ Копировать</span>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-yellow">⚠ Требует настройки</span>
+          Администратор Moodle должен разрешить тег &lt;iframe&gt; в фильтре «Разрешённые HTML теги».
+          Путь: Администрирование → Безопасность → HTML-очиститель.
+        </div>
+      </div>
+
+      <!-- GOOGLE SITES -->
+      <div id="code-google" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">На странице Google Sites нажмите <b>Вставить → Встроить URL</b></div>
+          <div class="step-item">Вставьте ваш <b>URL игры</b> в поле и нажмите «Вставить»</div>
+          <div class="step-item">Перетащите блок на нужное место, потяните за угол для изменения размера</div>
+        </div>
+        <div>
+          <label class="lbl" style="margin-bottom:6px;">URL для вставки в Google Sites:</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-google-url" rows="1" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-google-url')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          Google Sites поддерживает вставку через URL. Код вручную вставить нельзя — только через интерфейс.
+        </div>
+      </div>
+
+      <!-- NOTION -->
+      <div id="code-notion" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">В Notion напечатайте <b>/embed</b> и выберите «Embed»</div>
+          <div class="step-item">Вставьте URL вашей игры в появившееся поле</div>
+          <div class="step-item">Нажмите «Embed link» — игра появится на странице</div>
+          <div class="step-item">Потяните за нижний край блока чтобы увеличить высоту</div>
+        </div>
+        <div>
+          <label class="lbl" style="margin-bottom:6px;">URL для /embed в Notion:</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-notion-url" rows="1" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-notion-url')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          Notion поддерживает embed для GitHub Pages.
+          <span class="platform-badge pb-yellow">⚠</span> В бесплатном плане Notion ограниченный размер блока.
+        </div>
+      </div>
+
+      <!-- TILDA -->
+      <div id="code-tilda" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">В редакторе Tilda добавьте блок <b>T123 «HTML-код»</b></div>
+          <div class="step-item">Нажмите <b>«Редактировать HTML»</b> и вставьте код ниже</div>
+          <div class="step-item">Сохраните и опубликуйте страницу</div>
+        </div>
+        <div class="code-box">
+          <textarea class="code-area" id="code-tilda-html" rows="6" readonly></textarea>
+          <span class="copy-badge" onclick="copyCode('code-tilda-html')">⎘ Копировать</span>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          Tilda поддерживает блок T123 с произвольным HTML. Блок доступен на тарифах Personal и Business.
+        </div>
+      </div>
+
+      <!-- WORDPRESS -->
+      <div id="code-wordpress" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">В редакторе WordPress добавьте блок <b>«Пользовательский HTML»</b></div>
+          <div class="step-item">Вставьте код ниже в блок</div>
+          <div class="step-item">Для классического редактора: переключитесь в режим <b>«Текст»</b> и вставьте код</div>
+        </div>
+        <div class="code-box">
+          <textarea class="code-area" id="code-wordpress-html" rows="6" readonly></textarea>
+          <span class="copy-badge" onclick="copyCode('code-wordpress-html')">⎘ Копировать</span>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          На WordPress.com может потребоваться план <b>Business</b> для HTML-блоков.
+          WordPress.org (самохостинг) — работает на любом плане.
+        </div>
+      </div>
+
+      <!-- ISPRING -->
+      <div id="code-ispring" style="display:none;">
+        <div class="step-list" style="margin-bottom:12px;">
+          <div class="step-item">В iSpring Suite откройте <b>Вставить → Веб-объект</b></div>
+          <div class="step-item">Введите URL вашей игры и нажмите <b>OK</b></div>
+          <div class="step-item">Для iSpring Learn: добавьте <b>SCORM-курс</b> или используйте ссылку напрямую</div>
+        </div>
+        <div>
+          <label class="lbl" style="margin-bottom:6px;">URL для веб-объекта iSpring:</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-ispring-url" rows="1" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-ispring-url')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <label class="lbl" style="margin-bottom:6px;">Или HTML-код для вставки в iSpring:</label>
+          <div class="code-box">
+            <textarea class="code-area" id="code-ispring-html" rows="5" readonly></textarea>
+            <span class="copy-badge" onclick="copyCode('code-ispring-html')">⎘ Копировать</span>
+          </div>
+        </div>
+        <div class="ig-note" style="margin-top:10px;">
+          <span class="platform-badge pb-green">✓ Работает</span>
+          iSpring Suite поддерживает веб-объекты через встроенный браузер. Игра воспроизводится в полном размере.
+        </div>
+      </div>
+
+    </div><!-- #iframe-code-block -->
+
+    <!-- Universal test block -->
+    <div class="card" style="margin-top:16px;border-color:rgba(16,185,129,.3);">
+      <div class="card-title">🖥️ Предпросмотр — тест в браузере</div>
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <button class="tbbtn" style="background:rgba(16,185,129,.2);border-color:var(--gr);color:var(--gr2);" onclick="previewIframe()">▶ Показать предпросмотр</button>
+        <button class="tbbtn" onclick="openInTab()">↗ Открыть в новой вкладке</button>
+        <span style="font-size:11px;color:var(--tx2);">Тест работы игры прямо здесь, без выхода из редактора</span>
+      </div>
+      <div id="iframe-preview-container" style="display:none;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+        <iframe id="iframe-preview" style="width:100%;height:500px;border:none;display:block;"></iframe>
+      </div>
+    </div>
+
+  </div><!-- .iframe-gen -->
+
+  <!-- What's included -->
   <div class="card">
-    <div class="card-title">📦 Что включается в экспорт</div>
+    <div class="card-title">📦 Что включается в HTML-файл игры</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Весь игровой контент</div><div class="mech-desc">12 тем с вашими словами и заданиями</div></div></div>
-      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Настройки уровней</div><div class="mech-desc">3 уровня с вашими параметрами</div></div></div>
-      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Реплики Тамагочи</div><div class="mech-desc">Все фразы питомца</div></div></div>
-      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Спецэффекты</div><div class="mech-desc">Выбранные анимации и эффекты</div></div></div>
-      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Аудио настройки</div><div class="mech-desc">Плейлист и звуковые эффекты</div></div></div>
-      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Игровая механика</div><div class="mech-desc">Таймер, монеты, магазин, рост</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Работает без интернета</div><div class="mech-desc">Один .html файл — всё внутри</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Реплики и анимации</div><div class="mech-desc">3D Тамагочи со всеми настройками</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Все браузеры</div><div class="mech-desc">Chrome, Firefox, Safari, Edge, Opera</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Мобильные устройства</div><div class="mech-desc">Адаптивная вёрстка для планшетов и телефонов</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Genially / Moodle / Tilda</div><div class="mech-desc">Готовые коды для всех популярных платформ</div></div></div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">🌐 Быстрая публикация</div>
-    <div class="panel-sub" style="margin-bottom:12px;">Опубликуйте игру онлайн — поделитесь ссылкой с учениками</div>
-    <div class="row2">
-      <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:14px;">
-        <div style="font-size:14px;font-weight:800;margin-bottom:6px;">📁 GitHub Pages</div>
-        <div style="font-size:11px;color:var(--tx2);line-height:1.7;">1. Скачайте HTML-файл<br>2. Создайте репозиторий на github.com<br>3. Загрузите как <b>index.html</b><br>4. Включите GitHub Pages в Settings<br>5. Получите ссылку вида:<br><code style="color:var(--cy2);">логин.github.io/имя-репо/</code></div>
-      </div>
-      <div style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:14px;">
-        <div style="font-size:14px;font-weight:800;margin-bottom:6px;">🎨 Genially / iSpring</div>
-        <div style="font-size:11px;color:var(--tx2);line-height:1.7;">1. Опубликуйте на GitHub Pages<br>2. В Genially: Вставить → Embed<br>3. Вставьте ваш URL<br>4. Растяните на весь слайд<br><br><b>Размер рамки:</b><br>Ширина: 100%, Высота: 600px+</div>
-      </div>
-    </div>
-  </div>
-</div>
+</div><!-- panel-export -->
 
 </main><!-- end #main -->
 </div><!-- end #app -->
@@ -1585,8 +1889,141 @@ function copyGameLink(){
   navigator.clipboard.writeText(url).then(()=>showToast('✓ Ссылка скопирована!'));}
 
 // ════════════════════════════════
-//  INIT
+//  IFRAME GENERATOR
 // ════════════════════════════════
+let currentPlatform='genially';
+
+function getIframeParams(){
+  const wSel=document.getElementById('iframe-w')?.value;
+  const hSel=document.getElementById('iframe-h')?.value;
+  const w=wSel==='custom'?(document.getElementById('iframe-w-custom')?.value||'760px'):wSel||'760px';
+  const h=hSel==='custom'?(document.getElementById('iframe-h-custom')?.value||'700px'):hSel||'700px';
+  const radius=document.getElementById('iframe-radius')?.value||'16px';
+  const shadowType=document.getElementById('iframe-shadow')?.value||'box';
+  const scroll=document.getElementById('iframe-scroll')?.value||'no';
+  const allowType=document.getElementById('iframe-allow')?.value||'full';
+  const url=(document.getElementById('iframe-url')?.value||'https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/').trim();
+
+  const shadows={
+    box:`box-shadow:0 0 0 2px #7C3AED, 0 0 30px rgba(124,58,237,.5), 0 8px 32px rgba(0,0,0,.4);`,
+    soft:`box-shadow:0 8px 40px rgba(0,0,0,.3), 0 2px 10px rgba(0,0,0,.2);`,
+    none:``,
+    border:`border:2px solid #7C3AED;`};
+  const shadow=shadows[shadowType]||'';
+
+  const allows={
+    full:`autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture`,
+    audio:`autoplay; encrypted-media`,
+    minimal:`encrypted-media`};
+  const allow=allows[allowType]||allows.full;
+
+  return {w,h,radius,shadow,scroll,allow,url};}
+
+function buildIframeTag(p,extra=''){
+  return `<iframe
+  src="${p.url}"
+  width="${p.w}"
+  height="${p.h}"
+  frameborder="0"
+  scrolling="${p.scroll}"
+  allow="${p.allow}"
+  allowfullscreen
+  loading="lazy"
+  style="border:none; border-radius:${p.radius}; display:block; ${p.shadow}${extra}"
+  title="${CFG.title||'Тамагочи — игра'}">
+</iframe>`;}
+
+function buildResponsiveWrapper(p){
+  return `<!-- Адаптивная обёртка для любого экрана -->
+<div style="position:relative; width:100%; max-width:${p.w}; margin:0 auto;">
+${buildIframeTag(p,'max-width:100%;')}
+</div>`;}
+
+function buildAllCodes(){
+  const p=getIframeParams();
+  const url=p.url;
+
+  // Show/hide custom size row
+  const wSel=document.getElementById('iframe-w')?.value;
+  const hSel=document.getElementById('iframe-h')?.value;
+  const cr=document.getElementById('custom-size-row');
+  if(cr)cr.style.display=(wSel==='custom'||hSel==='custom')?'grid':'none';
+
+  // URL-only codes
+  ['code-url-only','code-google-url','code-notion-url','code-ispring-url'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=url;});
+
+  // Genially HTML
+  const gEl=document.getElementById('code-genially-html');
+  if(gEl)gEl.value=buildIframeTag(p);
+
+  // Full HTML with responsive wrapper
+  const htmlEl=document.getElementById('code-html-full');
+  if(htmlEl)htmlEl.value=buildResponsiveWrapper(p);
+
+  // Moodle — same as HTML but with note
+  const mEl=document.getElementById('code-moodle-html');
+  if(mEl)mEl.value=buildResponsiveWrapper(p);
+
+  // Tilda T123
+  const tEl=document.getElementById('code-tilda-html');
+  if(tEl)tEl.value=buildIframeTag(p,'width:100%;');
+
+  // WordPress
+  const wpEl=document.getElementById('code-wordpress-html');
+  if(wpEl)wpEl.value=`<!-- Вставьте в блок «Пользовательский HTML» -->
+${buildResponsiveWrapper(p)}`;
+
+  // iSpring HTML
+  const isEl=document.getElementById('code-ispring-html');
+  if(isEl)isEl.value=buildIframeTag(p);
+
+  // iSpring URL
+  const isuEl=document.getElementById('code-ispring-url');
+  if(isuEl)isuEl.value=url;
+}
+
+function switchPlatform(el,platform){
+  // Tab UI
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentPlatform=platform;
+  // Show/hide code blocks
+  ['genially','html','moodle','google','notion','tilda','wordpress','ispring']
+    .forEach(p=>{
+      const block=document.getElementById('code-'+p);
+      if(block)block.style.display=p===platform?'block':'none';});}
+
+function copyCode(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.select();
+  navigator.clipboard.writeText(el.value)
+    .then(()=>showToast('⎘ Код скопирован!'))
+    .catch(()=>{document.execCommand('copy');showToast('⎘ Скопировано!');});}
+
+function previewIframe(){
+  const p=getIframeParams();
+  const c=document.getElementById('iframe-preview-container');
+  const f=document.getElementById('iframe-preview');
+  if(!c||!f)return;
+  f.src=p.url;
+  c.style.display='block';
+  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+  showToast('▶ Загружаю предпросмотр...');}
+
+function openInTab(){
+  const url=(document.getElementById('iframe-url')?.value||'').trim();
+  if(url)window.open(url,'_blank');
+  else showToast('⚠ Введите URL игры');}
+
+// Auto-build codes on page load and when url changes
+document.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(buildAllCodes,400);
+  // Watch size selects for custom option
+  ['iframe-w','iframe-h'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('change',buildAllCodes);});});
 document.addEventListener('DOMContentLoaded',()=>{
   buildTopics();
   buildTamaGrid();
