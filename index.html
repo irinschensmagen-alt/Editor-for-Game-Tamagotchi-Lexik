@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🐾 Тамагочи · Редактор игр</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --space:#0a0a1a;--space2:#0f0f2e;--space3:#141440;
+  --pu:#7C3AED;--pu2:#A855F7;--pu3:#DDD6FE;
+  --pk:#EC4899;--pk2:#F9A8D4;
+  --cy:#06B6D4;--cy2:#A5F3FC;
+  --gr:#10B981;--gr2:#A7F3D0;
+  --ye:#F59E0B;--ye2:#FDE68A;
+  --re:#EF4444;
+  --card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);
+  --border:rgba(255,255,255,.12);
+  --tx:#F1F5F9;--tx2:#94A3B8;
+  --fp:'Orbitron',monospace;--fn:'Nunito',sans-serif;
+  --glow-pu:0 0 20px rgba(124,58,237,.5);
+  --glow-pk:0 0 20px rgba(236,72,153,.5);
+  --glow-cy:0 0 20px rgba(6,182,212,.5);
+}
+html,body{height:100%;font-family:var(--fn);background:var(--space);color:var(--tx);}
+body{display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── STARS BACKGROUND ── */
+#stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+
+/* ── TOP BAR ── */
+#topbar{
+  position:relative;z-index:10;
+  background:rgba(10,10,26,.9);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.topbar-logo{font-family:var(--fp);font-size:13px;color:var(--pu2);
+  text-shadow:0 0 14px var(--pu);letter-spacing:2px;white-space:nowrap;}
+.topbar-logo span{color:var(--pk);text-shadow:0 0 14px var(--pk);}
+.topbar-sep{flex:1;}
+.tbbtn{background:var(--card);border:1px solid var(--border);border-radius:9px;
+  color:var(--tx2);cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:700;
+  padding:7px 14px;transition:all .2s;white-space:nowrap;}
+.tbbtn:hover{background:var(--card2);color:var(--tx);}
+.tbbtn.pri{background:linear-gradient(135deg,var(--pu),var(--pk));
+  border-color:transparent;color:#fff;box-shadow:var(--glow-pu);}
+.tbbtn.pri:hover{filter:brightness(1.1);}
+.tbbtn.sav{background:linear-gradient(135deg,var(--cy),var(--gr));
+  border-color:transparent;color:#fff;}
+#save-status{font-size:11px;color:var(--gr2);min-width:80px;}
+
+/* ── MAIN LAYOUT ── */
+#app{display:flex;flex:1;overflow:hidden;position:relative;z-index:1;}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:210px;flex-shrink:0;
+  background:rgba(10,10,26,.8);backdrop-filter:blur(10px);
+  border-right:1px solid var(--border);
+  overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:4px;}
+.sb-section-lbl{font-family:var(--fp);font-size:8px;color:var(--tx2);
+  letter-spacing:2px;padding:10px 8px 4px;text-transform:uppercase;}
+.sb-btn{display:flex;align-items:center;gap:9px;border:none;border-radius:10px;
+  background:transparent;color:var(--tx2);cursor:pointer;font-family:var(--fn);
+  font-size:12px;font-weight:700;padding:9px 10px;transition:all .2s;width:100%;text-align:left;}
+.sb-btn:hover{background:var(--card);color:var(--tx);}
+.sb-btn.active{background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(236,72,153,.2));
+  color:var(--tx);border:1px solid rgba(124,58,237,.4);}
+.sb-btn .ic{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
+
+/* ── MAIN CONTENT ── */
+#main{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px;}
+
+/* ── PANELS ── */
+.panel{display:none;}
+.panel.active{display:flex;flex-direction:column;gap:18px;}
+.panel-title{font-family:var(--fp);font-size:14px;font-weight:700;
+  background:linear-gradient(90deg,var(--pu2),var(--pk));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:4px;}
+.panel-sub{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:4px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.card-title{font-family:var(--fp);font-size:9px;letter-spacing:2px;
+  color:var(--pu2);text-transform:uppercase;margin-bottom:12px;}
+.card-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
+.card-col{display:flex;flex-direction:column;gap:8px;}
+
+/* ── FORM ELEMENTS ── */
+label.lbl{font-size:11px;color:var(--tx2);font-weight:700;margin-bottom:3px;display:block;}
+input[type=text],input[type=url],input[type=number],textarea,select{
+  background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;
+  color:var(--tx);font-family:var(--fn);font-size:13px;
+  padding:9px 12px;transition:all .2s;width:100%;outline:none;}
+input[type=text]:focus,input[type=url]:focus,input[type=number]:focus,
+textarea:focus,select:focus{border-color:var(--pu2);box-shadow:0 0 0 3px rgba(124,58,237,.2);}
+textarea{resize:vertical;min-height:72px;line-height:1.6;}
+select option{background:#1a1a3e;color:var(--tx);}
+input[type=range]{accent-color:var(--pu2);width:100%;}
+input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;cursor:pointer;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fgrp{display:flex;flex-direction:column;gap:4px;}
+
+/* ── CHIPS / TOGGLE CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+.chip{background:var(--card);border:1.5px solid var(--border);border-radius:20px;
+  color:var(--tx2);cursor:pointer;font-size:11px;font-weight:700;
+  padding:5px 13px;transition:all .2s;user-select:none;}
+.chip:hover{border-color:var(--pu2);color:var(--tx);}
+.chip.on{background:linear-gradient(135deg,rgba(124,58,237,.4),rgba(236,72,153,.3));
+  border-color:var(--pu2);color:var(--tx);box-shadow:0 0 10px rgba(124,58,237,.3);}
+
+/* ── TOPIC GRID ── */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.topic-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.topic-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.topic-num{font-family:var(--fp);font-size:8px;color:var(--cy2);letter-spacing:1px;}
+.topic-color{display:flex;gap:6px;}
+.t-icon{font-size:18px;}
+
+/* ── AUDIO PLAYER ── */
+.audio-player{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.1));
+  border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:16px;}
+.ap-title{font-family:var(--fp);font-size:9px;color:var(--cy2);letter-spacing:2px;margin-bottom:12px;}
+.ap-controls{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.ap-btn{background:var(--card2);border:1px solid var(--border);border-radius:50%;
+  color:var(--tx);cursor:pointer;font-size:14px;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.ap-btn:hover{background:var(--pu);border-color:var(--pu);}
+.ap-btn.play-btn{background:linear-gradient(135deg,var(--pu),var(--pk));
+  border:none;width:44px;height:44px;font-size:16px;box-shadow:var(--glow-pu);}
+.ap-time{font-family:var(--fp);font-size:9px;color:var(--tx2);min-width:70px;}
+.ap-progress{flex:1;min-width:100px;}
+.ap-vol{display:flex;align-items:center;gap:6px;flex:0 0 120px;}
+#ap-track-name{font-size:11px;color:var(--cy2);text-align:center;
+  min-height:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ap-list{max-height:140px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;}
+.ap-track{background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;}
+.ap-track:hover,.ap-track.active{border-color:var(--pu2);background:var(--card2);}
+.ap-track-n{font-size:11px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ap-track-rm{color:var(--re);cursor:pointer;font-size:13px;flex-shrink:0;}
+
+/* ── TAMA GRID ── */
+.tama-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;}
+.tama-slot{background:var(--card);border:1.5px solid var(--border);border-radius:14px;
+  padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.tama-slot:hover{border-color:var(--pu2);transform:translateY(-2px);}
+.tama-slot.sel{border-color:var(--pk);background:rgba(236,72,153,.15);
+  box-shadow:0 0 14px rgba(236,72,153,.3);}
+.tama-emoji{font-size:32px;display:block;margin-bottom:5px;}
+.tama-name{font-size:10px;color:var(--tx2);font-weight:700;}
+.tama-slot .sel-badge{position:absolute;top:5px;right:7px;font-size:10px;
+  color:var(--pk);display:none;}
+.tama-slot.sel .sel-badge{display:block;}
+
+/* ── EFFECT GRID ── */
+.fx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;}
+.fx-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.fx-card:hover{border-color:var(--cy2);transform:scale(1.03);}
+.fx-card.on{border-color:var(--cy);background:rgba(6,182,212,.15);
+  box-shadow:0 0 12px rgba(6,182,212,.25);}
+.fx-icon{font-size:24px;display:block;margin-bottom:4px;}
+.fx-label{font-size:10px;color:var(--tx2);font-weight:700;}
+
+/* ── PHRASE BOXES ── */
+.phrase-item{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;display:flex;align-items:flex-start;gap:8px;}
+.phrase-tag{background:rgba(124,58,237,.3);border-radius:6px;
+  font-size:9px;font-family:var(--fp);color:var(--pu2);padding:2px 7px;
+  flex-shrink:0;margin-top:2px;}
+.phrase-text{font-size:12px;flex:1;color:var(--tx2);line-height:1.5;}
+.phrase-del{color:var(--re);cursor:pointer;font-size:14px;flex-shrink:0;}
+
+/* ── LEVEL TABS ── */
+.lvl-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.lvl-tab{background:var(--card);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--tx2);cursor:pointer;font-size:11px;font-weight:800;
+  padding:7px 16px;transition:all .2s;}
+.lvl-tab.active{color:#fff;border-color:transparent;}
+.lvl-tab[data-lv="1"].active{background:linear-gradient(135deg,#3B82F6,#06B6D4);}
+.lvl-tab[data-lv="2"].active{background:linear-gradient(135deg,var(--pu),var(--pu2));}
+.lvl-tab[data-lv="3"].active{background:linear-gradient(135deg,var(--pk),#F97316);}
+
+/* ── PROGRESS / MECHANIC ── */
+.mech-row{display:flex;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--border);}
+.mech-row:last-child{border-bottom:none;}
+.mech-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+.mech-info{flex:1;}
+.mech-name{font-size:12px;font-weight:800;}
+.mech-desc{font-size:10px;color:var(--tx2);margin-top:2px;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.15);
+  border-radius:12px;cursor:pointer;transition:.3s;}
+.toggle-slider:before{content:'';position:absolute;height:18px;width:18px;
+  left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+.toggle input:checked+.toggle-slider{background:var(--pu);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px);}
+
+/* ── EXPORT PANEL ── */
+.export-card{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(236,72,153,.15));
+  border:1px solid rgba(124,58,237,.4);border-radius:18px;padding:24px;text-align:center;}
+.export-icon{font-size:56px;margin-bottom:14px;}
+.export-title{font-family:var(--fp);font-size:14px;color:var(--pu2);margin-bottom:8px;}
+.export-sub{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:18px;max-width:460px;margin-left:auto;margin-right:auto;}
+.export-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.ebtn{border:none;border-radius:12px;color:#fff;cursor:pointer;
+  font-family:var(--fn);font-size:13px;font-weight:800;
+  padding:12px 26px;transition:all .2s;}
+.ebtn.json{background:linear-gradient(135deg,var(--cy),var(--gr));}
+.ebtn.html{background:linear-gradient(135deg,var(--pu),var(--pk));}
+.ebtn.copy{background:linear-gradient(135deg,var(--ye),#F97316);}
+.ebtn:hover{filter:brightness(1.1);transform:translateY(-2px);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,.4);border-radius:3px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:linear-gradient(135deg,var(--pu),var(--pk));
+  color:#fff;border-radius:12px;padding:11px 22px;font-weight:700;font-size:13px;
+  z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── API BADGE ── */
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(6,182,212,.15);
+  border:1px solid rgba(6,182,212,.3);border-radius:20px;
+  padding:4px 11px;font-size:10px;color:var(--cy2);font-weight:700;}
+
+/* ── PREVIEW MINI ── */
+.preview-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:6px 14px;font-size:11px;color:var(--tx2);font-weight:700;
+  display:inline-flex;align-items:center;gap:6px;}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed rgba(124,58,237,.4);border-radius:12px;
+  padding:18px;text-align:center;cursor:pointer;transition:all .2s;
+  background:rgba(124,58,237,.05);}
+.upload-zone:hover{border-color:var(--pu2);background:rgba(124,58,237,.1);}
+.upload-zone input{display:none;}
+.upload-icon{font-size:28px;margin-bottom:6px;}
+.upload-text{font-size:11px;color:var(--tx2);}
+
+/* ── PREVIEW TAMA ── */
+.preview-tama{
+  background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.1));
+  border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:16px;
+  display:flex;align-items:center;gap:14px;}
+.pt-egg{font-size:48px;animation:cosmicBob 3s ease-in-out infinite;}
+@keyframes cosmicBob{0%,100%{transform:rotate(-6deg);}50%{transform:rotate(6deg) translateY(-4px);}}
+.pt-info{flex:1;}
+.pt-name{font-family:var(--fp);font-size:10px;color:var(--pk2);margin-bottom:4px;}
+.pt-stats{display:flex;gap:8px;flex-wrap:wrap;}
+.pt-stat{background:var(--card);border-radius:8px;padding:4px 9px;
+  font-size:10px;color:var(--tx2);font-weight:700;}
+
+/* ── ANIM GRID ── */
+.anim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.anim-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.anim-card:hover{border-color:var(--ye2);transform:translateY(-2px);}
+.anim-card.on{border-color:var(--ye);background:rgba(245,158,11,.12);
+  box-shadow:0 0 12px rgba(245,158,11,.2);}
+.anim-demo{font-size:28px;display:block;margin-bottom:5px;}
+.anim-label{font-size:10px;color:var(--tx2);font-weight:700;}
+
+/* Responsive */
+@media(max-width:640px){
+  #sidebar{width:52px;}
+  .sb-btn .sb-label{display:none;}
+  .sb-section-lbl{display:none;}
+  #main{padding:12px;}
+  .row2,.row3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div id="stars-bg"></div>
+<div id="toast">✓ Сохранено!</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="topbar-logo">🐾 ТАМАГОЧИ <span>EDITOR</span></div>
+  <div class="preview-pill" id="config-preview">🥚 Новая игра</div>
+  <div class="topbar-sep"></div>
+  <span id="save-status"></span>
+  <button class="tbbtn sav" onclick="saveConfig()">💾 Сохранить</button>
+  <button class="tbbtn pri" onclick="showPanel('export')">📤 Экспорт</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <span class="sb-section-lbl">Основное</span>
+  <button class="sb-btn active" onclick="showPanel('settings')" data-panel="settings">
+    <span class="ic">⚙️</span><span class="sb-label">Настройки игры</span></button>
+  <button class="sb-btn" onclick="showPanel('content')" data-panel="content">
+    <span class="ic">📚</span><span class="sb-label">Контент · 12 тем</span></button>
+  <button class="sb-btn" onclick="showPanel('phrases')" data-panel="phrases">
+    <span class="ic">💬</span><span class="sb-label">Реплики Тамагочи</span></button>
+
+  <span class="sb-section-lbl">Медиа</span>
+  <button class="sb-btn" onclick="showPanel('audio')" data-panel="audio">
+    <span class="ic">🎵</span><span class="sb-label">Аудио · Музыка</span></button>
+  <button class="sb-btn" onclick="showPanel('visuals')" data-panel="visuals">
+    <span class="ic">🎨</span><span class="sb-label">Визуал · Фон</span></button>
+  <button class="sb-btn" onclick="showPanel('tamas')" data-panel="tamas">
+    <span class="ic">🐱</span><span class="sb-label">12 Тамагочи</span></button>
+  <button class="sb-btn" onclick="showPanel('media')" data-panel="media">
+    <span class="ic">🖼️</span><span class="sb-label">Стикеры · Гифы</span></button>
+
+  <span class="sb-section-lbl">Игра</span>
+  <button class="sb-btn" onclick="showPanel('effects')" data-panel="effects">
+    <span class="ic">✨</span><span class="sb-label">Спецэффекты</span></button>
+  <button class="sb-btn" onclick="showPanel('animations')" data-panel="animations">
+    <span class="ic">🎭</span><span class="sb-label">Анимации · 3D</span></button>
+  <button class="sb-btn" onclick="showPanel('mechanics')" data-panel="mechanics">
+    <span class="ic">🏆</span><span class="sb-label">Механики игры</span></button>
+
+  <span class="sb-section-lbl">Вывод</span>
+  <button class="sb-btn" onclick="showPanel('export')" data-panel="export">
+    <span class="ic">📤</span><span class="sb-label">Экспорт игры</span></button>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- ═══ SETTINGS ═══ -->
+<div id="panel-settings" class="panel active">
+  <div class="panel-title">⚙️ Настройки игры</div>
+  <div class="panel-sub">Выберите уровень, язык, формат заданий и параметры таймера.</div>
+
+  <!-- Game identity -->
+  <div class="card">
+    <div class="card-title">🏷️ Название и автор</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Название игры</label>
+        <input type="text" id="g-title" value="Тамагочи — Лексика А1" oninput="updatePreview()"></div>
+      <div class="fgrp"><label class="lbl">Автор / Предмет</label>
+        <input type="text" id="g-author" placeholder="Например: Иванова И.И. · Русский язык"></div>
+    </div>
+    <div class="row2" style="margin-top:10px;">
+      <div class="fgrp"><label class="lbl">Класс / Аудитория</label>
+        <input type="text" id="g-audience" placeholder="5 класс, А1, Beginner..."></div>
+      <div class="fgrp"><label class="lbl">Учебный год / Семестр</label>
+        <input type="text" id="g-year" placeholder="2025–2026"></div>
+    </div>
+  </div>
+
+  <!-- Language -->
+  <div class="card">
+    <div class="card-title">🌍 Язык игры</div>
+    <div class="chips" id="lang-chips">
+      <div class="chip on" onclick="selChip(this,'lang')" data-v="ru">🇷🇺 Русский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="de">🇩🇪 Немецкий</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="fr">🇫🇷 Французский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="es">🇪🇸 Испанский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="it">🇮🇹 Итальянский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="pt">🇵🇹 Португальский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="zh">🇨🇳 Китайский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="ja">🇯🇵 Японский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="ar">🇸🇦 Арабский</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="hi">🇮🇳 Хинди</div>
+      <div class="chip" onclick="selChip(this,'lang')" data-v="fa">🇮🇷 Фарси</div>
+    </div>
+    <div style="margin-top:10px;" class="row2">
+      <div class="fgrp"><label class="lbl">Язык интерфейса (кнопки, подсказки)</label>
+        <select id="ui-lang">
+          <option value="ru">Русский</option><option value="en">English</option>
+          <option value="de">Deutsch</option><option value="fr">Français</option>
+        </select>
+      </div>
+      <div class="fgrp"><label class="lbl">Язык изучаемой лексики</label>
+        <input type="text" id="target-lang" placeholder="напр. Английский, Химия, Математика..."></div>
+    </div>
+  </div>
+
+  <!-- Levels -->
+  <div class="card">
+    <div class="card-title">📊 Уровни сложности</div>
+    <div class="row3">
+      <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:12px;padding:14px;">
+        <div style="font-family:var(--fp);font-size:9px;color:#93C5FD;margin-bottom:8px;">УРОВЕНЬ 1 · БАЗОВЫЙ</div>
+        <div class="fgrp"><label class="lbl">Название</label>
+          <input type="text" id="lv1-name" value="Базовый"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Вопросов</label>
+          <input type="number" id="lv1-q" value="10" min="3" max="30"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Таймер (сек)</label>
+          <input type="number" id="lv1-t" value="30" min="5" max="120"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Жизни (попытки)</label>
+          <input type="number" id="lv1-lives" value="3" min="1" max="5"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Эмодзи уровня</label>
+          <input type="text" id="lv1-emoji" value="🐣"></div>
+      </div>
+      <div style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:14px;">
+        <div style="font-family:var(--fp);font-size:9px;color:var(--pu3);margin-bottom:8px;">УРОВЕНЬ 2 · ПОВЫШЕННЫЙ</div>
+        <div class="fgrp"><label class="lbl">Название</label>
+          <input type="text" id="lv2-name" value="Повышенный"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Вопросов</label>
+          <input type="number" id="lv2-q" value="10" min="3" max="30"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Таймер (сек)</label>
+          <input type="number" id="lv2-t" value="25" min="5" max="120"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Жизни</label>
+          <input type="number" id="lv2-lives" value="3" min="1" max="5"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Эмодзи уровня</label>
+          <input type="text" id="lv2-emoji" value="🐥"></div>
+      </div>
+      <div style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);border-radius:12px;padding:14px;">
+        <div style="font-family:var(--fp);font-size:9px;color:var(--pk2);margin-bottom:8px;">УРОВЕНЬ 3 · ВЫСОКИЙ</div>
+        <div class="fgrp"><label class="lbl">Название</label>
+          <input type="text" id="lv3-name" value="Высокий"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Вопросов</label>
+          <input type="number" id="lv3-q" value="5" min="3" max="30"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Таймер (сек)</label>
+          <input type="number" id="lv3-t" value="20" min="5" max="120"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Жизни</label>
+          <input type="number" id="lv3-lives" value="3" min="1" max="5"></div>
+        <div class="fgrp" style="margin-top:8px;"><label class="lbl">Эмодзи уровня</label>
+          <input type="text" id="lv3-emoji" value="🌟"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task format -->
+  <div class="card">
+    <div class="card-title">📝 Форматы заданий</div>
+    <div class="chips" id="fmt-chips">
+      <div class="chip on" onclick="togChip(this)" data-v="choice">🔘 Выбор из 4 слов</div>
+      <div class="chip on" onclick="togChip(this)" data-v="match">🖱️ Поймай мышку (пары)</div>
+      <div class="chip on" onclick="togChip(this)" data-v="fill">✍️ Вписать слово</div>
+      <div class="chip" onclick="togChip(this)" data-v="image">🖼️ Слово → картинка</div>
+      <div class="chip" onclick="togChip(this)" data-v="audio">🔊 Слово → звук</div>
+      <div class="chip" onclick="togChip(this)" data-v="proverb">📜 Пропущенное в пословице</div>
+      <div class="chip" onclick="togChip(this)" data-v="formula">🔢 Формула → ответ</div>
+      <div class="chip" onclick="togChip(this)" data-v="translate">🌍 Перевод слова</div>
+      <div class="chip" onclick="togChip(this)" data-v="date">📅 Дата → событие</div>
+      <div class="chip" onclick="togChip(this)" data-v="definition">📖 Термин → определение</div>
+      <div class="chip" onclick="togChip(this)" data-v="anagram">🔤 Анаграмма</div>
+    </div>
+  </div>
+
+  <!-- Score -->
+  <div class="card">
+    <div class="card-title">🏆 Система оценивания</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">% для «Отлично» (⭐⭐⭐⭐⭐)</label>
+        <input type="number" id="score-5" value="90" min="50" max="100"></div>
+      <div class="fgrp"><label class="lbl">% для «Хорошо» (⭐⭐⭐⭐)</label>
+        <input type="number" id="score-4" value="75" min="30" max="99"></div>
+    </div>
+    <div class="row2" style="margin-top:8px;">
+      <div class="fgrp"><label class="lbl">% для «Удовл.» (⭐⭐⭐)</label>
+        <input type="number" id="score-3" value="60" min="20" max="99"></div>
+      <div class="fgrp"><label class="lbl">Монеток за правильный ответ</label>
+        <input type="number" id="score-coins" value="1" min="1" max="10"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div id="panel-content" class="panel">
+  <div class="panel-title">📚 Контент · 12 тем</div>
+  <div class="panel-sub">Введите слова, словосочетания, формулы, даты или любой учебный контент через запятую. Каждая тема соответствует одной игровой категории.</div>
+
+  <div class="card">
+    <div class="card-title">🎓 Учебная дисциплина / Предмет</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Тип контента</label>
+        <select id="content-type">
+          <option value="vocab">Лексика / Слова</option>
+          <option value="phrases">Словосочетания / Фразы</option>
+          <option value="formulas">Формулы (математика, физика, химия)</option>
+          <option value="dates">Даты и события (история)</option>
+          <option value="terms">Термины и определения</option>
+          <option value="code">Программирование / Синтаксис</option>
+          <option value="geography">Географические названия</option>
+          <option value="biology">Биология / Анатомия</option>
+          <option value="custom">Свой тип...</option>
+        </select>
+      </div>
+      <div class="fgrp"><label class="lbl">Свой тип (если выбрали «Свой»)</label>
+        <input type="text" id="content-custom" placeholder="Например: Ноты, Химические элементы..."></div>
+    </div>
+  </div>
+
+  <div class="topic-grid" id="topics-grid"></div>
+</div>
+
+<!-- ═══ PHRASES ═══ -->
+<div id="panel-phrases" class="panel">
+  <div class="panel-title">💬 Реплики Тамагочи</div>
+  <div class="panel-sub">Настройте реплики питомца для разных тем и уровней. Базовые реплики из игры уже включены. Используйте ИИ для генерации новых!</div>
+
+  <div class="lvl-tabs">
+    <div class="lvl-tab active" data-lv="1" onclick="selLvTab(this)">🐣 Уровень 1 · Базовый</div>
+    <div class="lvl-tab" data-lv="2" onclick="selLvTab(this)">🐥 Уровень 2 · Повышенный</div>
+    <div class="lvl-tab" data-lv="3" onclick="selLvTab(this)">🌟 Уровень 3 · Высокий</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✅ Реплики при ПРАВИЛЬНОМ ответе</div>
+    <div id="ok-phrases-list" class="card-col" style="gap:6px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+      <input type="text" id="new-ok-phrase" placeholder="Напишите новую реплику..." style="flex:1;min-width:200px;">
+      <button class="tbbtn" style="background:rgba(16,185,129,.2);border-color:var(--gr);color:var(--gr2);" onclick="addPhrase('ok')">+ Добавить</button>
+      <button class="tbbtn ai-badge" onclick="genPhrases('ok')">✦ ИИ генерация</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">❌ Реплики при ОШИБКЕ / Плач Тамагочи</div>
+    <div id="err-phrases-list" class="card-col" style="gap:6px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+      <input type="text" id="new-err-phrase" placeholder="Напишите новую реплику..." style="flex:1;min-width:200px;">
+      <button class="tbbtn" style="background:rgba(239,68,68,.2);border-color:var(--re);color:#FCA5A5;" onclick="addPhrase('err')">+ Добавить</button>
+      <button class="tbbtn ai-badge" onclick="genPhrases('err')">✦ ИИ генерация</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💬 Тематические реплики (по категориям)</div>
+    <div id="themed-phrases" class="card-col" style="gap:6px;"></div>
+  </div>
+
+  <div class="card" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.06);">
+    <div class="card-title">✦ Генератор реплик через ИИ</div>
+    <div class="panel-sub" style="margin-bottom:10px;">Опишите тему или настроение — ИИ создаст реплики по образцу игры</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Тема / Контекст для генерации</label>
+        <input type="text" id="ai-context" placeholder="напр. химия, математика, история..."></div>
+      <div class="fgrp"><label class="lbl">Количество реплик</label>
+        <select id="ai-count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="ebtn html" style="padding:9px 20px;font-size:12px;" onclick="aiGenAllPhrases()">✦ Сгенерировать реплики для всех тем</button>
+      <button class="ebtn json" style="padding:9px 20px;font-size:12px;" onclick="aiGenThemed()">✦ Тематические реплики</button>
+    </div>
+    <div id="ai-phrases-output" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- ═══ AUDIO ═══ -->
+<div id="panel-audio" class="panel">
+  <div class="panel-title">🎵 Аудио · Музыкальный плеер</div>
+  <div class="panel-sub">Загружайте музыку и звуки с компьютера или по ссылке. Базовые синтезированные звуки игры сохранены.</div>
+
+  <!-- Player -->
+  <div class="audio-player">
+    <div class="ap-title">🎵 ПЛЕЕР</div>
+    <div id="ap-track-name">— нет трека —</div>
+    <div class="ap-controls" style="margin-top:10px;">
+      <button class="ap-btn" onclick="apPrev()" title="Назад">⏮</button>
+      <button class="ap-btn play-btn" id="ap-play" onclick="apToggle()">▶</button>
+      <button class="ap-btn" onclick="apNext()" title="Вперёд">⏭</button>
+      <button class="ap-btn" id="ap-loop" onclick="apToggleLoop()" title="Повтор">🔁</button>
+      <button class="ap-btn" id="ap-shuffle" onclick="apToggleShuffle()" title="Случайно">🔀</button>
+      <span class="ap-time" id="ap-time">0:00 / 0:00</span>
+      <input type="range" id="ap-seek" class="ap-progress" value="0" min="0" max="100" step="0.1" oninput="apSeek()">
+      <div class="ap-vol">
+        <span>🔊</span>
+        <input type="range" id="ap-vol" min="0" max="1" step="0.05" value="0.7" oninput="apVol()">
+      </div>
+    </div>
+    <audio id="ap-audio" onended="apEnded()" ontimeupdate="apUpdate()"></audio>
+  </div>
+
+  <!-- Track list -->
+  <div class="card">
+    <div class="card-title">📋 Плейлист</div>
+    <div id="ap-list" class="ap-list" style="margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <label class="tbbtn" style="cursor:pointer;background:rgba(124,58,237,.2);border-color:var(--pu2);">
+        📁 С компьютера <input type="file" accept="audio/*" multiple onchange="apAddFiles(event)" style="display:none;">
+      </label>
+      <div style="display:flex;gap:6px;flex:1;min-width:200px;">
+        <input type="url" id="ap-url" placeholder="https://... ссылка на mp3/ogg" style="flex:1;">
+        <button class="tbbtn" onclick="apAddUrl()">+ URL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound effects -->
+  <div class="card">
+    <div class="card-title">🔔 Звуковые эффекты</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Правильный ответ</label>
+        <div style="display:flex;gap:6px;">
+          <select id="sfx-ok" style="flex:1;">
+            <option value="synth">🎵 Синтез (базовый)</option>
+            <option value="chime">🔔 Колокольчик</option>
+            <option value="pop">🎈 Поп</option>
+            <option value="coin">🪙 Монета</option>
+            <option value="fanfare">🎺 Фанфара</option>
+          </select>
+          <label class="tbbtn" style="cursor:pointer;white-space:nowrap;padding:7px 10px;">
+            📁<input type="file" accept="audio/*" onchange="setSfx('ok',event)" style="display:none;"></label>
+        </div>
+      </div>
+      <div class="fgrp"><label class="lbl">Неверный ответ</label>
+        <div style="display:flex;gap:6px;">
+          <select id="sfx-err" style="flex:1;">
+            <option value="synth">🎵 Синтез (базовый)</option>
+            <option value="buzz">📯 Гудок</option>
+            <option value="sad">😢 Грустная нота</option>
+          </select>
+          <label class="tbbtn" style="cursor:pointer;padding:7px 10px;">
+            📁<input type="file" accept="audio/*" onchange="setSfx('err',event)" style="display:none;"></label>
+        </div>
+      </div>
+    </div>
+    <div class="row2" style="margin-top:10px;">
+      <div class="fgrp"><label class="lbl">Рождение Тамагочи</label>
+        <div style="display:flex;gap:6px;">
+          <select id="sfx-birth" style="flex:1;">
+            <option value="synth">✨ Синтез (базовый)</option>
+            <option value="sparkle">🌟 Сверкание</option>
+          </select>
+          <label class="tbbtn" style="cursor:pointer;padding:7px 10px;">
+            📁<input type="file" accept="audio/*" onchange="setSfx('birth',event)" style="display:none;"></label>
+        </div>
+      </div>
+      <div class="fgrp"><label class="lbl">Победа / Финал</label>
+        <div style="display:flex;gap:6px;">
+          <select id="sfx-win" style="flex:1;">
+            <option value="synth">🎉 Синтез (базовый)</option>
+            <option value="fanfare">🎺 Фанфара</option>
+            <option value="applause">👏 Аплодисменты</option>
+          </select>
+          <label class="tbbtn" style="cursor:pointer;padding:7px 10px;">
+            📁<input type="file" accept="audio/*" onchange="setSfx('win',event)" style="display:none;"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VISUALS ═══ -->
+<div id="panel-visuals" class="panel">
+  <div class="panel-title">🎨 Визуал · Фоны</div>
+  <div class="panel-sub">Загрузите фоны для каждого экрана или выберите из готовых.</div>
+
+  <div class="card">
+    <div class="card-title">🌌 Цветовая схема</div>
+    <div class="chips" id="theme-chips">
+      <div class="chip on" onclick="selChip(this,'theme')" data-v="cosmic">🌌 Космос (базовый)</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="forest">🌲 Лес</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="ocean">🌊 Океан</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="candy">🍭 Леденцы</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="retro">👾 Ретро</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="dark">🖤 Тёмный</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="light">🤍 Светлый</div>
+      <div class="chip" onclick="selChip(this,'theme')" data-v="custom">🎨 Свои цвета</div>
+    </div>
+    <div class="row3" style="margin-top:12px;" id="custom-colors" style="display:none;">
+      <div class="fgrp"><label class="lbl">Основной цвет</label><input type="color" value="#7C3AED"></div>
+      <div class="fgrp"><label class="lbl">Акцентный</label><input type="color" value="#EC4899"></div>
+      <div class="fgrp"><label class="lbl">Фон</label><input type="color" value="#0a0a1a"></div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">🖼️ Фон — Главный экран</div>
+      <div class="upload-zone" onclick="this.querySelector('input').click()">
+        <div class="upload-icon">🌌</div>
+        <div class="upload-text">PNG, JPG, GIF, WebP<br>или перетащите сюда</div>
+        <input type="file" accept="image/*" onchange="setBackground('welcome',event)">
+      </div>
+      <div id="bg-welcome-preview" style="margin-top:8px;font-size:11px;color:var(--gr2);"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🥚 Фон — Экран яйца / космос</div>
+      <div class="upload-zone" onclick="this.querySelector('input').click()">
+        <div class="upload-icon">🚀</div>
+        <div class="upload-text">PNG, JPG, GIF, WebP</div>
+        <input type="file" accept="image/*" onchange="setBackground('cosmic',event)">
+      </div>
+      <div id="bg-cosmic-preview" style="margin-top:8px;font-size:11px;color:var(--gr2);"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎮 Фон — Игровой экран</div>
+      <div class="upload-zone" onclick="this.querySelector('input').click()">
+        <div class="upload-icon">🎯</div>
+        <div class="upload-text">PNG, JPG, GIF, WebP</div>
+        <input type="file" accept="image/*" onchange="setBackground('game',event)">
+      </div>
+      <div id="bg-game-preview" style="margin-top:8px;font-size:11px;color:var(--gr2);"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🛍 Фон — Магазин</div>
+      <div class="upload-zone" onclick="this.querySelector('input').click()">
+        <div class="upload-icon">🏪</div>
+        <div class="upload-text">PNG, JPG, GIF, WebP</div>
+        <input type="file" accept="image/*" onchange="setBackground('shop',event)">
+      </div>
+      <div id="bg-shop-preview" style="margin-top:8px;font-size:11px;color:var(--gr2);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAMAS ═══ -->
+<div id="panel-tamas" class="panel">
+  <div class="panel-title">🐱 12 Тамагочи</div>
+  <div class="panel-sub">Базовые питомцы из игры включены. Загрузите свои изображения, выберите активных питомцев.</div>
+
+  <div class="card">
+    <div class="card-title">🥚 Активные питомцы</div>
+    <div class="tama-grid" id="tama-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📤 Загрузить своих питомцев (PNG с прозрачным фоном)</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" id="tama-uploads"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌱 Стадии роста Тамагочи</div>
+    <div class="row3">
+      <div class="fgrp"><label class="lbl">🥚 Яйцо</label><input type="text" id="stage-egg" value="🥚"></div>
+      <div class="fgrp"><label class="lbl">🐣 Младенец</label><input type="text" id="stage-baby" value="🐣"></div>
+      <div class="fgrp"><label class="lbl">🐥 Подросток</label><input type="text" id="stage-teen" value="🐥"></div>
+      <div class="fgrp"><label class="lbl">🐓 Юный</label><input type="text" id="stage-young" value="🐤"></div>
+      <div class="fgrp"><label class="lbl">🦅 Взрослый</label><input type="text" id="stage-adult" value="🐦"></div>
+      <div class="fgrp"><label class="lbl">👑 Легенда</label><input type="text" id="stage-legend" value="🦁"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏪 Товары магазина — Уровень 1</div>
+    <div id="shop1-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;"></div>
+    <button class="tbbtn" style="margin-top:10px;" onclick="addShopItem(1)">+ Добавить товар</button>
+  </div>
+</div>
+
+<!-- ═══ MEDIA ═══ -->
+<div id="panel-media" class="panel">
+  <div class="panel-title">🖼️ Стикеры · Гифы · Картинки</div>
+  <div class="panel-sub">Загружайте прозрачные PNG, GIF-анимации, стикеры для украшения игры.</div>
+
+  <div class="card">
+    <div class="card-title">📤 Загрузка изображений</div>
+    <div class="row2">
+      <div>
+        <label class="lbl">Картинки и стикеры (PNG, WebP с прозрачностью)</label>
+        <div class="upload-zone" onclick="this.querySelector('input').click()" style="margin-top:6px;">
+          <div class="upload-icon">🎨</div>
+          <div class="upload-text">PNG · WebP · SVG · до 5 МБ</div>
+          <input type="file" accept="image/png,image/webp,image/svg+xml" multiple onchange="addMedia('stickers',event)">
+        </div>
+      </div>
+      <div>
+        <label class="lbl">GIF-анимации</label>
+        <div class="upload-zone" onclick="this.querySelector('input').click()" style="margin-top:6px;">
+          <div class="upload-icon">🌀</div>
+          <div class="upload-text">GIF · Animated WebP</div>
+          <input type="file" accept="image/gif,image/webp" multiple onchange="addMedia('gifs',event)">
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="lbl">Добавить по URL (Giphy, Tenor и др.)</label>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <input type="url" id="media-url" placeholder="https://media.giphy.com/..." style="flex:1;">
+        <button class="tbbtn" onclick="addMediaUrl()">+ Добавить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗂️ Загруженные медиа</div>
+    <div id="media-gallery" style="display:flex;flex-wrap:wrap;gap:10px;min-height:60px;">
+      <div style="color:var(--tx2);font-size:12px;padding:10px;">Здесь появятся загруженные изображения...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏷️ Назначение изображений</div>
+    <div class="panel-sub">Выберите какие изображения показывать при правильном ответе по каждой теме.</div>
+    <div id="topic-images" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- ═══ EFFECTS ═══ -->
+<div id="panel-effects" class="panel">
+  <div class="panel-title">✨ Спецэффекты</div>
+  <div class="panel-sub">Выберите эффекты для победных экранов, правильных ответов и финала игры.</div>
+
+  <div class="card">
+    <div class="card-title">🎯 Эффекты при правильном ответе</div>
+    <div class="fx-grid" id="fx-correct"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🏆 Эффекты при победе / финале</div>
+    <div class="fx-grid" id="fx-win"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">😴 Эффекты при проигрыше</div>
+    <div class="fx-grid" id="fx-fail"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ Интенсивность</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Количество частиц</label>
+        <input type="range" id="fx-intensity" min="10" max="200" value="55"></div>
+      <div class="fgrp"><label class="lbl">Длительность (сек)</label>
+        <input type="range" id="fx-duration" min="1" max="10" value="4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ANIMATIONS ═══ -->
+<div id="panel-animations" class="panel">
+  <div class="panel-title">🎭 Анимации · 3D</div>
+  <div class="panel-sub">Настройте движения Тамагочи для каждого действия. Включите 3D-режим для объёмных эффектов.</div>
+
+  <div class="card" style="border-color:rgba(245,158,11,.3);">
+    <div class="card-title">🌐 3D-режим</div>
+    <div class="mech-row">
+      <div class="mech-icon">🌐</div>
+      <div class="mech-info">
+        <div class="mech-name">CSS 3D трансформации</div>
+        <div class="mech-desc">Тамагочи и объекты вращаются в 3D пространстве (perspective + rotateX/Y/Z)</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="t-3d" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🌟</div>
+      <div class="mech-info">
+        <div class="mech-name">Неоновое свечение</div>
+        <div class="mech-desc">Drop-shadow эффекты неонового свечения на персонажах и предметах</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="t-neon" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🎠</div>
+      <div class="mech-info">
+        <div class="mech-name">3D подиумное вращение</div>
+        <div class="mech-desc">При угадывании одежды — Тамагочи вращается на 360° как на подиуме</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="t-catwalk" checked><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎬 Анимации по теме задания</div>
+    <div class="anim-grid" id="anim-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🐾 Анимация яйца</div>
+    <div class="row2">
+      <div class="fgrp"><label class="lbl">Стиль покачивания яйца</label>
+        <select id="egg-anim">
+          <option value="cosmic">🌌 Космическое (базовое)</option>
+          <option value="gentle">😌 Нежное</option>
+          <option value="energetic">⚡ Энергичное</option>
+          <option value="bouncy">🏀 Прыгучее</option>
+        </select>
+      </div>
+      <div class="fgrp"><label class="lbl">Цвет свечения яйца</label>
+        <select id="egg-glow">
+          <option value="purple">💜 Фиолетовый</option>
+          <option value="pink">🌸 Розовый</option>
+          <option value="cyan">💙 Голубой</option>
+          <option value="gold">✨ Золотой</option>
+          <option value="rainbow">🌈 Радуга</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MECHANICS ═══ -->
+<div id="panel-mechanics" class="panel">
+  <div class="panel-title">🏆 Механики игры</div>
+  <div class="panel-sub">Настройте таймер, очки, магазин, рост питомца и прогресс-бар.</div>
+
+  <div class="card">
+    <div class="card-title">⚙️ Основные механики</div>
+    <div class="mech-row">
+      <div class="mech-icon">⏱️</div>
+      <div class="mech-info"><div class="mech-name">Таймер</div><div class="mech-desc">Цветной прогресс-бар с обратным отсчётом (зелёный→жёлтый→красный)</div></div>
+      <label class="toggle"><input type="checkbox" id="m-timer" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🪙</div>
+      <div class="mech-info"><div class="mech-name">Монеты</div><div class="mech-desc">Начисляются за правильные ответы с первой попытки</div></div>
+      <label class="toggle"><input type="checkbox" id="m-coins" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">❤️</div>
+      <div class="mech-info"><div class="mech-name">Жизни (❤️❤️❤️)</div><div class="mech-desc">3 ошибки — Тамагочи засыпает в яйце, игра начинается сначала</div></div>
+      <label class="toggle"><input type="checkbox" id="m-lives" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">📊</div>
+      <div class="mech-info"><div class="mech-name">Прогресс-бар уровня</div><div class="mech-desc">Полоса прогресса с монетками показывает продвижение по уровню</div></div>
+      <label class="toggle"><input type="checkbox" id="m-progress" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🛍️</div>
+      <div class="mech-info"><div class="mech-name">Магазин после уровня</div><div class="mech-desc">Игрок тратит монеты на предметы для питомца (только при хорошем/отличном результате)</div></div>
+      <label class="toggle"><input type="checkbox" id="m-shop" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🌱</div>
+      <div class="mech-info"><div class="mech-name">Рост Тамагочи</div><div class="mech-desc">Питомец взрослеет после каждого успешного уровня: яйцо→младенец→подросток→юный→взрослый</div></div>
+      <label class="toggle"><input type="checkbox" id="m-growth" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">💡</div>
+      <div class="mech-info"><div class="mech-name">Подсказка после ошибки</div><div class="mech-desc">Первые 2 буквы слова появляются только после неверного ответа</div></div>
+      <label class="toggle"><input type="checkbox" id="m-hint" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🎁</div>
+      <div class="mech-info"><div class="mech-name">Предметы влетают в комнату</div><div class="mech-desc">Угаданный предмет / эмодзи добавляется в пространство Тамагочи с анимацией</div></div>
+      <label class="toggle"><input type="checkbox" id="m-items" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🏆</div>
+      <div class="mech-info"><div class="mech-name">Итоговая таблица результатов</div><div class="mech-desc">Финальный экран со звёздами, баллами и поздравлением</div></div>
+      <label class="toggle"><input type="checkbox" id="m-results" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mech-row">
+      <div class="mech-icon">🔄</div>
+      <div class="mech-info"><div class="mech-name">Кнопка «Играть снова»</div><div class="mech-desc">После финала игрок может начать сначала</div></div>
+      <label class="toggle"><input type="checkbox" id="m-restart" checked><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🐣 Имя питомца</div>
+    <div class="chips" id="naming-chips">
+      <div class="chip on" onclick="selChip(this,'naming')" data-v="keyboard">⌨️ Клавиатура (буквы)</div>
+      <div class="chip" onclick="selChip(this,'naming')" data-v="type">✍️ Вводить текст</div>
+      <div class="chip" onclick="selChip(this,'naming')" data-v="auto">🎲 Случайное имя</div>
+      <div class="chip" onclick="selChip(this,'naming')" data-v="fixed">📌 Фиксированное имя</div>
+    </div>
+    <div class="fgrp" style="margin-top:8px;"><label class="lbl">Фиксированное имя (если выбрано выше)</label>
+      <input type="text" id="fixed-name" placeholder="Например: Миша, Тамара..."></div>
+  </div>
+</div>
+
+<!-- ═══ EXPORT ═══ -->
+<div id="panel-export" class="panel">
+  <div class="panel-title">📤 Экспорт игры</div>
+
+  <div class="export-card">
+    <div class="export-icon">🚀</div>
+    <div class="export-title">Готов к экспорту!</div>
+    <div class="export-sub" id="export-summary">Настройте параметры игры, добавьте контент и нажмите кнопку экспорта. Вы получите полноценный HTML-файл, который работает в любом браузере без интернета.</div>
+    <div class="export-btns">
+      <button class="ebtn html" onclick="exportGame()">🎮 Скачать игру (HTML)</button>
+      <button class="ebtn json" onclick="exportConfig()">📋 Сохранить конфиг (JSON)</button>
+      <button class="ebtn copy" onclick="copyGameLink()">🔗 Создать ссылку</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📦 Что включается в экспорт</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Весь игровой контент</div><div class="mech-desc">12 тем с вашими словами и заданиями</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Настройки уровней</div><div class="mech-desc">3 уровня с вашими параметрами</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Реплики Тамагочи</div><div class="mech-desc">Все фразы питомца</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Спецэффекты</div><div class="mech-desc">Выбранные анимации и эффекты</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Аудио настройки</div><div class="mech-desc">Плейлист и звуковые эффекты</div></div></div>
+      <div class="mech-row"><div class="mech-icon">✅</div><div class="mech-info"><div class="mech-name">Игровая механика</div><div class="mech-desc">Таймер, монеты, магазин, рост</div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌐 Быстрая публикация</div>
+    <div class="panel-sub" style="margin-bottom:12px;">Опубликуйте игру онлайн — поделитесь ссылкой с учениками</div>
+    <div class="row2">
+      <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:14px;">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;">📁 GitHub Pages</div>
+        <div style="font-size:11px;color:var(--tx2);line-height:1.7;">1. Скачайте HTML-файл<br>2. Создайте репозиторий на github.com<br>3. Загрузите как <b>index.html</b><br>4. Включите GitHub Pages в Settings<br>5. Получите ссылку вида:<br><code style="color:var(--cy2);">логин.github.io/имя-репо/</code></div>
+      </div>
+      <div style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:14px;">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;">🎨 Genially / iSpring</div>
+        <div style="font-size:11px;color:var(--tx2);line-height:1.7;">1. Опубликуйте на GitHub Pages<br>2. В Genially: Вставить → Embed<br>3. Вставьте ваш URL<br>4. Растяните на весь слайд<br><br><b>Размер рамки:</b><br>Ширина: 100%, Высота: 600px+</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main><!-- end #main -->
+</div><!-- end #app -->
+
+<script>
+'use strict';
+
+// ════════════════════════════════
+//  CONFIG STATE
+// ════════════════════════════════
+const CFG={
+  title:'Тамагочи — Лексика А1',author:'',audience:'',year:'',
+  lang:'ru',uiLang:'ru',targetLang:'',
+  theme:'cosmic',
+  levels:{1:{name:'Базовый',q:10,timer:30,lives:3,emoji:'🐣'},
+          2:{name:'Повышенный',q:10,timer:25,lives:3,emoji:'🐥'},
+          3:{name:'Высокий',q:5,timer:20,lives:3,emoji:'🌟'}},
+  formats:['choice','match','fill'],
+  score:{5:90,4:75,3:60,coins:1},
+  topics: Array.from({length:12},(_,i)=>({
+    num:i+1,name:`Тема ${i+1}`,icon:'📌',color:'#7C3AED',
+    words:[],pairs:[],proverbs:[],desc:''})),
+  phrases:{ok:{1:[],2:[],3:[]},err:{1:[],2:[],3:[]},themed:{}},
+  audio:{playlist:[],sfx:{ok:'synth',err:'synth',birth:'synth',win:'synth'}},
+  visuals:{backgrounds:{},colors:{main:'#7C3AED',accent:'#EC4899',bg:'#0a0a1a'}},
+  tamas:{active:[0,1,2,3,4,5,6,7,8,9,10,11],custom:[],stages:{egg:'🥚',baby:'🐣',teen:'🐥',young:'🐤',adult:'🐦',legend:'🦁'}},
+  effects:{correct:[],win:[],fail:[]},
+  animations:{enable3d:true,neon:true,catwalk:true,egg:'cosmic',eggGlow:'purple'},
+  mechanics:{timer:true,coins:true,lives:true,progress:true,shop:true,growth:true,hint:true,items:true,results:true,restart:true},
+  naming:'keyboard',fixedName:'',
+  media:{stickers:[],gifs:[]},
+  shopItems:{1:[],2:[],3:[]},
+  activeLv:1
+};
+
+// ════════════════════════════════
+//  BASE PHRASES (from the game)
+// ════════════════════════════════
+const BASE_PHRASES_OK={
+  1:['Ням-ням! Вкусно! 😋','Ура! Играем! ⚽','Гуляем! 🌿','Сладких снов! 😴',
+     'Я учусь! 📚','Ура! Праздник! 🎉','Чистый и свежий! ✨','Как красиво! 👗',
+     'Правильно! Молодец! 🎉','Отлично! Ещё! ⭐'],
+  2:['Спасибо! Очень вкусно!','Весело! Хочу ещё!','Как хорошо на улице!',
+     'Знания — сила! 📚','Умнею! 🧠','Обожаю своё хобби!','Мне нравится! ✨',
+     'Я счастлив! 😊','Супер! Продолжаем!','Вот это да! 🌟'],
+  3:['Объедение! 🍽️','Поехали! 🎮','Свежий воздух! 🌸','Zzz... сплю!',
+     'Красна птица перьем, а человек учением!','Повторение — мать учения!',
+     'Ты мой лучший друг! 🤝','Я повзрослел! 🎉','Шедеврально! 🏆','Непобедим! 👑']
+};
+const BASE_PHRASES_ERR={
+  1:['Голодный! Ничего не досталось! 😭','Никто не играет со мной! 😢',
+     'Хочу гулять! 😭','Хочу спать, но не могу! 😢','Не знаю ответа... 😢',
+     'Расстроился! 😭','Плохо мне... 😢','Хочу новый наряд! 😭'],
+  2:['Хочу есть! 😢','Скучно... нечем заняться! 😢','Праздник без меня?! 😢',
+     'Грязный! Ужас! 😢','Без друзей грустно... 😢','Хочу умыться! 😭',
+     'Болею и нет лечения! 😢','Нечего надеть! 😢'],
+  3:['Мне грустно... 😢','Не вырос... 😢','Ошибка! Пробую ещё раз!',
+     'Почти правильно! 😔','Ой, не то... 😢','Тамагочи плачет 😭']
+};
+
+// ════════════════════════════════
+//  TAMAGOTCHI DATA
+// ════════════════════════════════
+const TAMAS_BASE=[
+  {e:'🐱',n:'Котёнок'},{e:'🐶',n:'Щенок'},{e:'🦜',n:'Попугайчик'},
+  {e:'🐹',n:'Хомяк'},{e:'🐷',n:'Мини-пиг'},{e:'🐮',n:'Коровка'},
+  {e:'🐐',n:'Козлёнок'},{e:'🐑',n:'Барашек'},{e:'🐢',n:'Черепашка'},
+  {e:'🐥',n:'Цыплёнок'},{e:'🦆',n:'Утёнок'},{e:'🐴',n:'Лошадка'}
+];
+
+// ════════════════════════════════
+//  EFFECTS DATA
+// ════════════════════════════════
+const FX_LIST=[
+  {id:'confetti',ic:'🎊',n:'Конфетти'},
+  {id:'fireworks',ic:'🎆',n:'Фейерверк'},
+  {id:'salute',ic:'🎇',n:'Салют'},
+  {id:'sparkles',ic:'✨',n:'Искры'},
+  {id:'stars',ic:'🌟',n:'Звездопад'},
+  {id:'petals',ic:'🌸',n:'Лепестки роз'},
+  {id:'snow',ic:'❄️',n:'Снег'},
+  {id:'rain',ic:'🌧️',n:'Дождь'},
+  {id:'hail',ic:'🌨️',n:'Град'},
+  {id:'leaves',ic:'🍂',n:'Листопад'},
+  {id:'cosmos',ic:'🌌',n:'Космос'},
+  {id:'lightning',ic:'⚡',n:'Молния'},
+  {id:'wind',ic:'💨',n:'Ветер'},
+  {id:'tornado',ic:'🌪️',n:'Ураган'},
+  {id:'rainbow',ic:'🌈',n:'Радуга'},
+  {id:'bubbles',ic:'🫧',n:'Пузыри'},
+  {id:'hearts',ic:'💕',n:'Сердечки'},
+  {id:'coins',ic:'🪙',n:'Монеты'},
+  {id:'eggs',ic:'🥚',n:'Яйцо лопается'},
+  {id:'balloons',ic:'🎈',n:'Шарики'},
+];
+
+const ANIM_LIST=[
+  {id:'eat',ic:'🍽️',n:'Кушает'},
+  {id:'drink',ic:'💧',n:'Пьёт'},
+  {id:'sleep',ic:'😴',n:'Спит'},
+  {id:'play',ic:'⚽',n:'Играет'},
+  {id:'walk',ic:'🌿',n:'Гуляет'},
+  {id:'dress',ic:'👗',n:'Одевается'},
+  {id:'hobby',ic:'🎵',n:'Хобби'},
+  {id:'wash',ic:'🚿',n:'Моется'},
+  {id:'study',ic:'📚',n:'Учится'},
+  {id:'party',ic:'🎉',n:'Праздник'},
+  {id:'cry',ic:'😭',n:'Плачет'},
+  {id:'jump',ic:'🦘',n:'Прыгает'},
+  {id:'spin',ic:'💫',n:'Вращается'},
+  {id:'dance',ic:'💃',n:'Танцует'},
+  {id:'think',ic:'🤔',n:'Думает'},
+  {id:'sick',ic:'🤒',n:'Болеет'},
+];
+
+// ════════════════════════════════
+//  STARS INIT
+// ════════════════════════════════
+(function initStars(){
+  const c=document.getElementById('stars-bg');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    const sz=0.5+Math.random()*2.5;
+    s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;border-radius:50%;
+      background:${['#fff','#C4B0FF','#FFD700','#FF6B9D','#7DF9FF'][Math.floor(Math.random()*5)]};
+      opacity:${.2+Math.random()*.8};
+      animation:stTw ${1.5+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite alternate;`;
+    c.appendChild(s);}
+  const st=document.createElement('style');
+  st.textContent='@keyframes stTw{from{opacity:.1;transform:scale(.6);}to{opacity:1;transform:scale(1.4);}}';
+  document.head.appendChild(st);
+})();
+
+// ════════════════════════════════
+//  PANEL NAVIGATION
+// ════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('panel-'+id);
+  if(p)p.classList.add('active');
+  const b=document.querySelector(`[data-panel="${id}"]`);
+  if(b)b.classList.add('active');
+}
+
+// ════════════════════════════════
+//  CHIP SELECTORS
+// ════════════════════════════════
+function selChip(el,group){
+  document.querySelectorAll(`#${group}-chips .chip,.chip[data-group="${group}"]`).forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function togChip(el){el.classList.toggle('on');}
+function selLvTab(el){
+  document.querySelectorAll('.lvl-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  CFG.activeLv=parseInt(el.dataset.lv);
+  renderPhrases();
+}
+
+// ════════════════════════════════
+//  TOPICS GRID
+// ════════════════════════════════
+const TOPIC_ICONS=['📌','📖','🔢','⚗️','🌍','💻','🏛️','🌿','🎵','🎨','⚡','🔬'];
+const TOPIC_COLORS=['#7C3AED','#EC4899','#06B6D4','#10B981','#F59E0B','#EF4444',
+                    '#8B5CF6','#F97316','#14B8A6','#6366F1','#D946EF','#0EA5E9'];
+function buildTopics(){
+  const g=document.getElementById('topics-grid');g.innerHTML='';
+  CFG.topics.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='topic-card';
+    d.innerHTML=`
+      <div class="topic-header">
+        <span class="topic-num">📌 ТЕМА ${i+1}</span>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <input type="text" value="${TOPIC_ICONS[i]}" style="width:36px;text-align:center;padding:4px;font-size:16px;" title="Иконка темы"
+            oninput="CFG.topics[${i}].icon=this.value">
+          <input type="color" value="${TOPIC_COLORS[i]}" style="width:32px;height:28px;"
+            oninput="CFG.topics[${i}].color=this.value">
+        </div>
+      </div>
+      <div class="fgrp"><label class="lbl">Название темы</label>
+        <input type="text" value="${t.name}" oninput="CFG.topics[${i}].name=this.value"></div>
+      <div class="fgrp" style="margin-top:8px;"><label class="lbl">Слова через запятую</label>
+        <textarea placeholder="сон, кровать, ночь, подушка, одеяло, плед, усталость..."
+          oninput="CFG.topics[${i}].words=this.value.split(',').map(s=>s.trim()).filter(Boolean)"
+          style="min-height:60px;">${t.words.join(', ')}</textarea></div>
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">Пары (слово:значение через ; каждая пара через запятую)</label>
+        <textarea placeholder="спать:sleep, кровать:bed, ночь:night..."
+          oninput="CFG.topics[${i}].pairs=parsePairs(this.value)"
+          style="min-height:48px;">${pairsToStr(t.pairs)}</textarea></div>
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">Пословицы / фразы (_____ = пропуск)</label>
+        <textarea placeholder="Век живи — век _____. | учись&#10;Ученье — _____, а неученье — тьма. | свет"
+          oninput="CFG.topics[${i}].proverbs=parseProverbs(this.value)"
+          style="min-height:60px;">${proverbsToStr(t.proverbs)}</textarea></div>
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">Примечание к теме</label>
+        <input type="text" placeholder="Необязательно..." oninput="CFG.topics[${i}].desc=this.value"
+          value="${t.desc}"></div>`;
+    g.appendChild(d);});
+}
+function parsePairs(s){
+  return s.split(',').map(p=>{const[a,b]=p.split(':');return a&&b?{s:a.trim(),e:b.trim()}:null;}).filter(Boolean);}
+function pairsToStr(arr){return arr.map(p=>`${p.s}:${p.e}`).join(', ');}
+function parseProverbs(s){
+  return s.split('\n').map(line=>{const[p,a]=line.split('|');return p&&a?{p:p.trim(),a:a.trim()}:null;}).filter(Boolean);}
+function proverbsToStr(arr){return arr.map(p=>`${p.p} | ${p.a}`).join('\n');}
+
+// ════════════════════════════════
+//  TAMA GRID
+// ════════════════════════════════
+function buildTamaGrid(){
+  const g=document.getElementById('tama-grid');g.innerHTML='';
+  TAMAS_BASE.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='tama-slot'+(CFG.tamas.active.includes(i)?' sel':'');
+    d.innerHTML=`<span class="tama-emoji">${t.e}</span><div class="tama-name">${t.n}</div><span class="sel-badge">✓</span>`;
+    d.onclick=()=>{
+      if(CFG.tamas.active.includes(i)){CFG.tamas.active=CFG.tamas.active.filter(x=>x!==i);}
+      else CFG.tamas.active.push(i);
+      d.classList.toggle('sel');};
+    g.appendChild(d);});
+  // Upload slots
+  const u=document.getElementById('tama-uploads');u.innerHTML='';
+  for(let i=0;i<6;i++){
+    const d=document.createElement('div');
+    d.innerHTML=`<div class="upload-zone" onclick="this.querySelector('input').click()">
+      <div class="upload-icon">🐾</div>
+      <div class="upload-text">Слот ${i+1}<br>PNG прозрачный</div>
+      <input type="file" accept="image/*" onchange="addCustomTama(${i},event)"></div>
+    <div id="ctama-${i}" style="font-size:10px;color:var(--gr2);margin-top:4px;text-align:center;"></div>`;
+    u.appendChild(d);}
+}
+
+function addCustomTama(i,e){
+  const f=e.target.files[0];if(!f)return;
+  const url=URL.createObjectURL(f);
+  CFG.tamas.custom[i]={name:f.name,url};
+  document.getElementById(`ctama-${i}`).innerHTML=`<img src="${url}" style="max-width:80px;max-height:60px;border-radius:8px;">`;
+}
+
+// ════════════════════════════════
+//  EFFECTS GRID
+// ════════════════════════════════
+function buildEffects(){
+  const render=(containerId,key)=>{
+    const c=document.getElementById(containerId);c.innerHTML='';
+    FX_LIST.forEach(f=>{
+      const d=document.createElement('div');
+      d.className='fx-card'+(CFG.effects[key].includes(f.id)?' on':'');
+      d.innerHTML=`<span class="fx-icon">${f.ic}</span><div class="fx-label">${f.n}</div>`;
+      d.onclick=()=>{
+        const idx=CFG.effects[key].indexOf(f.id);
+        if(idx>=0)CFG.effects[key].splice(idx,1); else CFG.effects[key].push(f.id);
+        d.classList.toggle('on');};
+      c.appendChild(d);});};
+  render('fx-correct','correct');
+  render('fx-win','win');
+  render('fx-fail','fail');
+}
+
+// ════════════════════════════════
+//  ANIMATIONS GRID
+// ════════════════════════════════
+function buildAnimGrid(){
+  const c=document.getElementById('anim-grid');c.innerHTML='';
+  ANIM_LIST.forEach(a=>{
+    const d=document.createElement('div');d.className='anim-card on';
+    d.innerHTML=`<span class="anim-demo">${a.ic}</span><div class="anim-label">${a.n}</div>`;
+    d.onclick=()=>d.classList.toggle('on');
+    c.appendChild(d);});}
+
+// ════════════════════════════════
+//  PHRASES
+// ════════════════════════════════
+function renderPhrases(){
+  const lv=CFG.activeLv;
+  // Merge base + custom
+  const okList=[...BASE_PHRASES_OK[lv],...(CFG.phrases.ok[lv]||[])];
+  const errList=[...BASE_PHRASES_ERR[lv],...(CFG.phrases.err[lv]||[])];
+  renderPhraseList('ok-phrases-list',okList,'ok',lv);
+  renderPhraseList('err-phrases-list',errList,'err',lv);
+  // themed
+  const th=document.getElementById('themed-phrases');th.innerHTML='';
+  const themes={
+    'Питание':['Ням-ням! Вкусно! 😋','Я сыт!','Объедение!'],
+    'Сон':['Сладких снов! 😴','Zzzz...','Постель зовёт!'],
+    'Учёба':['Знания — сила! 📚','Умнею! 🧠','Повторение — мать учения!'],
+    'Праздник':['Ура! Праздник! 🎉','Гуляем! 🎊','Весело!'],
+    'Дружба':['Ты мой лучший друг! 🤝','Дружба — это важно!'],
+  };
+  Object.entries(themes).forEach(([k,arr])=>{
+    const d=document.createElement('div');
+    d.innerHTML=`<div style="font-family:var(--fp);font-size:8px;color:var(--pu2);margin-bottom:5px;letter-spacing:1px;">${k.toUpperCase()}</div>`;
+    arr.forEach(ph=>{
+      const p=document.createElement('div');p.className='phrase-item';
+      p.innerHTML=`<span class="phrase-tag">${k}</span><span class="phrase-text">${ph}</span>`;
+      d.appendChild(p);});
+    th.appendChild(d);});}
+
+function renderPhraseList(id,arr,type,lv){
+  const c=document.getElementById(id);c.innerHTML='';
+  arr.forEach((ph,i)=>{
+    const d=document.createElement('div');d.className='phrase-item';
+    d.innerHTML=`<span class="phrase-tag">Ур.${lv}</span>
+      <span class="phrase-text">${ph}</span>
+      <span class="phrase-del" onclick="removePhrase('${type}',${lv},${i})" title="Удалить">✕</span>`;
+    c.appendChild(d);});}
+
+function addPhrase(type){
+  const inp=document.getElementById(`new-${type}-phrase`);
+  const v=inp.value.trim();if(!v)return;
+  const lv=CFG.activeLv;
+  if(!CFG.phrases[type][lv])CFG.phrases[type][lv]=[];
+  CFG.phrases[type][lv].push(v);
+  inp.value='';renderPhrases();}
+
+function removePhrase(type,lv,i){
+  const all=[...BASE_PHRASES_OK[lv],...(CFG.phrases[type][lv]||[])];
+  const customIdx=i-BASE_PHRASES_OK[lv].length;
+  if(customIdx>=0&&CFG.phrases[type][lv]){CFG.phrases[type][lv].splice(customIdx,1);}
+  renderPhrases();}
+
+// ════════════════════════════════
+//  AI PHRASE GENERATOR
+// ════════════════════════════════
+async function genPhrases(type){
+  const ctx=document.getElementById('ai-context').value||'учёба';
+  const count=document.getElementById('ai-count').value||10;
+  const lv=CFG.activeLv;
+  const example=type==='ok'?BASE_PHRASES_OK[1].slice(0,4).join(', '):BASE_PHRASES_ERR[1].slice(0,4).join(', ');
+  const prompt=`Создай ${count} коротких реплик для персонажа Тамагочи (игрушечного питомца) по теме: "${ctx}".
+Реплики при ${type==='ok'?'ПРАВИЛЬНОМ ответе (радость, восторг, благодарность)':'НЕВЕРНОМ ответе (расстройство, плач, грусть)'}.
+Уровень игры: ${lv===1?'базовый (простые слова)':lv===2?'повышенный':'высокий (пословицы и сложные понятия)'}.
+Примеры стиля из игры: ${example}
+Каждая реплика 3-8 слов, включай эмодзи. Верни только нумерованный список реплик, без пояснений.`;
+  const out=document.getElementById('ai-phrases-output');
+  out.innerHTML=`<div style="color:var(--cy2);font-size:12px;">✦ Генерирую реплики...</div>`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'Ошибка генерации';
+    const phrases=txt.split('\n').map(l=>l.replace(/^\d+\.\s*/,'')).filter(l=>l.trim().length>2);
+    if(!CFG.phrases[type][lv])CFG.phrases[type][lv]=[];
+    CFG.phrases[type][lv].push(...phrases.slice(0,parseInt(count)));
+    renderPhrases();
+    out.innerHTML=`<div style="color:var(--gr2);font-size:12px;">✓ Добавлено ${phrases.length} реплик!</div>`;
+    showToast('✓ Реплики сгенерированы!');
+  }catch(e){out.innerHTML=`<div style="color:var(--re);font-size:12px;">Ошибка: ${e.message}</div>`;}}
+
+async function aiGenAllPhrases(){await genPhrases('ok');setTimeout(()=>genPhrases('err'),1000);}
+async function aiGenThemed(){
+  const ctx=document.getElementById('ai-context').value||'учёба';
+  const out=document.getElementById('ai-phrases-output');
+  out.innerHTML=`<div style="color:var(--cy2);font-size:12px;">✦ Генерирую тематические реплики...</div>`;
+  const prompt=`Создай тематические реплики для Тамагочи по предмету/теме: "${ctx}".
+Для каждой подтемы (5-6 штук) создай 3 реплики радости и 2 реплики расстройства.
+Формат: ТЕМА | реплика1 | реплика2 | реплика3
+Включай эмодзи, стиль как у детской игры. Без пояснений.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'';
+    out.innerHTML=`<div style="background:var(--card);border-radius:10px;padding:12px;font-size:11px;color:var(--tx2);white-space:pre-line;line-height:1.8;">${txt}</div>`;
+  }catch(e){out.innerHTML=`<div style="color:var(--re);font-size:12px;">${e.message}</div>`;}}
+
+// ════════════════════════════════
+//  AUDIO PLAYER
+// ════════════════════════════════
+let apTracks=[],apIdx=0,apLooping=false,apShuffling=false;
+const apAudio=()=>document.getElementById('ap-audio');
+
+function apRender(){
+  const l=document.getElementById('ap-list');l.innerHTML='';
+  apTracks.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='ap-track'+(i===apIdx?' active':'');
+    d.innerHTML=`<span style="font-size:11px;color:var(--tx2);">${i+1}</span>
+      <span class="ap-track-n">${t.name}</span>
+      <span class="ap-track-rm" onclick="apRemove(${i})">✕</span>`;
+    d.onclick=(e)=>{if(!e.target.classList.contains('ap-track-rm')){apPlay(i);}};
+    l.appendChild(d);});}
+
+function apAddFiles(e){
+  [...e.target.files].forEach(f=>{
+    apTracks.push({name:f.name.replace(/\.[^.]+$/,''),url:URL.createObjectURL(f)});});
+  apRender();if(apTracks.length===1)apPlay(0);}
+
+function apAddUrl(){
+  const u=document.getElementById('ap-url').value.trim();if(!u)return;
+  const name=u.split('/').pop().split('?')[0]||'Трек';
+  apTracks.push({name,url:u});
+  document.getElementById('ap-url').value='';apRender();}
+
+function apRemove(i){apTracks.splice(i,1);if(apIdx>=apTracks.length)apIdx=0;apRender();}
+function apPlay(i){apIdx=i;const a=apAudio();a.src=apTracks[i]?.url||'';a.play().catch(()=>{});
+  document.getElementById('ap-track-name').textContent=apTracks[i]?.name||'—';
+  document.getElementById('ap-play').textContent='⏸';apRender();}
+function apToggle(){const a=apAudio();a.paused?a.play().catch(()=>{}):a.pause();
+  document.getElementById('ap-play').textContent=a.paused?'▶':'⏸';}
+function apPrev(){apPlay((apIdx-1+apTracks.length)%Math.max(apTracks.length,1));}
+function apNext(){apPlay(apShuffling?Math.floor(Math.random()*apTracks.length):(apIdx+1)%Math.max(apTracks.length,1));}
+function apEnded(){if(apLooping)apPlay(apIdx); else apNext();}
+function apToggleLoop(){apLooping=!apLooping;document.getElementById('ap-loop').style.color=apLooping?'var(--cy2)':'var(--tx2)';}
+function apToggleShuffle(){apShuffling=!apShuffling;document.getElementById('ap-shuffle').style.color=apShuffling?'var(--cy2)':'var(--tx2)';}
+function apSeek(){const a=apAudio();if(a.duration)a.currentTime=a.duration*document.getElementById('ap-seek').value/100;}
+function apVol(){apAudio().volume=document.getElementById('ap-vol').value;}
+function apUpdate(){
+  const a=apAudio();
+  if(!a.duration)return;
+  const p=a.currentTime/a.duration*100;
+  document.getElementById('ap-seek').value=p;
+  const fmt=s=>Math.floor(s/60)+':'+(Math.floor(s%60)).toString().padStart(2,'0');
+  document.getElementById('ap-time').textContent=fmt(a.currentTime)+' / '+fmt(a.duration);}
+
+// ════════════════════════════════
+//  BACKGROUNDS
+// ════════════════════════════════
+function setBackground(key,e){
+  const f=e.target.files[0];if(!f)return;
+  CFG.visuals.backgrounds[key]=URL.createObjectURL(f);
+  const el=document.getElementById(`bg-${key}-preview`);
+  if(el)el.innerHTML=`✓ ${f.name}`;}
+
+// ════════════════════════════════
+//  MEDIA GALLERY
+// ════════════════════════════════
+function addMedia(type,e){
+  [...e.target.files].forEach(f=>{
+    const url=URL.createObjectURL(f);
+    CFG.media[type].push({name:f.name,url});
+    addToGallery(url,f.name);});}
+function addMediaUrl(){
+  const u=document.getElementById('media-url').value.trim();if(!u)return;
+  CFG.media.gifs.push({name:'URL',url:u});
+  addToGallery(u,'URL');
+  document.getElementById('media-url').value='';}
+function addToGallery(url,name){
+  const g=document.getElementById('media-gallery');
+  if(g.children.length===1&&g.children[0].tagName==='DIV')g.innerHTML='';
+  const d=document.createElement('div');
+  d.style.cssText='position:relative;';
+  d.innerHTML=`<img src="${url}" title="${name}" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">`;
+  g.appendChild(d);}
+
+// ════════════════════════════════
+//  SHOP ITEMS
+// ════════════════════════════════
+const DEF_SHOP=[
+  {e:'⚽',n:'Мяч'},{e:'♟️',n:'Шахматы'},{e:'🎳',n:'Боулинг'},
+  {e:'🐭',n:'Мышка'},{e:'⛸️',n:'Коньки'},{e:'🎿',n:'Лыжи'},
+  {e:'🛷',n:'Санки'},{e:'💡',n:'Лампа'},{e:'😴',n:'Пижама'},{e:'🥿',n:'Тапки'}];
+function buildShop(){
+  CFG.shopItems[1]=DEF_SHOP.map(i=>({...i}));
+  const c=document.getElementById('shop1-grid');c.innerHTML='';
+  CFG.shopItems[1].forEach((it,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;';
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <input type="text" value="${it.e}" style="width:38px;text-align:center;font-size:18px;padding:3px;"
+        oninput="CFG.shopItems[1][${i}].e=this.value">
+      <input type="text" value="${it.n}" style="flex:1;font-size:12px;"
+        oninput="CFG.shopItems[1][${i}].n=this.value">
+      <span style="cursor:pointer;color:var(--re);font-size:13px;" onclick="removeShopItem(1,${i})">✕</span>
+    </div>`;
+    c.appendChild(d);});}
+function addShopItem(lv){
+  CFG.shopItems[lv].push({e:'⭐',n:'Новый предмет'});buildShop();}
+function removeShopItem(lv,i){CFG.shopItems[lv].splice(i,1);buildShop();}
+
+// ════════════════════════════════
+//  PREVIEW
+// ════════════════════════════════
+function updatePreview(){
+  const t=document.getElementById('g-title')?.value||'Тамагочи';
+  const a=document.getElementById('g-audience')?.value||'';
+  document.getElementById('config-preview').innerHTML=`🥚 ${t}${a?' · '+a:''}`;}
+
+// ════════════════════════════════
+//  SAVE / LOAD
+// ════════════════════════════════
+function saveConfig(){
+  try{localStorage.setItem('tama-editor-cfg',JSON.stringify(CFG));
+    showToast('✓ Конфиг сохранён!');
+    document.getElementById('save-status').textContent='✓ Сохранено';}
+  catch(e){showToast('Ошибка сохранения');}}
+function loadConfig(){
+  try{const s=localStorage.getItem('tama-editor-cfg');
+    if(s){const c=JSON.parse(s);Object.assign(CFG,c);
+      document.getElementById('g-title').value=CFG.title||'';
+      document.getElementById('g-author').value=CFG.author||'';
+      document.getElementById('save-status').textContent='✓ Загружено';}}
+  catch(e){}}
+
+// ════════════════════════════════
+//  TOAST
+// ════════════════════════════════
+let toastTO=null;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTO);toastTO=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ════════════════════════════════
+//  EXPORT
+// ════════════════════════════════
+function collectConfig(){
+  // Collect all form values into CFG
+  CFG.title=document.getElementById('g-title')?.value||CFG.title;
+  CFG.author=document.getElementById('g-author')?.value||'';
+  CFG.audience=document.getElementById('g-audience')?.value||'';
+  CFG.levels[1].name=document.getElementById('lv1-name')?.value||'Базовый';
+  CFG.levels[1].q=+document.getElementById('lv1-q')?.value||10;
+  CFG.levels[1].timer=+document.getElementById('lv1-t')?.value||30;
+  CFG.levels[2].name=document.getElementById('lv2-name')?.value||'Повышенный';
+  CFG.levels[2].q=+document.getElementById('lv2-q')?.value||10;
+  CFG.levels[2].timer=+document.getElementById('lv2-t')?.value||25;
+  CFG.levels[3].name=document.getElementById('lv3-name')?.value||'Высокий';
+  CFG.levels[3].q=+document.getElementById('lv3-q')?.value||5;
+  CFG.levels[3].timer=+document.getElementById('lv3-t')?.value||20;
+  ['timer','coins','lives','progress','shop','growth','hint','items','results','restart']
+    .forEach(k=>{const el=document.getElementById('m-'+k);if(el)CFG.mechanics[k]=el.checked;});
+  return CFG;}
+
+function exportConfig(){
+  collectConfig();
+  const blob=new Blob([JSON.stringify(CFG,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`tama-config-${Date.now()}.json`;a.click();
+  showToast('✓ Конфиг скачан!');}
+
+function exportGame(){
+  collectConfig();
+  const cfg=JSON.stringify(CFG);
+  // Generate a configured game HTML
+  const html=buildGameHTML(cfg);
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const name=(CFG.title||'tamagotchi').toLowerCase().replace(/[^a-zа-яё0-9]/gi,'-');
+  a.download=`${name}.html`;a.click();
+  showToast('🎮 Игра экспортирована!');}
+
+function buildGameHTML(cfgJson){
+  return `<!DOCTYPE html>
+<html lang="${CFG.uiLang||'ru'}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${CFG.title||'Тамагочи'}</title>
+<meta name="description" content="${CFG.title} · ${CFG.audience||'Интерактивная игра'}">
+<script>
+window.TAMA_CONFIG=${cfgJson};
+<\/script>
+</head>
+<body style="margin:0;background:#0a0a1a;color:#fff;font-family:sans-serif;
+  display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;">
+<div>
+  <div style="font-size:64px;margin-bottom:16px;animation:bob 2s ease-in-out infinite;">🥚</div>
+  <h1 style="font-size:20px;margin-bottom:8px;">${CFG.title}</h1>
+  <p style="color:#94A3B8;margin-bottom:20px;">${CFG.audience||''}</p>
+  <p style="color:#C4B0FF;font-size:13px;line-height:1.8;">
+    ✓ Конфиг загружен: ${CFG.topics.filter(t=>t.words.length>0).length} тем с контентом<br>
+    ✓ Уровней: 3 (${CFG.levels[1].name} / ${CFG.levels[2].name} / ${CFG.levels[3].name})<br>
+    ✓ Тамагочи: ${CFG.tamas.active.length} питомцев<br>
+    <br>
+    <b style="color:#FFD700;">Для полной версии игры:</b><br>
+    Откройте исходную игру и импортируйте этот конфиг.<br>
+    Или используйте API-интеграцию для генерации полной игры.
+  </p>
+  <a href="https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/" target="_blank"
+    style="display:inline-block;margin-top:16px;padding:12px 24px;
+    background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff;
+    border-radius:12px;text-decoration:none;font-weight:700;">
+    🐾 Открыть базовую игру
+  </a>
+</div>
+<style>@keyframes bob{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg) translateY(-6px);}}</style>
+</body></html>`;}
+
+function copyGameLink(){
+  const url='https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/';
+  navigator.clipboard.writeText(url).then(()=>showToast('✓ Ссылка скопирована!'));}
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  buildTopics();
+  buildTamaGrid();
+  buildEffects();
+  buildAnimGrid();
+  buildShop();
+  renderPhrases();
+  loadConfig();
+  updatePreview();
+  // Auto-save every 30s
+  setInterval(saveConfig,30000);
+});
+</script>
+</body>
+</html>
