@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🌿 Тамагочи · Редактор игр v4 — Усовершенствованный</title>
+<title>🌿 Тамагочи · Редактор игр v4.1 — Полное обновление</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -79,7 +79,7 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .chip:hover{border-color:var(--pu2);color:var(--tx);}
 .chip.on{background:linear-gradient(135deg,rgba(22,163,74,.4),rgba(6,182,212,.3));
   border-color:var(--pu2);color:var(--tx);box-shadow:0 0 10px rgba(22,163,74,.3);}
-.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;overflow:visible;}
 .topic-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
 .topic-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .topic-num{font-family:var(--fp);font-size:8px;color:var(--cy2);letter-spacing:1px;}
@@ -183,9 +183,7 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .ebtn.html{background:linear-gradient(135deg,var(--pu),#059669);}
 .ebtn.copy{background:linear-gradient(135deg,var(--gr),#d97706);}
 .ebtn:hover{filter:brightness(1.1);transform:translateY(-2px);}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(74,222,128,.35);border-radius:3px;}
+/* scrollbar handled below */
 /* RTL support */
 [dir="rtl"] #sidebar{border-right:none;border-left:1px solid var(--border);}
 [dir="rtl"] .sb-btn{text-align:right;}
@@ -329,16 +327,40 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 
 
 /* ── SMOOTH SCROLL EVERYWHERE ── */
-#main,#sidebar,.panel,.ap-list,.dict-table{scroll-behavior:smooth;}
-#main::-webkit-scrollbar{width:6px;}
-#main::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--pu2),var(--cy2));border-radius:3px;}
-#sidebar::-webkit-scrollbar{width:4px;}
-#sidebar::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
+#main,#sidebar,.ap-list,.dict-table{scroll-behavior:smooth;}
+.ap-list::-webkit-scrollbar{width:4px;}
+.ap-list::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
 /* Panel transitions */
 .panel.active{animation:panelFadeIn .25s ease;}
 @keyframes panelFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 /* Card hover lift */
 .card:hover{transform:translateY(-1px);transition:transform .2s;}
+
+/* ══ CRITICAL SCROLL FIXES ══ */
+html,body{overflow:hidden;}
+#app{overflow:hidden;}
+#main{overflow-y:auto !important;overflow-x:hidden;scroll-behavior:smooth;}
+.panel.active{overflow:visible;}
+.panel{overflow:visible;}
+/* Topic grid scroll container */
+#topics-grid{overflow:visible;}
+/* Phrase lists */
+#ok-phrases-list,#err-phrases-list{max-height:400px;overflow-y:auto;scroll-behavior:smooth;}
+/* Sidebar scroll */
+#sidebar{overflow-y:auto;overflow-x:hidden;}
+/* Ensure textareas don't overflow cards */
+.topic-card textarea{resize:vertical;}
+.topic-card{overflow:visible;}
+/* Custom scrollbars for all panels */
+#main::-webkit-scrollbar{width:7px;}
+#main::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:4px;}
+#main::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--pu2),var(--cy2));border-radius:4px;}
+#main::-webkit-scrollbar-thumb:hover{background:var(--cy2);}
+#sidebar::-webkit-scrollbar{width:4px;}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
+#ok-phrases-list::-webkit-scrollbar,#err-phrases-list::-webkit-scrollbar{width:4px;}
+#ok-phrases-list::-webkit-scrollbar-thumb,#err-phrases-list::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
+
 
 </style>
 </head>
@@ -438,6 +460,8 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
     <span class="ic">🎨</span><span class="sb-label" data-i18n="nav_design">Дизайн редактора</span></button>
 
   <span class="sb-section-lbl" data-i18n="nav_output">Вывод</span>
+  <button class="sb-btn" onclick="showPanel('preview')" data-panel="preview">
+    <span class="ic">👁️</span><span class="sb-label" data-i18n="nav_preview">Предпросмотр игры</span></button>
   <button class="sb-btn" onclick="showPanel('export')" data-panel="export">
     <span class="ic">📤</span><span class="sb-label" data-i18n="nav_export">Экспорт игры</span></button>
 </nav>
@@ -1019,19 +1043,20 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
   <!-- QUICK EDIT BUTTONS -->
   <div class="card" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.04);">
     <div class="card-title">✏️ Быстрый переход к редактированию</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-      <button class="edit-jump-btn" onclick="showPanel('settings')">⚙️ Настройки</button>
-      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(document.querySelector('.lvl-topic-tab[data-lv=\'1\']'),1)">📚 Темы Ур.1</button>
-      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(document.querySelector('.lvl-topic-tab[data-lv=\'2\']'),2)">📚 Темы Ур.2</button>
-      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(document.querySelector('.lvl-topic-tab[data-lv=\'3\']'),3)">📚 Темы Ур.3</button>
-      <button class="edit-jump-btn" onclick="showPanel('phrases')">💬 Реплики</button>
-      <button class="edit-jump-btn" onclick="showPanel('dict')">📖 Словари</button>
-      <button class="edit-jump-btn" onclick="showPanel('audio')">🎵 Аудио</button>
-      <button class="edit-jump-btn" onclick="showPanel('visuals')">🎨 Визуал</button>
-      <button class="edit-jump-btn" onclick="showPanel('tamas')">🐱 Тамагочи</button>
-      <button class="edit-jump-btn" onclick="showPanel('effects')">✨ Эффекты</button>
-      <button class="edit-jump-btn" onclick="showPanel('mechanics')">🏆 Механики</button>
-      <button class="edit-jump-btn" onclick="showPanel('design')">🎨 Дизайн</button>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="quick-edit-btns">
+      <button class="edit-jump-btn" onclick="showPanel('settings')">⚙️ <span data-i18n="nav_settings">Настройки</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(null,1)">📚 <span data-i18n="lbl_lv1_topics_short">Темы Ур.1</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(null,2)">📚 <span data-i18n="lbl_lv2_topics_short">Темы Ур.2</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('content');selTopicLvTab(null,3)">📚 <span data-i18n="lbl_lv3_topics_short">Темы Ур.3</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('phrases')">💬 <span data-i18n="nav_phrases">Реплики</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('dict')">📖 <span data-i18n="nav_dict">Словари</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('audio')">🎵 <span data-i18n="nav_audio">Аудио</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('visuals')">🎨 <span data-i18n="nav_visuals">Визуал</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('tamas')">🐱 <span data-i18n="nav_tamas">Тамагочи</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('effects')">✨ <span data-i18n="nav_effects">Эффекты</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('mechanics')">🏆 <span data-i18n="nav_mech">Механики</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('design')">🎨 <span data-i18n="nav_design">Дизайн</span></button>
+      <button class="edit-jump-btn" onclick="showPanel('preview')" style="background:rgba(22,163,74,.15);border-color:var(--pu2);color:var(--pu2);">👁️ <span data-i18n="nav_preview">Предпросмотр</span></button>
     </div>
   </div>
 
@@ -1300,6 +1325,63 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 </div><!-- panel-export -->
 
 
+<!-- ═══ PREVIEW PANEL ═══ -->
+<div id="panel-preview" class="panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
+    <div class="panel-title" data-i18n="h_preview">👁️ Предпросмотр игры Тамагочи</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="tbbtn" style="background:linear-gradient(135deg,var(--pu),#059669);border:none;color:#fff;" onclick="refreshPreview()">🔄 <span data-i18n="btn_refresh_preview">Обновить</span></button>
+      <button class="tbbtn" onclick="openGamePreviewTab()">↗ <span data-i18n="btn_open_game">Открыть игру</span></button>
+      <button class="tbbtn" onclick="showPanel('export')">📤 <span data-i18n="btn_export">Экспорт</span></button>
+    </div>
+  </div>
+  <div class="panel-sub" data-i18n="sub_preview">Посмотрите, как будет выглядеть ваша игра с заполненным контентом и настройками.</div>
+
+  <!-- PREVIEW CARD -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(22,163,74,.12),rgba(6,182,212,.08));border-color:rgba(74,222,128,.35);">
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:0 0 auto;text-align:center;">
+        <div style="font-size:72px;animation:forestBob 2s ease-in-out infinite;" id="pv-tama-icon">🦊</div>
+        <div style="font-size:10px;color:var(--pk2);margin-top:6px;font-weight:700;" id="pv-tama-name">Лисёнок</div>
+      </div>
+      <div style="flex:1;min-width:200px;">
+        <div style="font-family:var(--fp);font-size:18px;font-weight:900;background:linear-gradient(90deg,var(--pu2),var(--cy2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;" id="pv-title">Моя игра</div>
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:4px;" id="pv-author"></div>
+        <div style="font-size:11px;color:var(--cy2);margin-bottom:12px;" id="pv-lang-level"></div>
+        <!-- Stats pills -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="pv-stats"></div>
+        <!-- Level cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;" id="pv-levels"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPICS PREVIEW -->
+  <div class="card" id="pv-topics-card">
+    <div class="card-title">📚 <span data-i18n="ct_preview_topics">Темы с контентом</span></div>
+    <div id="pv-topics-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;"></div>
+  </div>
+
+  <!-- SAMPLE QUESTION -->
+  <div class="card" style="border-color:rgba(6,182,212,.3);">
+    <div class="card-title">🎮 <span data-i18n="ct_preview_question">Пример вопроса</span></div>
+    <div id="pv-sample-question" style="padding:8px 0;"></div>
+    <button class="tbbtn" style="margin-top:8px;background:rgba(6,182,212,.2);border-color:var(--cy);color:var(--cy2);" onclick="generateSampleQuestion()">🎲 <span data-i18n="btn_new_question">Другой пример</span></button>
+  </div>
+
+  <!-- PHRASES PREVIEW -->
+  <div class="card">
+    <div class="card-title">💬 <span data-i18n="ct_preview_phrases">Реплики Тамагочи</span></div>
+    <div id="pv-phrases" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+
+  <!-- MECHANICS PREVIEW -->
+  <div class="card">
+    <div class="card-title">⚙️ <span data-i18n="ct_preview_mechanics">Механики игры</span></div>
+    <div id="pv-mechanics" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+  </div>
+</div>
+
 <!-- ═══ DESIGN PANEL ═══ -->
 <div id="panel-design" class="panel">
   <div class="panel-title" data-i18n="h_design">🎨 Дизайн редактора</div>
@@ -1438,7 +1520,8 @@ const UI_T = {
     nav_phrases:'Реплики Тамагочи', nav_dict:'Словари · Пословицы', nav_media:'Медиа',
     nav_audio:'Аудио · Музыка', nav_visuals:'Визуал · Фон', nav_tamas:'12 Тамагочи',
     nav_media2:'Стикеры · Гифы', nav_game:'Игра', nav_effects:'Спецэффекты',
-    nav_anim:'Анимации · 3D', nav_mech:'Механики игры', nav_output:'Вывод', nav_export:'Экспорт игры',
+    nav_anim:'Анимации · 3D', nav_mech:'Механики игры', nav_output:'Вывод', nav_preview:'Предпросмотр игры',
+    nav_export:'Экспорт игры',
     h_settings:'⚙️ Настройки игры', sub_settings:'Выберите уровень, язык, формат заданий и параметры таймера.',
     h_content:'📚 Контент · 12 тем', sub_content:'Введите слова, словосочетания или любой учебный контент через запятую.',
     h_phrases:'💬 Реплики Тамагочи', sub_phrases:'Настройте реплики питомца для разных тем и уровней.',
@@ -1501,6 +1584,8 @@ const UI_T = {
     music_off:'Без музыки', music_forest:'Лес', music_space:'Космос',
     music_rain:'Дождь', music_cafe:'Кафе', music_lofi:'Lo-fi',
     lbl_music_vol:'Громкость:',
+    h_preview:'👁️ Предпросмотр игры',sub_preview:'Посмотрите, как будет выглядеть игра.',btn_refresh_preview:'Обновить',btn_open_game:'Открыть игру',ct_preview_topics:'Темы с контентом',ct_preview_question:'Пример вопроса',ct_preview_phrases:'Реплики Тамагочи',ct_preview_mechanics:'Механики игры',btn_new_question:'Другой пример',
+    lbl_lv1_topics_short:'Темы Ур.1',lbl_lv2_topics_short:'Темы Ур.2',lbl_lv3_topics_short:'Темы Ур.3',
     btn_add:'+ Добавить',
     lv1_head:'УРОВЕНЬ 1 · БАЗОВЫЙ', lv2_head:'УРОВЕНЬ 2 · ПОВЫШЕННЫЙ', lv3_head:'УРОВЕНЬ 3 · ВЫСОКИЙ',
     m_timer:'Таймер', m_coins:'Монеты', m_lives:'Жизни', m_progress:'Прогресс-бар',
@@ -1512,7 +1597,8 @@ const UI_T = {
     nav_phrases:'Tamagotchi-Dialoge', nav_dict:'Wörterbücher · Sprichwörter', nav_media:'Medien',
     nav_audio:'Audio · Musik', nav_visuals:'Visuals · Hintergrund', nav_tamas:'12 Tamagotchis',
     nav_media2:'Sticker · GIFs', nav_game:'Spiel', nav_effects:'Spezialeffekte',
-    nav_anim:'Animationen · 3D', nav_mech:'Spielmechanik', nav_output:'Ausgabe', nav_export:'Spiel exportieren',
+    nav_anim:'Animationen · 3D', nav_mech:'Spielmechanik', nav_output:'Ausgabe', nav_preview:'Spielvorschau',
+    nav_export:'Spiel exportieren',
     h_settings:'⚙️ Spieleinstellungen', sub_settings:'Wählen Sie Stufe, Sprache, Aufgabenformat und Timer.',
     h_content:'📚 Inhalt · 12 Themen', sub_content:'Geben Sie Wörter, Phrasen oder Lerninhalt durch Komma getrennt ein.',
     h_phrases:'💬 Tamagotchi-Dialoge', sub_phrases:'Konfigurieren Sie die Dialoge des Haustiers.',
@@ -1564,6 +1650,8 @@ const UI_T = {
     music_off:'Kein Ton', music_forest:'Wald', music_space:'Weltraum',
     music_rain:'Regen', music_cafe:'Café', music_lofi:'Lo-fi',
     lbl_music_vol:'Lautstärke:',
+    h_preview:'👁️ Spielvorschau',sub_preview:'Sehen Sie, wie das Spiel aussieht.',btn_refresh_preview:'Aktualisieren',btn_open_game:'Spiel öffnen',ct_preview_topics:'Themen mit Inhalt',ct_preview_question:'Beispielfrage',ct_preview_phrases:'Tamagotchi-Dialoge',ct_preview_mechanics:'Spielmechanik',btn_new_question:'Andere Frage',
+    lbl_lv1_topics_short:'Themen St.1',lbl_lv2_topics_short:'Themen St.2',lbl_lv3_topics_short:'Themen St.3',
     btn_add:'+ Hinzufügen',
     lv1_head:'STUFE 1 · BASIC', lv2_head:'STUFE 2 · MITTEL', lv3_head:'STUFE 3 · FORTGESCHRITTEN',
     m_timer:'Timer', m_coins:'Münzen', m_lives:'Leben', m_progress:'Fortschrittsbalken',
@@ -1575,7 +1663,8 @@ const UI_T = {
     nav_phrases:'Tamagotchi Phrases', nav_dict:'Dictionaries · Proverbs', nav_media:'Media',
     nav_audio:'Audio · Music', nav_visuals:'Visuals · Background', nav_tamas:'12 Tamagotchis',
     nav_media2:'Stickers · GIFs', nav_game:'Game', nav_effects:'Special Effects',
-    nav_anim:'Animations · 3D', nav_mech:'Game Mechanics', nav_output:'Output', nav_export:'Export Game',
+    nav_anim:'Animations · 3D', nav_mech:'Game Mechanics', nav_output:'Output', nav_preview:'Game Preview',
+    nav_export:'Export Game',
     h_settings:'⚙️ Game Settings', sub_settings:'Choose level, language, task format and timer.',
     h_content:'📚 Content · 12 Topics', sub_content:'Enter words, phrases or any learning content, comma-separated.',
     h_phrases:'💬 Tamagotchi Phrases', sub_phrases:'Configure pet phrases for different topics and levels.',
@@ -1627,6 +1716,8 @@ const UI_T = {
     music_off:'No sound', music_forest:'Forest', music_space:'Space',
     music_rain:'Rain', music_cafe:'Cafe', music_lofi:'Lo-fi',
     lbl_music_vol:'Volume:',
+    h_preview:'👁️ Game Preview',sub_preview:'See how your game will look.',btn_refresh_preview:'Refresh',btn_open_game:'Open Game',ct_preview_topics:'Topics with content',ct_preview_question:'Sample question',ct_preview_phrases:'Tamagotchi phrases',ct_preview_mechanics:'Game mechanics',btn_new_question:'New question',
+    lbl_lv1_topics_short:'Topics L.1',lbl_lv2_topics_short:'Topics L.2',lbl_lv3_topics_short:'Topics L.3',
     btn_add:'+ Add',
     lv1_head:'LEVEL 1 · BASIC', lv2_head:'LEVEL 2 · INTERMEDIATE', lv3_head:'LEVEL 3 · ADVANCED',
     m_timer:'Timer', m_coins:'Coins', m_lives:'Lives', m_progress:'Progress bar',
@@ -1638,7 +1729,8 @@ const UI_T = {
     nav_phrases:'Répliques Tamagotchi', nav_dict:'Dictionnaires · Proverbes', nav_media:'Médias',
     nav_audio:'Audio · Musique', nav_visuals:'Visuels · Fond', nav_tamas:'12 Tamagotchis',
     nav_media2:'Stickers · GIFs', nav_game:'Jeu', nav_effects:'Effets spéciaux',
-    nav_anim:'Animations · 3D', nav_mech:'Mécaniques du jeu', nav_output:'Exportation', nav_export:'Exporter le jeu',
+    nav_anim:'Animations · 3D', nav_mech:'Mécaniques du jeu', nav_output:'Exportation', nav_preview:'Aperçu du jeu',
+    nav_export:'Exporter le jeu',
     h_settings:'⚙️ Paramètres du jeu', sub_settings:'Choisissez le niveau, la langue et le format des tâches.',
     h_content:'📚 Contenu · 12 thèmes', sub_content:'Entrez des mots, phrases ou contenu pédagogique séparé par des virgules.',
     h_phrases:'💬 Répliques Tamagotchi', sub_phrases:'Configurez les répliques de l\'animal.',
@@ -1690,6 +1782,8 @@ const UI_T = {
     music_off:'Silence', music_forest:'Forêt', music_space:'Espace',
     music_rain:'Pluie', music_cafe:'Café', music_lofi:'Lo-fi',
     lbl_music_vol:'Volume:',
+    h_preview:'👁️ Aperçu du jeu',sub_preview:'Voyez à quoi ressemblera le jeu.',btn_refresh_preview:'Rafraîchir',btn_open_game:'Ouvrir le jeu',ct_preview_topics:'Thèmes avec contenu',ct_preview_question:'Question exemple',ct_preview_phrases:'Répliques Tamagotchi',ct_preview_mechanics:'Mécaniques de jeu',btn_new_question:'Autre question',
+    lbl_lv1_topics_short:'Thèmes N.1',lbl_lv2_topics_short:'Thèmes N.2',lbl_lv3_topics_short:'Thèmes N.3',
     btn_add:'+ Ajouter',
     lv1_head:'NIVEAU 1 · DE BASE', lv2_head:'NIVEAU 2 · INTERMÉDIAIRE', lv3_head:'NIVEAU 3 · AVANCÉ',
     m_timer:'Minuteur', m_coins:'Pièces', m_lives:'Vies', m_progress:'Barre de progression',
@@ -1701,7 +1795,8 @@ const UI_T = {
     nav_phrases:'Frases Tamagotchi', nav_dict:'Diccionarios · Refranes', nav_media:'Medios',
     nav_audio:'Audio · Música', nav_visuals:'Visuales · Fondo', nav_tamas:'12 Tamagotchis',
     nav_media2:'Pegatinas · GIFs', nav_game:'Juego', nav_effects:'Efectos especiales',
-    nav_anim:'Animaciones · 3D', nav_mech:'Mecánicas', nav_output:'Exportar', nav_export:'Exportar juego',
+    nav_anim:'Animaciones · 3D', nav_mech:'Mecánicas', nav_output:'Exportar', nav_preview:'Vista previa',
+    nav_export:'Exportar juego',
     h_settings:'⚙️ Configuración del juego', sub_settings:'Elige nivel, idioma, formato y temporizador.',
     h_content:'📚 Contenido · 12 temas', sub_content:'Introduce palabras o frases separadas por comas.',
     h_phrases:'💬 Frases Tamagotchi', sub_phrases:'Configura frases para distintos temas y niveles.',
@@ -1753,6 +1848,8 @@ const UI_T = {
     music_off:'Sin sonido', music_forest:'Bosque', music_space:'Espacio',
     music_rain:'Lluvia', music_cafe:'Café', music_lofi:'Lo-fi',
     lbl_music_vol:'Volumen:',
+    h_preview:'👁️ Vista previa',sub_preview:'Vea cómo se verá el juego.',btn_refresh_preview:'Actualizar',btn_open_game:'Abrir juego',ct_preview_topics:'Temas con contenido',ct_preview_question:'Pregunta de ejemplo',ct_preview_phrases:'Frases Tamagotchi',ct_preview_mechanics:'Mecánicas del juego',btn_new_question:'Otra pregunta',
+    lbl_lv1_topics_short:'Temas N.1',lbl_lv2_topics_short:'Temas N.2',lbl_lv3_topics_short:'Temas N.3',
     btn_add:'+ Agregar',
     lv1_head:'NIVEL 1 · BÁSICO', lv2_head:'NIVEL 2 · INTERMEDIO', lv3_head:'NIVEL 3 · AVANZADO',
     m_timer:'Temporizador', m_coins:'Monedas', m_lives:'Vidas', m_progress:'Barra de progreso',
@@ -1764,7 +1861,8 @@ const UI_T = {
     nav_phrases:'たまごっちのセリフ', nav_dict:'辞書 · ことわざ', nav_media:'メディア',
     nav_audio:'音楽 · オーディオ', nav_visuals:'ビジュアル · 背景', nav_tamas:'12たまごっち',
     nav_media2:'スタンプ · GIF', nav_game:'ゲーム', nav_effects:'特殊効果',
-    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_export:'ゲームエクスポート',
+    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_preview:'プレビュー',h_preview:'👁️ ゲームプレビュー',sub_preview:'ゲームの外観を確認',btn_refresh_preview:'更新',btn_open_game:'ゲームを開く',ct_preview_topics:'コンテンツのあるテーマ',ct_preview_question:'サンプル問題',ct_preview_phrases:'たまごっちのセリフ',ct_preview_mechanics:'ゲームメカニクス',btn_new_question:'別の問題',
+    nav_export:'ゲームエクスポート',
     h_settings:'⚙️ ゲーム設定', sub_settings:'レベル、言語、タスク形式、タイマーを選択してください。',
     h_content:'📚 コンテンツ · 12テーマ', sub_content:'単語やフレーズをカンマ区切りで入力してください。',
     h_phrases:'💬 たまごっちのセリフ', sub_phrases:'テーマとレベルに応じてペットのセリフを設定します。',
@@ -1824,7 +1922,8 @@ const UI_T = {
     nav_phrases:'宠物台词', nav_dict:'词典 · 谚语', nav_media:'媒体',
     nav_audio:'音乐 · 音频', nav_visuals:'视觉 · 背景', nav_tamas:'12宠物',
     nav_media2:'贴纸 · GIF', nav_game:'游戏', nav_effects:'特效',
-    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_export:'导出游戏',
+    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_preview:'游戏预览',h_preview:'👁️ 游戏预览',sub_preview:'查看游戏外观',btn_refresh_preview:'刷新',btn_open_game:'打开游戏',ct_preview_topics:'有内容的主题',ct_preview_question:'示例问题',ct_preview_phrases:'宠物台词',ct_preview_mechanics:'游戏机制',btn_new_question:'新问题',
+    nav_export:'导出游戏',
     h_settings:'⚙️ 游戏设置', sub_settings:'选择级别、语言、任务格式和计时器。',
     h_content:'📚 内容 · 12主题', sub_content:'用逗号分隔输入单词、短语或学习内容。',
     h_phrases:'💬 宠物台词', sub_phrases:'为不同主题和级别配置宠物台词。',
@@ -1883,7 +1982,8 @@ const UI_T = {
     nav_phrases:'عبارات الحيوان', nav_dict:'قواميس · أمثال', nav_media:'وسائط',
     nav_audio:'موسيقى · صوت', nav_visuals:'مرئيات · خلفية', nav_tamas:'12 حيوان',
     nav_media2:'ملصقات · GIF', nav_game:'لعبة', nav_effects:'مؤثرات خاصة',
-    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_export:'تصدير اللعبة',
+    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_preview:'معاينة اللعبة',h_preview:'👁️ معاينة اللعبة',sub_preview:'شاهد كيف ستبدو اللعبة',btn_refresh_preview:'تحديث',btn_open_game:'فتح اللعبة',ct_preview_topics:'مواضيع بمحتوى',ct_preview_question:'مثال سؤال',ct_preview_phrases:'عبارات الحيوان',ct_preview_mechanics:'آليات اللعبة',btn_new_question:'سؤال آخر',
+    nav_export:'تصدير اللعبة',
     h_settings:'⚙️ إعدادات اللعبة', sub_settings:'اختر المستوى واللغة وتنسيق المهام والمؤقت.',
     h_content:'📚 المحتوى · 12 موضوع', sub_content:'أدخل الكلمات أو العبارات مفصولة بفواصل.',
     h_phrases:'💬 عبارات الحيوان', sub_phrases:'اضبط عبارات الحيوان لمواضيع ومستويات مختلفة.',
@@ -1943,7 +2043,8 @@ const UI_T = {
     nav_phrases:'पालतू के संवाद', nav_dict:'शब्दकोश · कहावतें', nav_media:'मीडिया',
     nav_audio:'संगीत · ऑडियो', nav_visuals:'विजुअल · पृष्ठभूमि', nav_tamas:'12 पालतू',
     nav_media2:'स्टिकर · GIF', nav_game:'गेम', nav_effects:'विशेष प्रभाव',
-    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_export:'गेम निर्यात',
+    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_preview:'पूर्वावलोकन',h_preview:'👁️ गेम प्रीव्यू',sub_preview:'देखें कि गेम कैसा दिखेगा',btn_refresh_preview:'ताज़ा करें',btn_open_game:'गेम खोलें',ct_preview_topics:'सामग्री वाले विषय',ct_preview_question:'नमूना प्रश्न',ct_preview_phrases:'पालतू के संवाद',ct_preview_mechanics:'गेम मैकेनिक्स',btn_new_question:'नया प्रश्न',
+    nav_export:'गेम निर्यात',
     h_settings:'⚙️ गेम सेटिंग्स', sub_settings:'स्तर, भाषा, कार्य प्रारूप और टाइमर चुनें।',
     h_content:'📚 सामग्री · 12 विषय', sub_content:'शब्द या वाक्यांश अल्पविराम से अलग करके दर्ज करें।',
     h_phrases:'💬 पालतू के संवाद', sub_phrases:'विभिन्न विषयों और स्तरों के लिए संवाद सेट करें।',
@@ -2003,7 +2104,8 @@ const UI_T = {
     nav_phrases:'دیالوگ‌های حیوان', nav_dict:'فرهنگ‌لغت · ضرب‌المثل', nav_media:'رسانه',
     nav_audio:'موسیقی · صدا', nav_visuals:'تصویری · پس‌زمینه', nav_tamas:'۱۲ حیوان',
     nav_media2:'استیکر · GIF', nav_game:'بازی', nav_effects:'جلوه‌های ویژه',
-    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_export:'صادرکردن',
+    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_preview:'پیش‌نمایش',h_preview:'👁️ پیش‌نمایش بازی',sub_preview:'ببین بازی چطور به نظر می‌رسه',btn_refresh_preview:'بروزرسانی',btn_open_game:'باز کردن بازی',ct_preview_topics:'موضوع‌ها با محتوا',ct_preview_question:'نمونه سؤال',ct_preview_phrases:'دیالوگ‌های حیوان',ct_preview_mechanics:'مکانیک بازی',btn_new_question:'سؤال دیگر',
+    nav_export:'صادرکردن',
     h_settings:'⚙️ تنظیمات بازی', sub_settings:'سطح، زبان، قالب تکلیف و تایمر را انتخاب کنید.',
     h_content:'📚 محتوا · ۱۲ موضوع', sub_content:'کلمات یا عبارات را با ویرگول جدا کنید.',
     h_phrases:'💬 دیالوگ‌های حیوان', sub_phrases:'دیالوگ‌ها را برای موضوعات و سطوح مختلف تنظیم کنید.',
@@ -2092,6 +2194,7 @@ function applyUiLang(lang) {
   // Rebuild dynamic content
   buildTopics();
   buildAnimGrid();
+  renderPhrases();
   updateStepProgress();
 }
 
@@ -2945,16 +3048,121 @@ const CFG = {
 // ════════════════════════════════════════════════════════
 //  BASE PHRASES
 // ════════════════════════════════════════════════════════
-const BASE_PHRASES_OK = {
-  1:['Ням-ням! Вкусно! 😋','Ура! Играем! ⚽','Гуляем! 🌿','Сладких снов! 😴','Правильно! Молодец! 🎉','Отлично! ⭐'],
-  2:['Спасибо! Очень вкусно!','Знания — сила! 📚','Умнею! 🧠','Вот это да! 🌟','Супер! Продолжаем!'],
-  3:['Красна птица перьем, а человек учением!','Повторение — мать учения!','Шедеврально! 🏆','Непобедим! 👑']
+// Multilingual base phrases
+const ALL_BASE_PHRASES_OK = {
+  ru:{
+    1:['Ням-ням! Вкусно! 😋','Ура! Играем! ⚽','Гуляем! 🌿','Сладких снов! 😴','Правильно! Молодец! 🎉','Отлично! ⭐'],
+    2:['Спасибо! Очень вкусно!','Знания — сила! 📚','Умнею! 🧠','Вот это да! 🌟','Супер! Продолжаем!'],
+    3:['Красна птица перьем, а человек учением!','Повторение — мать учения!','Шедеврально! 🏆','Непобедим! 👑']
+  },
+  de:{
+    1:['Lecker! Yummy! 😋','Hurra! Spielen wir! ⚽','Spazieren! 🌿','Gute Nacht! 😴','Richtig! Gut gemacht! 🎉','Ausgezeichnet! ⭐'],
+    2:['Danke! Sehr lecker!','Wissen ist Macht! 📚','Ich werde klüger! 🧠','Wow! 🌟','Super! Weiter!'],
+    3:['Übung macht den Meister!','Wiederholen ist die Mutter des Lernens!','Meisterhaft! 🏆','Unbesiegbar! 👑']
+  },
+  en:{
+    1:['Yummy! 😋','Yay! Let's play! ⚽','Let's walk! 🌿','Sweet dreams! 😴','Correct! Well done! 🎉','Excellent! ⭐'],
+    2:['Thank you! So tasty!','Knowledge is power! 📚','Getting smarter! 🧠','Wow! 🌟','Super! Keep going!'],
+    3:['Practice makes perfect!','Repetition is the mother of learning!','Masterful! 🏆','Unstoppable! 👑']
+  },
+  fr:{
+    1:['Miam! Délicieux! 😋','Hourra! On joue! ⚽','Promenade! 🌿','Bonne nuit! 😴','Correct! Bravo! 🎉','Excellent! ⭐'],
+    2:['Merci! Très bon!','Le savoir c'est le pouvoir! 📚','Je deviens plus intelligent! 🧠','Wow! 🌟','Super! Continuons!'],
+    3:['La répétition est la mère de l'apprentissage!','C'est parfait! 🏆','Imbattable! 👑']
+  },
+  es:{
+    1:['¡Delicioso! 😋','¡Hurra! ¡Jugamos! ⚽','¡A pasear! 🌿','¡Dulces sueños! 😴','¡Correcto! ¡Bien hecho! 🎉','¡Excelente! ⭐'],
+    2:['¡Gracias! ¡Muy rico!','¡El conocimiento es poder! 📚','¡Me hago más inteligente! 🧠','¡Vaya! 🌟','¡Súper! ¡Continuamos!'],
+    3:['¡La práctica hace al maestro!','¡La repetición es la madre del aprendizaje!','¡Magistral! 🏆','¡Invencible! 👑']
+  },
+  ja:{
+    1:['おいしい！ 😋','やった！遊ぼう！ ⚽','お散歩！ 🌿','おやすみ！ 😴','正解！よくできました！ 🎉','すばらしい！ ⭐'],
+    2:['ありがとう！おいしい！','知識は力！ 📚','賢くなってる！ 🧠','すごい！ 🌟','スーパー！続けよう！'],
+    3:['習うより慣れろ！','繰り返しは学習の母！','見事！ 🏆','無敵！ 👑']
+  },
+  zh:{
+    1:['好吃！ 😋','万岁！让我们玩！ ⚽','散步！ 🌿','晚安！ 😴','正确！干得好！ 🎉','优秀！ ⭐'],
+    2:['谢谢！非常好吃！','知识就是力量！ 📚','越来越聪明！ 🧠','哇！ 🌟','超级！继续吧！'],
+    3:['熟能生巧！','重复是学习之母！','出色！ 🏆','无敌！ 👑']
+  },
+  ar:{
+    1:['لذيذ! 😋','هيا نلعب! ⚽','نتمشى! 🌿','تصبح على خير! 😴','صحيح! أحسنت! 🎉','ممتاز! ⭐'],
+    2:['شكرًا! لذيذ جدًا!','العلم نور! 📚','أصبح أذكى! 🧠','رائع! 🌟','سوبر! واصل!'],
+    3:['التكرار يعلّم الشطار!','الإتقان بالتكرار!','رائع جدًا! 🏆','لا يُقهر! 👑']
+  },
+  hi:{
+    1:['स्वादिष्ट! 😋','वाह! खेलते हैं! ⚽','सैर करते हैं! 🌿','शुभ रात्रि! 😴','सही! शाबाश! 🎉','उत्कृष्ट! ⭐'],
+    2:['धन्यवाद! बहुत स्वादिष्ट!','ज्ञान शक्ति है! 📚','होशियार हो रहे हैं! 🧠','वाह! 🌟','सुपर! जारी रखो!'],
+    3:['अभ्यास परफेक्ट बनाता है!','दोहराना सीखने की जननी है!','शानदार! 🏆','अजेय! 👑']
+  },
+  fa:{
+    1:['خوشمزه! 😋','هورا! بازی می‌کنیم! ⚽','قدم می‌زنیم! 🌿','شب بخیر! 😴','درسته! آفرین! 🎉','عالی! ⭐'],
+    2:['ممنون! خیلی خوشمزه!','دانش قدرت است! 📚','باهوش‌تر می‌شم! 🧠','وای! 🌟','سوپر! ادامه بده!'],
+    3:['تکرار مادر یادگیری است!','استاد شدم! 🏆','شکست‌ناپذیر! 👑']
+  },
 };
-const BASE_PHRASES_ERR = {
-  1:['Голодный! 😭','Хочу гулять! 😭','Не знаю ответа... 😢','Расстроился! 😭'],
-  2:['Хочу есть! 😢','Скучно... 😢','Без друзей грустно... 😢'],
-  3:['Мне грустно... 😢','Ой, не то... 😢','Тамагочи плачет 😭']
+const ALL_BASE_PHRASES_ERR = {
+  ru:{
+    1:['Голодный! 😭','Хочу гулять! 😭','Не знаю ответа... 😢','Расстроился! 😭'],
+    2:['Хочу есть! 😢','Скучно... 😢','Без друзей грустно... 😢'],
+    3:['Мне грустно... 😢','Ой, не то... 😢','Тамагочи плачет 😭']
+  },
+  de:{
+    1:['Ich bin hungrig! 😭','Ich will raus! 😭','Ich kenne die Antwort nicht... 😢','Ich bin traurig! 😭'],
+    2:['Ich will essen! 😢','Langweilig... 😢','Ohne Freunde ist es traurig... 😢'],
+    3:['Ich bin traurig... 😢','Oh, das ist falsch... 😢','Tamagotchi weint 😭']
+  },
+  en:{
+    1:['I'm hungry! 😭','I want to go out! 😭','I don't know the answer... 😢','I'm upset! 😭'],
+    2:['I want to eat! 😢','Boring... 😢','Lonely without friends... 😢'],
+    3:['I'm sad... 😢','Oh, that's wrong... 😢','Tamagotchi is crying 😭']
+  },
+  fr:{
+    1:['J'ai faim! 😭','Je veux sortir! 😭','Je ne connais pas la réponse... 😢','Je suis triste! 😭'],
+    2:['Je veux manger! 😢','C'est ennuyeux... 😢','Seul sans amis... 😢'],
+    3:['Je suis triste... 😢','Oh, c'est faux... 😢','Le Tamagotchi pleure 😭']
+  },
+  es:{
+    1:['¡Tengo hambre! 😭','¡Quiero salir! 😭','No sé la respuesta... 😢','¡Estoy triste! 😭'],
+    2:['¡Quiero comer! 😢','Qué aburrido... 😢','Solo sin amigos... 😢'],
+    3:['Estoy triste... 😢','Oh, eso está mal... 😢','Tamagotchi llora 😭']
+  },
+  ja:{
+    1:['お腹すいた！ 😭','外に出たい！ 😭','答えが分からない... 😢','悲しい！ 😭'],
+    2:['食べたい！ 😢','退屈... 😢','友達がいなくて寂しい... 😢'],
+    3:['悲しいな... 😢','あ、違う... 😢','たまごっちが泣いてる 😭']
+  },
+  zh:{
+    1:['我饿了！ 😭','我想出去！ 😭','我不知道答案... 😢','我很难过！ 😭'],
+    2:['我想吃东西！ 😢','好无聊... 😢','没有朋友真孤单... 😢'],
+    3:['我很难过... 😢','哦，错了... 😢','电子宠物在哭 😭']
+  },
+  ar:{
+    1:['أنا جائع! 😭','أريد الخروج! 😭','لا أعرف الجواب... 😢','أنا حزين! 😭'],
+    2:['أريد أن آكل! 😢','مملّ... 😢','وحيد بدون أصدقاء... 😢'],
+    3:['أنا حزين... 😢','آه، هذا خطأ... 😢','التاماغوتشي يبكي 😭']
+  },
+  hi:{
+    1:['मुझे भूख लगी है! 😭','मैं बाहर जाना चाहता हूं! 😭','मुझे जवाब नहीं पता... 😢','मैं दुखी हूं! 😭'],
+    2:['मुझे खाना चाहिए! 😢','उबाऊ... 😢','बिना दोस्तों के अकेलापन... 😢'],
+    3:['मैं उदास हूं... 😢','ओह, यह गलत है... 😢','तमागोत्ची रो रहा है 😭']
+  },
+  fa:{
+    1:['گرسنه‌ام! 😭','می‌خوام بیرون برم! 😭','جواب نمی‌دونم... 😢','ناراحتم! 😭'],
+    2:['می‌خوام غذا بخورم! 😢','حوصله‌ام سر رفته... 😢','تنها بدون دوست... 😢'],
+    3:['غمگینم... 😢','اوه، اشتباهه... 😢','تاماگوچی گریه می‌کنه 😭']
+  },
 };
+
+function getBasePhrases(type, lv) {
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const store = type === 'ok' ? ALL_BASE_PHRASES_OK : ALL_BASE_PHRASES_ERR;
+  return (store[lang] || store.ru)[lv] || [];
+}
+
+// Keep backward compat aliases
+const BASE_PHRASES_OK = ALL_BASE_PHRASES_OK.ru;
+const BASE_PHRASES_ERR = ALL_BASE_PHRASES_ERR.ru;
 
 const TAMAS_BASE = [
   {e:'🦊',n:'Лисёнок'},{e:'🐺',n:'Волчонок'},{e:'🦝',n:'Енот'},
@@ -3074,6 +3282,8 @@ function showPanel(id, skipHistory=false){
   const main = document.getElementById('main');
   if(main) main.scrollTop = 0;
   updateStepProgress();
+  // Auto-refresh preview when opening it
+  if(id === 'preview') setTimeout(refreshPreview, 50);
 }
 
 function goBack(){
@@ -3084,7 +3294,7 @@ function goBack(){
 }
 
 // Step progress dots for sidebar panels
-const ALL_PANELS = ['settings','content','phrases','dict','audio','visuals','tamas','media','effects','animations','mechanics','design','export'];
+const ALL_PANELS = ['settings','content','phrases','dict','audio','visuals','tamas','media','effects','animations','mechanics','design','preview','export'];
 
 function updateStepProgress(){
   const container = document.getElementById('step-progress');
@@ -3112,6 +3322,9 @@ function selLvTab(el){
   el.classList.add('active');
   CFG.activeLv=parseInt(el.dataset.lv);
   renderPhrases();
+  // Scroll phrases panel to top
+  const main=document.getElementById('main');
+  if(main) main.scrollTop=0;
 }
 
 // ════════════════════════════════════════════════════════
@@ -3121,14 +3334,43 @@ const TOPIC_ICONS=['📌','📖','🔢','⚗️','🌍','💻','🏛️','🌿',
 const TOPIC_COLORS=['#7C3AED','#EC4899','#06B6D4','#10B981','#F59E0B','#EF4444',
                     '#8B5CF6','#F97316','#14B8A6','#6366F1','#D946EF','#0EA5E9'];
 
+
+// Topic card labels per language
+const TOPIC_LABELS = {
+  ru:{subject:'Предмет задания',words:'Слова через запятую',pairs:'Пары (слово:значение)',proverbs:'Пословицы (_____ = пропуск) | ответ',note:'Примечание',clear:'🗑 Очистить',copy:'📋 Копировать',ai:'✦ ИИ подсказка'},
+  de:{subject:'Aufgabenthema',words:'Wörter (kommagetrennt)',pairs:'Paare (Wort:Bedeutung)',proverbs:'Sprichwörter (_____ = Lücke) | Antwort',note:'Hinweis',clear:'🗑 Leeren',copy:'📋 Kopieren',ai:'✦ KI-Vorschlag'},
+  en:{subject:'Task subject',words:'Words (comma-separated)',pairs:'Pairs (word:meaning)',proverbs:'Proverbs (_____ = gap) | answer',note:'Note',clear:'🗑 Clear',copy:'📋 Copy',ai:'✦ AI hint'},
+  fr:{subject:'Sujet de tâche',words:'Mots (séparés par virgule)',pairs:'Paires (mot:sens)',proverbs:'Proverbes (_____ = lacune) | réponse',note:'Note',clear:'🗑 Effacer',copy:'📋 Copier',ai:'✦ Suggestion IA'},
+  es:{subject:'Tema de tarea',words:'Palabras (separadas por coma)',pairs:'Pares (palabra:significado)',proverbs:'Refranes (_____ = hueco) | respuesta',note:'Nota',clear:'🗑 Limpiar',copy:'📋 Copiar',ai:'✦ Sugerencia IA'},
+  ja:{subject:'タスクテーマ',words:'単語（カンマ区切り）',pairs:'ペア（単語:意味）',proverbs:'ことわざ（_____=空欄）| 答え',note:'メモ',clear:'🗑 クリア',copy:'📋 コピー',ai:'✦ AI提案'},
+  zh:{subject:'任务主题',words:'单词（逗号分隔）',pairs:'配对（词:义）',proverbs:'谚语（_____ = 空格）| 答案',note:'备注',clear:'🗑 清除',copy:'📋 复制',ai:'✦ AI提示'},
+  ar:{subject:'موضوع المهمة',words:'كلمات (مفصولة بفاصلة)',pairs:'أزواج (كلمة:معنى)',proverbs:'أمثال (_____ = فراغ) | إجابة',note:'ملاحظة',clear:'🗑 مسح',copy:'📋 نسخ',ai:'✦ اقتراح ذكاء'},
+  hi:{subject:'कार्य विषय',words:'शब्द (अल्पविराम से)',pairs:'जोड़े (शब्द:अर्थ)',proverbs:'कहावत (_____ = रिक्त) | उत्तर',note:'नोट',clear:'🗑 साफ़ करें',copy:'📋 कॉपी',ai:'✦ AI सुझाव'},
+  fa:{subject:'موضوع تکلیف',words:'کلمات (با کاما)',pairs:'جفت‌ها (کلمه:معنی)',proverbs:'ضرب‌المثل (_____ = جای خالی) | جواب',note:'توضیح',clear:'🗑 پاک کردن',copy:'📋 کپی',ai:'✦ پیشنهاد هوش مصنوعی'},
+};
+const TOPIC_PLACEHOLDERS = {
+  ru:{name:'Семья, Глаголы, Числа...',subject:'напр. Семья, Числа, Глаголы движения...',words:'сон, кровать, ночь, подушка...',pairs:'спать:sleep, кровать:bed...',proverbsPh:'Век живи — век _____. | учись',note:'Необязательно...'},
+  de:{name:'Familie, Verben, Zahlen...',subject:'z.B. Familie, Zahlen, Bewegungsverben...',words:'schlafen, Bett, Nacht, Kissen...',pairs:'schlafen:sleep, Bett:bed...',proverbsPh:'Übung macht den _____. | Meister',note:'Optional...'},
+  en:{name:'Family, Verbs, Numbers...',subject:'e.g. Family, Numbers, Action verbs...',words:'sleep, bed, night, pillow...',pairs:'sleep:schlafen, bed:Bett...',proverbsPh:'Practice makes _____. | perfect',note:'Optional...'},
+  fr:{name:'Famille, Verbes, Nombres...',subject:'ex. Famille, Nombres, Verbes d'action...',words:'dormir, lit, nuit, oreiller...',pairs:'dormir:sleep, lit:bed...',proverbsPh:'Qui dort _____. | dîne',note:'Facultatif...'},
+  es:{name:'Familia, Verbos, Números...',subject:'ej. Familia, Números, Verbos de acción...',words:'dormir, cama, noche, almohada...',pairs:'dormir:sleep, cama:bed...',proverbsPh:'El que duerme _____. | sueña',note:'Opcional...'},
+};
+
 // Track which level is being shown in content panel
 let _topicLv = 1;
 
 function selTopicLvTab(el, lv){
   document.querySelectorAll('.lvl-topic-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+  if(el) el.classList.add('active');
+  else {
+    const tab = document.querySelector(`.lvl-topic-tab[data-lv="${lv}"]`);
+    if(tab) tab.classList.add('active');
+  }
   _topicLv = lv;
   buildTopics();
+  // scroll to top of main
+  const main = document.getElementById('main');
+  if(main) main.scrollTop = 0;
 }
 
 function buildTopics(){
@@ -3155,8 +3397,9 @@ function buildTopics(){
   };
   const hdr = document.createElement('div');
   hdr.style.cssText = `grid-column:1/-1;background:${lvColors[lv].bg};border:1px solid ${lvColors[lv].border};border-radius:14px;padding:12px 16px;margin-bottom:4px;`;
+  const lvDescKey = ['lbl_lv1_topics','lbl_lv2_topics','lbl_lv3_topics'][lv-1];
   hdr.innerHTML = `<div style="font-family:var(--fp);font-size:10px;color:${lvColors[lv].head};letter-spacing:2px;font-weight:900;">${lvColors[lv].emoji} ${lvNames[lv]}</div>
-    <div style="font-size:11px;color:var(--tx2);margin-top:4px;">${t.lbl_lv1_topics||''}</div>`;
+    <div style="font-size:11px;color:var(--tx2);margin-top:4px;">${t[lvDescKey]||''}</div>`;
   g.appendChild(hdr);
 
   // 4 topics for this level
@@ -3177,36 +3420,36 @@ function buildTopics(){
         </div>
       </div>
       <div class="fgrp">
-        <label class="lbl" style="color:${lvColors[lv].head};">✏️ Название темы</label>
-        <input type="text" value="${top.name}" placeholder="Например: Семья, Глаголы, Числа..."
+        <label class="lbl" style="color:${lvColors[lv].head};">✏️ ${t.lbl_topic_name||'Название темы'}</label>
+        <input type="text" value="${top.name}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.name||'Семья, Глаголы, Числа...'}"
           oninput="CFG.topics[${i}].name=this.value"
           style="border-color:${lvColors[lv].border};font-weight:700;font-size:13px;">
       </div>
-      <div class="fgrp" style="margin-top:8px;"><label class="lbl" style="color:var(--cy2);">🏷️ Предмет задания</label>
-        <input type="text" value="${top.subject||''}" placeholder="напр. Семья, Числа, Глаголы движения..."
+      <div class="fgrp" style="margin-top:8px;"><label class="lbl" style="color:var(--cy2);">🏷️ ${TOPIC_LABELS[lang]?.subject||'Предмет задания'}</label>
+        <input type="text" value="${top.subject||''}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.subject||'напр. Семья, Числа...'}"
           oninput="CFG.topics[${i}].subject=this.value"
           style="border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.05);"></div>
-      <div class="fgrp" style="margin-top:8px;"><label class="lbl">📝 Слова через запятую</label>
-        <textarea id="topic-words-${i}" placeholder="сон, кровать, ночь, подушка..."
+      <div class="fgrp" style="margin-top:8px;"><label class="lbl">📝 ${TOPIC_LABELS[lang]?.words||'Слова через запятую'}</label>
+        <textarea id="topic-words-${i}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.words||'сон, кровать, ночь, подушка...'}"
           oninput="CFG.topics[${i}].words=this.value.split(',').map(s=>s.trim()).filter(Boolean)"
           style="min-height:60px;">${top.words.join(', ')}</textarea></div>
-      <div class="fgrp" style="margin-top:6px;"><label class="lbl">🔗 Пары (слово:значение)</label>
-        <textarea id="topic-pairs-${i}" placeholder="спать:sleep, кровать:bed..."
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">🔗 ${TOPIC_LABELS[lang]?.pairs||'Пары (слово:значение)'}</label>
+        <textarea id="topic-pairs-${i}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.pairs||'спать:sleep, кровать:bed...'}"
           oninput="CFG.topics[${i}].pairs=parsePairs(this.value)"
           style="min-height:48px;">${pairsToStr(top.pairs)}</textarea></div>
-      <div class="fgrp" style="margin-top:6px;"><label class="lbl">📜 Пословицы (_____ = пропуск) | ответ</label>
-        <textarea id="topic-proverbs-${i}" placeholder="Век живи — век _____. | учись&#10;Ученье — _____, а неученье — тьма. | свет"
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">📜 ${TOPIC_LABELS[lang]?.proverbs||'Пословицы (_____ = пропуск) | ответ'}</label>
+        <textarea id="topic-proverbs-${i}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.proverbsPh||'Век живи — век _____. | учись'}"
           oninput="CFG.topics[${i}].proverbs=parseProverbs(this.value)"
           style="min-height:70px;">${proverbsToStr(top.proverbs)}</textarea></div>
-      <div class="fgrp" style="margin-top:6px;"><label class="lbl">💬 Примечание</label>
-        <input type="text" id="topic-desc-${i}" placeholder="Необязательно..." oninput="CFG.topics[${i}].desc=this.value" value="${top.desc||''}"></div>
+      <div class="fgrp" style="margin-top:6px;"><label class="lbl">💬 ${TOPIC_LABELS[lang]?.note||'Примечание'}</label>
+        <input type="text" id="topic-desc-${i}" placeholder="${TOPIC_PLACEHOLDERS[lang]?.note||'Необязательно...'}" oninput="CFG.topics[${i}].desc=this.value" value="${top.desc||''}"></div>
       <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
         <button class="tbbtn" style="font-size:10px;padding:5px 10px;background:rgba(6,182,212,.15);border-color:var(--cy);color:var(--cy2);"
-          onclick="clearTopic(${i})">🗑 Очистить</button>
+          onclick="clearTopic(${i})">🗑 ${TOPIC_LABELS[lang]?.clear||'Очистить'}</button>
         <button class="tbbtn" style="font-size:10px;padding:5px 10px;background:rgba(74,222,128,.15);border-color:var(--pu2);color:var(--pu2);"
-          onclick="copyTopicToClipboard(${i})">📋 Копировать</button>
+          onclick="copyTopicToClipboard(${i})">📋 ${TOPIC_LABELS[lang]?.copy||'Копировать'}</button>
         <button class="tbbtn" style="font-size:10px;padding:5px 10px;background:rgba(124,58,237,.15);border-color:var(--pu);color:var(--pu3);"
-          onclick="aiSuggestTopic(${i})">✦ ИИ подсказка</button>
+          onclick="aiSuggestTopic(${i})">✦ ${TOPIC_LABELS[lang]?.ai||'ИИ подсказка'}</button>
       </div>`;
     g.appendChild(d);
   }
@@ -3315,48 +3558,90 @@ function buildAnimGrid(){
 }
 
 // ════════════════════════════════════════════════════════
-//  PHRASES
+//  PHRASES — multilingual
 // ════════════════════════════════════════════════════════
+
+// Themed phrases per language
+const THEMED_PHRASES = {
+  ru: {'🍽️ Питание':['Ням-ням! Вкусно! 😋','Я сыт!'],'😴 Сон':['Сладких снов! 😴','Zzzz...'],'📚 Учёба':['Знания — сила! 📚','Умнею! 🧠'],'🎉 Праздник':['Ура! Праздник! 🎉','Гуляем! 🎊']},
+  de: {'🍽️ Essen':['Lecker! 😋','Ich bin satt!'],'😴 Schlafen':['Gute Nacht! 😴','Zzzz...'],'📚 Lernen':['Wissen ist Macht! 📚','Ich lerne!'],'🎉 Fest':['Hurra! Fest! 🎉','Tanzen! 🎊']},
+  en: {'🍽️ Food':['Yummy! 😋','I'm full!'],'😴 Sleep':['Sweet dreams! 😴','Zzzz...'],'📚 Study':['Knowledge is power! 📚','Learning!'],'🎉 Party':['Yay! Party! 🎉','Let's go! 🎊']},
+  fr: {'🍽️ Nourriture':['Délicieux! 😋','Je suis repu!'],'😴 Sommeil':['Bonne nuit! 😴','Zzzz...'],'📚 Études':['Le savoir c'est le pouvoir! 📚','J'apprends!'],'🎉 Fête':['Hourra! Fête! 🎉','Dansons! 🎊']},
+  es: {'🍽️ Comida':['¡Delicioso! 😋','¡Estoy lleno!'],'😴 Sueño':['¡Dulces sueños! 😴','Zzzz...'],'📚 Estudio':['¡El conocimiento es poder! 📚','¡Aprendiendo!'],'🎉 Fiesta':['¡Viva! ¡Fiesta! 🎉','¡A bailar! 🎊']},
+  ja: {'🍽️ 食事':['おいしい！ 😋','お腹いっぱい！'],'😴  睡眠':['おやすみ！ 😴','Zzzz...'],'📚 勉強':['知識は力！ 📚','学んでる！'],'🎉 パーティー':['やった！ 🎉','踊ろう！ 🎊']},
+  zh: {'🍽️ 饮食':['好吃！ 😋','吃饱了！'],'😴 睡眠':['晚安！ 😴','Zzzz...'],'📚 学习':['知识就是力量！ 📚','在学习！'],'🎉 派对':['万岁！ 🎉','跳舞！ 🎊']},
+  ar: {'🍽️ طعام':['لذيذ! 😋','شبعت!'],'😴 نوم':['تصبح على خير! 😴','Zzzz...'],'📚 دراسة':['العلم نور! 📚','أتعلم!'],'🎉 حفلة':['هورا! 🎉','نرقص! 🎊']},
+  hi: {'🍽️ भोजन':['स्वादिष्ट! 😋','पेट भर गया!'],'😴 नींद':['शुभ रात्रि! 😴','Zzzz...'],'📚 पढ़ाई':['ज्ञान शक्ति है! 📚','सीख रहे हैं!'],'🎉 पार्टी':['वाह! 🎉','नाचते हैं! 🎊']},
+  fa: {'🍽️ غذا':['خوشمزه! 😋','سیر شدم!'],'😴 خواب':['شب بخیر! 😴','Zzzz...'],'📚 درس':['دانش قدرت است! 📚','دارم یاد می‌گیرم!'],'🎉 جشن':['هورا! 🎉','برقصیم! 🎊']},
+};
+
+// Level label per language
+const LV_LABELS = {
+  ru:{1:'Ур.',2:'Ур.',3:'Ур.'},
+  de:{1:'Stufe',2:'Stufe',3:'Stufe'},
+  en:{1:'Lv.',2:'Lv.',3:'Lv.'},
+  fr:{1:'Niv.',2:'Niv.',3:'Niv.'},
+  es:{1:'Niv.',2:'Niv.',3:'Niv.'},
+  ja:{1:'レベル',2:'レベル',3:'レベル'},
+  zh:{1:'级',2:'级',3:'级'},
+  ar:{1:'م.',2:'م.',3:'م.'},
+  hi:{1:'स्तर',2:'स्तर',3:'स्तर'},
+  fa:{1:'سطح',2:'سطح',3:'سطح'},
+};
+
 function renderPhrases(){
-  const lv=CFG.activeLv;
-  const okList=[...BASE_PHRASES_OK[lv],...(CFG.phrases.ok[lv]||[])];
-  const errList=[...BASE_PHRASES_ERR[lv],...(CFG.phrases.err[lv]||[])];
-  renderPhraseList('ok-phrases-list',okList,'ok',lv);
-  renderPhraseList('err-phrases-list',errList,'err',lv);
-  const th=document.getElementById('themed-phrases');th.innerHTML='';
-  const themes={'Питание':['Ням-ням! Вкусно! 😋','Я сыт!'],'Сон':['Сладких снов! 😴','Zzzz...'],
-    'Учёба':['Знания — сила! 📚','Умнею! 🧠'],'Праздник':['Ура! Праздник! 🎉','Гуляем! 🎊']};
+  const lv = CFG.activeLv;
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const baseOk = getBasePhrases('ok', lv);
+  const baseErr = getBasePhrases('err', lv);
+  const okList = [...baseOk, ...(CFG.phrases.ok[lv]||[])];
+  const errList = [...baseErr, ...(CFG.phrases.err[lv]||[])];
+  renderPhraseList('ok-phrases-list', okList, 'ok', lv, baseOk.length);
+  renderPhraseList('err-phrases-list', errList, 'err', lv, baseErr.length);
+  const th = document.getElementById('themed-phrases');
+  if(!th) return;
+  th.innerHTML = '';
+  const themes = THEMED_PHRASES[lang] || THEMED_PHRASES.ru;
   Object.entries(themes).forEach(([k,arr])=>{
-    const d=document.createElement('div');
-    d.innerHTML=`<div style="font-family:var(--fp);font-size:8px;color:var(--pu2);margin-bottom:5px;letter-spacing:1px;">${k.toUpperCase()}</div>`;
+    const d = document.createElement('div');
+    d.innerHTML = `<div style="font-family:var(--fp);font-size:8px;color:var(--pu2);margin-bottom:5px;letter-spacing:1px;">${k.toUpperCase()}</div>`;
     arr.forEach(ph=>{
-      const p=document.createElement('div');p.className='phrase-item';
-      p.innerHTML=`<span class="phrase-tag">${k}</span><span class="phrase-text">${ph}</span>`;
-      d.appendChild(p);});
-    th.appendChild(d);});
+      const p = document.createElement('div'); p.className='phrase-item';
+      p.innerHTML = `<span class="phrase-tag">${k}</span><span class="phrase-text">${ph}</span>`;
+      d.appendChild(p);
+    });
+    th.appendChild(d);
+  });
 }
 
-function renderPhraseList(id,arr,type,lv){
-  const c=document.getElementById(id);c.innerHTML='';
-  arr.forEach((ph,i)=>{
-    const d=document.createElement('div');d.className='phrase-item';
-    d.innerHTML=`<span class="phrase-tag">Ур.${lv}</span>
+function renderPhraseList(id, arr, type, lv, baseLen){
+  const c = document.getElementById(id); if(!c) return; c.innerHTML='';
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const lvLabel = (LV_LABELS[lang]||LV_LABELS.ru)[lv] || 'Ур.';
+  arr.forEach((ph, i)=>{
+    const d = document.createElement('div'); d.className='phrase-item';
+    const isBase = i < baseLen;
+    d.innerHTML = `<span class="phrase-tag" style="${isBase?'opacity:.6;':''}">
+        ${lvLabel}${lv}${isBase?' 🔒':''}</span>
       <span class="phrase-text">${ph}</span>
-      <span class="phrase-del" onclick="removePhrase('${type}',${lv},${i})">✕</span>`;
-    c.appendChild(d);});
+      ${isBase ? '' : `<span class="phrase-del" onclick="removePhrase('${type}',${lv},${i})">✕</span>`}`;
+    c.appendChild(d);
+  });
 }
+
 function addPhrase(type){
-  const inp=document.getElementById(`new-${type}-phrase`);
-  const v=inp.value.trim();if(!v)return;
-  const lv=CFG.activeLv;
-  if(!CFG.phrases[type][lv])CFG.phrases[type][lv]=[];
+  const inp = document.getElementById(`new-${type}-phrase`);
+  const v = inp.value.trim(); if(!v) return;
+  const lv = CFG.activeLv;
+  if(!CFG.phrases[type][lv]) CFG.phrases[type][lv]=[];
   CFG.phrases[type][lv].push(v);
-  inp.value='';renderPhrases();
+  inp.value=''; renderPhrases();
 }
+
 function removePhrase(type,lv,i){
-  const base=type==='ok'?BASE_PHRASES_OK:BASE_PHRASES_ERR;
-  const customIdx=i-base[lv].length;
-  if(customIdx>=0&&CFG.phrases[type][lv])CFG.phrases[type][lv].splice(customIdx,1);
+  const baseLen = getBasePhrases(type, lv).length;
+  const customIdx = i - baseLen;
+  if(customIdx >= 0 && CFG.phrases[type][lv]) CFG.phrases[type][lv].splice(customIdx, 1);
   renderPhrases();
 }
 
@@ -3367,12 +3652,15 @@ async function genPhrases(type){
   const ctx=document.getElementById('ai-context').value||'учёба';
   const count=document.getElementById('ai-count').value||10;
   const lv=CFG.activeLv;
-  const example=type==='ok'?BASE_PHRASES_OK[1].slice(0,3).join(', '):BASE_PHRASES_ERR[1].slice(0,3).join(', ');
-  const prompt=`Создай ${count} коротких реплик для Тамагочи (питомца) по теме "${ctx}".
-Реплики при ${type==='ok'?'ПРАВИЛЬНОМ ответе (радость)':'НЕВЕРНОМ ответе (расстройство)'}.
-Уровень ${lv}: ${lv===1?'базовый':lv===2?'повышенный':'высокий (пословицы)'}.
-Стиль: ${example}
-Каждая 3-8 слов, с эмодзи. Только нумерованный список.`;
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const baseEx = getBasePhrases(type, 1).slice(0,3).join(', ');
+  const lvNames = {ru:{1:'базовый',2:'повышенный',3:'высокий'},de:{1:'Basis',2:'Mittel',3:'Fortgeschritten'},en:{1:'basic',2:'intermediate',3:'advanced'},fr:{1:'de base',2:'intermédiaire',3:'avancé'},es:{1:'básico',2:'intermedio',3:'avanzado'}};
+  const lvName = (lvNames[lang]||lvNames.ru)[lv];
+  const prompt=`Generate ${count} short Tamagotchi pet phrases in language "${lang}" for topic "${ctx}".
+Phrases for ${type==='ok'?'CORRECT answer (joy/happiness)':'WRONG answer (sadness/frustration)'}.
+Level ${lv} (${lvName}).
+Style example: ${baseEx}
+Each phrase: 3-8 words, with emoji. Numbered list only.`;
   const out=document.getElementById('ai-phrases-output');
   out.innerHTML=`<div style="color:var(--cy2);font-size:12px;">✦ Генерирую реплики...</div>`;
   try{
@@ -3551,6 +3839,8 @@ function exportConfig(){
 
 function exportGame(){
   collectConfig();
+  // Ensure uiLang is saved
+  CFG.uiLang = document.getElementById('ui-lang')?.value || CFG.uiLang || 'ru';
   const cfg=JSON.stringify(CFG);
   const html=buildGameHTML(cfg);
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
@@ -3949,6 +4239,186 @@ function copyCustomUrl() {
   const url = document.getElementById('custom-game-url')?.value || '';
   if(url) navigator.clipboard.writeText(url).then(()=>showToast('✓ URL скопирован!'));
   else showToast('⚠ Введите URL игры');
+}
+
+
+// ════════════════════════════════════════════════════════
+//  PREVIEW PANEL
+// ════════════════════════════════════════════════════════
+function refreshPreview(){
+  collectConfig();
+  const lang = CFG.uiLang || document.getElementById('ui-lang')?.value || 'ru';
+  const t = UI_T[lang] || UI_T.ru;
+
+  // Title & meta
+  const pvTitle = document.getElementById('pv-title');
+  if(pvTitle) pvTitle.textContent = CFG.title || 'Моя игра';
+  const pvAuthor = document.getElementById('pv-author');
+  if(pvAuthor) {
+    const author = document.getElementById('g-author')?.value || document.getElementById('g-title')?.value || '';
+    pvAuthor.textContent = author;
+  }
+  const pvLangLevel = document.getElementById('pv-lang-level');
+  if(pvLangLevel) {
+    const lvEl = document.querySelector('#lang-level-chips .chip.on');
+    const langEl = document.querySelector('#lang-chips .chip.on');
+    pvLangLevel.textContent = [langEl?.textContent?.trim(), lvEl?.dataset?.v].filter(Boolean).join(' · ');
+  }
+
+  // Tama icon
+  const activeTamas = CFG.tamas.active || [0];
+  const randTama = TAMAS_BASE[activeTamas[Math.floor(Math.random()*activeTamas.length)]];
+  const pvIcon = document.getElementById('pv-tama-icon');
+  const pvName = document.getElementById('pv-tama-name');
+  if(pvIcon && randTama) pvIcon.textContent = randTama.e;
+  if(pvName && randTama) pvName.textContent = randTama.n;
+
+  // Stats pills
+  const pvStats = document.getElementById('pv-stats');
+  if(pvStats) {
+    const topicsWithContent = CFG.topics.filter(tp => tp.words.length > 0).length;
+    const totalProverbs = CFG.topics.reduce((a,tp) => a + tp.proverbs.length, 0);
+    const totalWords = CFG.topics.reduce((a,tp) => a + tp.words.length, 0);
+    pvStats.innerHTML = [
+      ['📚', topicsWithContent + ' тем'],
+      ['📝', totalWords + ' слов'],
+      ['📜', totalProverbs + ' пословиц'],
+      ['🏆', '3 уровня'],
+    ].map(([ic,txt]) => `<span style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:5px 10px;font-size:11px;color:var(--tx2);font-weight:700;">${ic} ${txt}</span>`).join('');
+  }
+
+  // Level cards
+  const pvLevels = document.getElementById('pv-levels');
+  if(pvLevels) {
+    const lvColors = ['#93C5FD','#C4B5FD','#FBCFE8'];
+    const lvBg = ['rgba(8,145,178,.15)','rgba(124,58,237,.15)','rgba(236,72,153,.15)'];
+    pvLevels.innerHTML = [1,2,3].map(lv => {
+      const lvCfg = CFG.levels[lv];
+      const topicsForLv = CFG.topics.slice((lv-1)*4, lv*4).filter(tp => tp.words.length > 0).length;
+      return `<div style="background:${lvBg[lv-1]};border:1px solid ${lvColors[lv-1]}33;border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:20px;margin-bottom:4px;">${lvCfg.emoji||['🐣','🐥','🌟'][lv-1]}</div>
+        <div style="font-size:10px;color:${lvColors[lv-1]};font-weight:800;">${lvCfg.name}</div>
+        <div style="font-size:10px;color:var(--tx2);margin-top:4px;">⏱️ ${lvCfg.timer}с · ❤️ ${lvCfg.lives||3} · 📝 ${lvCfg.q}</div>
+        <div style="font-size:10px;color:var(--gr2);margin-top:2px;">${topicsForLv}/4 тем</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Topics preview
+  buildPreviewTopics();
+  // Sample question
+  generateSampleQuestion();
+  // Phrases preview
+  buildPreviewPhrases();
+  // Mechanics
+  buildPreviewMechanics();
+
+  showToast('👁️ Предпросмотр обновлён!');
+}
+
+function buildPreviewTopics(){
+  const pvTopics = document.getElementById('pv-topics-grid');
+  if(!pvTopics) return;
+  pvTopics.innerHTML = '';
+  const filledTopics = CFG.topics.filter(tp => tp.words.length > 0 || tp.pairs.length > 0);
+  if(filledTopics.length === 0) {
+    pvTopics.innerHTML = '<div style="color:var(--tx2);font-size:12px;grid-column:1/-1;padding:8px;">Добавьте слова в темы в разделе «Контент»</div>';
+    return;
+  }
+  filledTopics.forEach((tp, idx) => {
+    const lv = Math.floor(CFG.topics.indexOf(tp) / 4) + 1;
+    const lvColors = ['#93C5FD','#C4B5FD','#FBCFE8'];
+    const d = document.createElement('div');
+    d.style.cssText = `background:var(--card);border:1px solid ${lvColors[lv-1]}44;border-radius:12px;padding:10px;`;
+    d.innerHTML = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span style="font-size:16px;">${tp.icon||'📌'}</span>
+        <span style="font-size:11px;font-weight:800;color:${lvColors[lv-1]};">${tp.name}</span>
+        <span style="font-size:9px;color:var(--tx2);margin-left:auto;">Ур.${lv}</span>
+      </div>
+      <div style="font-size:10px;color:var(--tx2);line-height:1.6;">
+        ${tp.words.slice(0,6).join(', ')}${tp.words.length > 6 ? ' ...' : ''}
+      </div>
+      <div style="font-size:9px;color:var(--cy2);margin-top:4px;">${tp.words.length} слов · ${tp.pairs.length} пар · ${tp.proverbs.length} посл.</div>`;
+    pvTopics.appendChild(d);
+  });
+}
+
+function generateSampleQuestion(){
+  const pvQ = document.getElementById('pv-sample-question');
+  if(!pvQ) return;
+  const filledTopics = CFG.topics.filter(tp => tp.words.length >= 2);
+  if(filledTopics.length === 0) {
+    pvQ.innerHTML = '<div style="color:var(--tx2);font-size:12px;">Добавьте минимум 2 слова в тему для генерации примера.</div>';
+    return;
+  }
+  const tp = filledTopics[Math.floor(Math.random() * filledTopics.length)];
+  const words = [...tp.words].sort(() => Math.random() - 0.5);
+  const correct = words[0];
+  const options = words.slice(0, 4);
+  while(options.length < 4 && CFG.topics.some(t => t.words.length > 0)) {
+    const other = CFG.topics.filter(t => t !== tp && t.words.length > 0);
+    if(other.length > 0) {
+      const w = other[Math.floor(Math.random()*other.length)].words[Math.floor(Math.random()*other[0].words.length)];
+      if(w && !options.includes(w)) options.push(w);
+      else break;
+    } else break;
+  }
+  options.sort(() => Math.random() - 0.5);
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const qLabels = {ru:'Выберите правильный ответ:',de:'Wählen Sie die richtige Antwort:',en:'Choose the correct answer:',fr:'Choisissez la bonne réponse:',es:'Elige la respuesta correcta:'};
+  pvQ.innerHTML = `
+    <div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:12px;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--cy2);margin-bottom:8px;">📌 ${tp.name} · ${qLabels[lang]||qLabels.ru}</div>
+      <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:12px;">❓ «${correct}»</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        ${options.map((w,i) => `<div style="background:${w===correct?'rgba(22,163,74,.2)':'var(--card)'};border:1px solid ${w===correct?'var(--pu2)':'var(--border)'};border-radius:8px;padding:8px 10px;font-size:12px;text-align:center;cursor:pointer;transition:all .2s;" 
+          onmouseover="this.style.borderColor='var(--cy2)'" onmouseout="this.style.borderColor='${w===correct?'var(--pu2)':'var(--border)'}'">${'ABCD'[i]}. ${w} ${w===correct?'✓':''}</div>`).join('')}
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--tx2);">✓ = правильный ответ · тема: ${tp.name} · формат: Выбор из 4</div>`;
+}
+
+function buildPreviewPhrases(){
+  const pvPh = document.getElementById('pv-phrases');
+  if(!pvPh) return;
+  const lang = document.getElementById('ui-lang')?.value || 'ru';
+  const ok = getBasePhrases('ok', 1);
+  const err = getBasePhrases('err', 1);
+  pvPh.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div>
+        <div style="font-size:9px;color:var(--gr2);font-weight:800;margin-bottom:6px;">✅ ПРАВИЛЬНЫЙ ОТВЕТ</div>
+        ${ok.slice(0,3).map(ph => `<div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--tx2);margin-bottom:4px;">${ph}</div>`).join('')}
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--re);font-weight:800;margin-bottom:6px;">❌ НЕВЕРНЫЙ ОТВЕТ</div>
+        ${err.slice(0,3).map(ph => `<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--tx2);margin-bottom:4px;">${ph}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function buildPreviewMechanics(){
+  const pvMech = document.getElementById('pv-mechanics');
+  if(!pvMech) return;
+  const mechs = [
+    {k:'timer',ic:'⏱️',on:CFG.mechanics.timer},
+    {k:'coins',ic:'🪙',on:CFG.mechanics.coins},
+    {k:'lives',ic:'❤️',on:CFG.mechanics.lives},
+    {k:'progress',ic:'📊',on:CFG.mechanics.progress},
+    {k:'shop',ic:'🛍️',on:CFG.mechanics.shop},
+    {k:'growth',ic:'🌱',on:CFG.mechanics.growth},
+    {k:'hint',ic:'💡',on:CFG.mechanics.hint},
+    {k:'results',ic:'🏆',on:CFG.mechanics.results},
+  ];
+  pvMech.innerHTML = mechs.map(m =>
+    `<span style="background:${m.on?'rgba(22,163,74,.2)':'rgba(255,255,255,.04)'};border:1px solid ${m.on?'rgba(74,222,128,.4)':'var(--border)'};border-radius:8px;padding:4px 10px;font-size:11px;color:${m.on?'var(--pu2)':'var(--tx2)'};font-weight:700;">${m.ic} ${m.on?'✓':'✗'}</span>`
+  ).join('');
+}
+
+function openGamePreviewTab(){
+  collectConfig();
+  const gameUrl = document.getElementById('iframe-url')?.value || 'https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/';
+  window.open(gameUrl, '_blank');
 }
 
 // ════════════════════════════════════════════════════════
