@@ -3,276 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐾 Редактор Тамагочи · Ultra Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>🌿 Тамагочи · Редактор игр v2.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* =========================================
-   ГЛОБАЛЬНЫЕ СТИЛИ И КАСТОМНЫЙ СКРОЛЛ
-   ========================================= */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0a0a1a; --bg2: #0f0f2e; --bg3: #141440;
-  --pu: #7C3AED; --pu2: #A855F7; --pu3: #DDD6FE;
-  --cy: #06B6D4; --cy2: #A5F3FC;
-  --pk: #EC4899; --pk2: #F9A8D4;
-  --gr: #10B981; --re: #EF4444; --ye: #F59E0B;
-  --text: #F8FAFC; --text-dim: #94A3B8;
-  --card: rgba(255, 255, 255, 0.05);
-  --border: rgba(255, 255, 255, 0.1);
-  --font-h: 'Orbitron', sans-serif;
-  --font-t: 'Nunito', sans-serif;
+/* Сохраняю твой оригинальный стиль «Зачарованного леса» */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --space:#050e0a;--space2:#071410;--space3:#0d1f17;
+  --pu:#16a34a;--pu2:#4ade80;--pu3:#bbf7d0;
+  --pk:#f43f5e;--pk2:#fda4af;
+  --cy:#06b6d4;--cy2:#67e8f9;
+  --gr:#d97706;--gr2:#fcd34d;
+  --ye:#a3e635;--ye2:#d9f99d;
+  --re:#ef4444;
+  --card:rgba(74,222,128,.05);--card2:rgba(74,222,128,.09);
+  --border:rgba(74,222,128,.14);
+  --tx:#ecfdf5;--tx2:#6ee7b7;
+  --fp:'Outfit',sans-serif;--fn:'Space Grotesk',sans-serif;
+  --glow-pu:0 0 24px rgba(22,163,74,.5);
+}
+html,body{height:100%;font-family:var(--fn);background:var(--space);color:var(--tx);overflow:hidden;}
+#app{display:flex;height:100vh;}
+
+/* SideBar */
+#sidebar{width:220px;border-right:1px solid var(--border);background:rgba(5,14,10,0.9);padding:15px;display:flex;flex-direction:column;gap:5px;}
+.sb-btn{display:flex;align-items:center;gap:10px;border:none;border-radius:10px;background:transparent;color:var(--tx2);cursor:pointer;padding:10px;font-size:12px;font-weight:700;transition:0.2s;}
+.sb-btn:hover, .sb-btn.active{background:var(--card2);color:var(--pu2);}
+
+/* Main Content */
+#main{flex:1;overflow-y:auto;padding:25px;display:flex;flex-direction:column;gap:20px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:20px;}
+.panel-title{font-family:var(--fp);font-size:16px;font-weight:900;color:var(--pu2);margin-bottom:10px;letter-spacing:1px;}
+
+/* Inputs */
+input, select, textarea{
+  background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;
+  color:var(--tx);padding:10px;width:100%;outline:none;font-family:var(--fn);margin-top:5px;
 }
 
-html, body {
-  height: 100vh;
-  font-family: var(--font-t);
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden; /* Блокируем общий скролл, чтобы скроллились только панели */
-}
+/* Specific UI Elements */
+.mode-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:15px;}
+.mode-item{border:1px solid var(--border);border-radius:14px;padding:15px;background:rgba(255,255,255,0.02);}
+.mode-tag{font-size:9px;font-weight:900;text-transform:uppercase;color:var(--cy2);letter-spacing:1px;margin-bottom:10px;display:block;}
 
-/* Красивый скроллбар */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg2); border-radius: 4px; }
-::-webkit-scrollbar-thumb { background: var(--pu); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--pu2); }
+.topic-input-group{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;}
 
-/* =========================================
-   КАРКАС ПРИЛОЖЕНИЯ
-   ========================================= */
-#app { display: flex; height: 100vh; width: 100vw; }
-
-/* Боковое меню (Sidebar) */
-#sidebar {
-  width: 260px;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 15px;
-  gap: 10px;
-  flex-shrink: 0;
-  overflow-y: auto;
-}
-.brand {
-  font-family: var(--font-h);
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--cy);
-  text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-}
-.nav-btn {
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-dim);
-  padding: 15px;
-  border-radius: 12px;
-  font-family: var(--font-t);
-  font-size: 14px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.nav-btn:hover { background: var(--card); color: var(--text); }
-.nav-btn.active {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: var(--pu);
-  color: var(--pu2);
-  box-shadow: inset 4px 0 0 var(--pu);
-}
-
-/* Основной контент (Main) */
-#main {
-  flex: 1;
-  position: relative;
-  background: var(--bg);
-  overflow-y: auto; /* Включаем скролл внутри контента */
-  padding: 40px;
-  scroll-behavior: smooth;
-}
-
-/* =========================================
-   ВКЛАДКИ И КАРТОЧКИ
-   ========================================= */
-.tab-content { display: none; animation: fadeIn 0.4s ease forwards; }
-.tab-content.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.section-title {
-  font-family: var(--font-h);
-  font-size: 24px;
-  color: var(--text);
-  margin-bottom: 25px;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 15px;
-}
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 25px;
-  margin-bottom: 20px;
-}
-.card-header { font-weight: 800; color: var(--cy); margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
-
-/* Формы */
-.form-group { margin-bottom: 15px; }
-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; }
-input[type="text"], select, textarea {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 15px;
-  border-radius: 10px;
-  font-family: var(--font-t);
-  font-size: 14px;
-  outline: none;
-  transition: 0.3s;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--pu); box-shadow: 0 0 12px rgba(124, 58, 237, 0.3); }
-
-/* Сетки */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-
-/* Теги логики */
-.logic-box { border-left: 4px solid var(--pu); padding: 15px; background: rgba(0,0,0,0.2); border-radius: 0 12px 12px 0; margin-bottom: 15px; }
-.logic-box.study { border-color: var(--cy); }
-.logic-box.master { border-color: var(--pu); }
-.logic-box.test { border-color: var(--re); }
-
-/* Кнопки */
-.btn-primary {
-  background: linear-gradient(135deg, var(--pu), var(--pu2));
-  color: white; border: none; padding: 15px 30px; border-radius: 12px;
-  font-family: var(--font-h); font-weight: 700; font-size: 14px; cursor: pointer;
-  width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
-}
-.btn-primary:hover { box-shadow: 0 0 20px rgba(124, 58, 237, 0.6); transform: translateY(-2px); }
-
-#toast {
-  position: fixed; bottom: 30px; right: 30px; background: var(--gr); color: #fff;
-  padding: 15px 25px; border-radius: 12px; font-weight: 800;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-  opacity: 0; pointer-events: none; transition: 0.4s; z-index: 9999;
-}
-#toast.show { opacity: 1; transform: translateY(-10px); }
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--pu);padding:10px 20px;border-radius:10px;display:none;z-index:100;}
 </style>
 </head>
 <body>
 
-<div id="toast">✅ Данные успешно сохранены!</div>
+<div id="toast">✓ Изменения сохранены</div>
 
 <div id="app">
   <nav id="sidebar">
-    <div class="brand">🐾 TAMA STUDIO</div>
-    <button class="nav-btn active" onclick="openTab('tab-general')">⚙️ Основные настройки</button>
-    <button class="nav-btn" onclick="openTab('tab-topics')">📚 Темы и Словари</button>
-    <button class="nav-btn" onclick="openTab('tab-mechanics')">🕹️ Логика Режимов</button>
-    <button class="nav-btn" onclick="openTab('tab-export')" style="margin-top: auto;">📤 Экспорт проекта</button>
+    <div style="font-family:var(--fp);font-weight:900;color:var(--pu2);padding:10px;font-size:14px;letter-spacing:2px;margin-bottom:20px;">🌿 TAMA EDIT</div>
+    <button class="sb-btn active" onclick="openTab('tab-settings')">⚙️ Настройки</button>
+    <button class="sb-btn" onclick="openTab('tab-content')">📚 12 Тем обучения</button>
+    <button class="sb-btn" onclick="openTab('tab-logic')">🏆 Логика режимов</button>
+    <button class="sb-btn" onclick="openTab('tab-export')" style="margin-top:auto; background:var(--pu); color:white;">📤 Экспорт игры</button>
   </nav>
 
   <main id="main">
-
-    <div id="tab-general" class="tab-content active">
-      <h2 class="section-title">ОСНОВНЫЕ НАСТРОЙКИ</h2>
-      <div class="card grid-2">
-        <div class="form-group">
-          <label>Название игры</label>
-          <input type="text" id="g-name" value="Тамагочи · Уровень 1">
-        </div>
-        <div class="form-group">
-          <label>Язык обучения (Меняется в любой момент)</label>
-          <select id="g-lang">
-            <option value="ja">🇯🇵 Японский (日本語)</option>
-            <option value="zh">🇨🇳 Китайский (中文)</option>
-            <option value="fa">🇮🇷 Фарси (فارسی)</option>
-            <option value="hi">🇮🇳 Хинди (हिन्दी)</option>
-            <option value="dr">🇦🇫 Дари (دری)</option>
-            <option value="ar">🇸🇦 Арабский (العربية)</option>
-            <option value="pt">🇵🇹 Португальский</option>
-            <option value="it">🇮🇹 Итальянский</option>
-            <option value="fr">🇫🇷 Французский</option>
-            <option value="es">🇪🇸 Испанский</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="de">🇩🇪 Немецкий</option>
-            <option value="en">🇬🇧 Английский</option>
-          </select>
-        </div>
-      </div>
+    
+    <div id="tab-settings" class="panel active">
+      <div class="panel-title">ОСНОВНЫЕ НАСТРОЙКИ</div>
       <div class="card">
-        <div class="card-header">Описание или Инструкция для ученика</div>
-        <textarea id="g-desc" rows="3" placeholder="Введите приветственный текст для стартового экрана..."></textarea>
+        <label class="card-title" style="font-size:10px; color:var(--tx2)">ЦЕЛЕВОЙ ЯЗЫК ОБУЧЕНИЯ</label>
+        <select id="game-lang">
+          <option value="ja">🇯🇵 Japanese (日本語)</option>
+          <option value="zh">🇨🇳 Chinese (中文)</option>
+          <option value="fa">🇮🇷 Farsi (فارسی)</option>
+          <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+          <option value="dr">🇦🇫 Dari (دری)</option>
+          <option value="ar">🇸🇦 Arabic (العربية)</option>
+          <option value="pt">🇵🇹 Portuguese</option>
+          <option value="it">🇮🇹 Italian</option>
+          <option value="fr">🇫🇷 French</option>
+          <option value="es">🇪🇸 Spanish</option>
+          <option value="de">🇩🇪 German</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
       </div>
     </div>
 
-    <div id="tab-topics" class="tab-content">
-      <h2 class="section-title">УПРАВЛЕНИЕ КОНТЕНТОМ (12 ТЕМ)</h2>
+    <div id="tab-content" class="panel">
+      <div class="panel-title">СТРУКТУРА КОНТЕНТА (12 ТЕМ)</div>
       <div class="card">
-        <div class="card-header">Словарь и Лексика</div>
-        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">
-          Заполняйте поля ниже. Вы можете уйти на другую вкладку, изменить язык, и вернуться — весь введенный контент останется на месте.
-        </p>
-        <div class="grid-3" id="topics-container">
+        <div class="topic-input-group">
+          <div><label style="font-size:9px">ТЕМА 1</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 2</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 3</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 4</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 5</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 6</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 7</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 8</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 9</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 10</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 11</label><input type="text" class="topic-val"></div>
+          <div><label style="font-size:9px">ТЕМА 12</label><input type="text" class="topic-val"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-logic" class="panel">
+      <div class="panel-title">МЕХАНИКИ ВЗАИМОДЕЙСТВИЯ</div>
+      <div class="mode-grid">
+        <div class="mode-item">
+          <span class="mode-tag">Study Mode</span>
+          <div style="font-size:11px; color:var(--tx2); margin-top:10px;">
+            • Повтор аудио: <b>макс. 2 раза</b><br>
+            • Перемотка: блок на <b>3-й попытке</b><br>
+            • <b>Slow Motion:</b> 0.8x активна<br>
+            • Экран: не блокируется
           </div>
+        </div>
+        <div class="mode-item">
+          <span class="mode-tag" style="color:var(--pu2)">Master Mode</span>
+          <div style="font-size:11px; color:var(--tx2); margin-top:10px;">
+            • Функция <b>Loop</b>: Доступна<br>
+            • Перемотка: Свободно<br>
+            • Без ограничений таймера
+          </div>
+        </div>
+        <div class="mode-item" style="border-color:var(--re)">
+          <span class="mode-tag" style="color:var(--re)">Test Mode</span>
+          <div style="font-size:11px; color:var(--tx2); margin-top:10px;">
+            • Таймер: <b>2 минуты</b><br>
+            • Перемотка: <b>Заблокирована</b><br>
+            • Финал: Блок экрана + "Time is up"<br>
+            • Авто-пауза при окончании
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="tab-mechanics" class="tab-content">
-      <h2 class="section-title">ВСТРОЕННАЯ ЛОГИКА РЕЖИМОВ</h2>
+    <div id="tab-export" class="panel">
+      <div class="panel-title">ГОТОВЫЙ КОД ИГРЫ</div>
       <div class="card">
-        
-        <div class="logic-box study">
-          <div class="card-header" style="color: var(--cy);">📘 STUDY MODE (Режим Обучения)</div>
-          <ul style="color: var(--text-dim); font-size: 14px; line-height: 1.8; margin-left: 20px;">
-            <li>Аудио проигрывается <b>2 раза</b> свободно.</li>
-            <li>Блокировка перемотки срабатывает <b>только на 3-й попытке</b>.</li>
-            <li>Доступна кнопка <b>Slow Motion (0.8x)</b> без искажения высоты голоса (pitch-preserving).</li>
-            <li>Таймер: Без ограничений.</li>
-            <li>Экран: Не блокируется по времени.</li>
-          </ul>
-        </div>
-
-        <div class="logic-box master">
-          <div class="card-header" style="color: var(--pu2);">🎓 MASTER MODE (Режим Мастера)</div>
-          <ul style="color: var(--text-dim); font-size: 14px; line-height: 1.8; margin-left: 20px;">
-            <li>Включена функция <b>Loop</b> (цикличное воспроизведение аудио).</li>
-            <li>Полный контроль над прогресс-баром и перемоткой.</li>
-          </ul>
-        </div>
-
-        <div class="logic-box test">
-          <div class="card-header" style="color: var(--re);">⏱️ TEST MODE (Режим Экзамена)</div>
-          <ul style="color: var(--text-dim); font-size: 14px; line-height: 1.8; margin-left: 20px;">
-            <li>Перемотка аудио <b>полностью заблокирована</b>.</li>
-            <li>Жесткий таймер: <b>2 минуты (120 сек)</b>.</li>
-            <li>По истечении времени: Аудио ставится на паузу.</li>
-            <li>Экран блокируется сообщением: <b style="color: var(--re);">"Time is up"</b>.</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-
-    <div id="tab-export" class="tab-content">
-      <h2 class="section-title">ЭКСПОРТ ПРОЕКТА</h2>
-      <div class="card">
-        <div class="card-header">Финальный пакет данных (JSON String)</div>
-        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 15px;">Этот код содержит все ваши настройки языка, словарей и жестко зашитую логику режимов. Скопируйте его для вставки в движок Тамагочи.</p>
-        <textarea id="final-code" rows="10" readonly style="font-family: monospace; color: var(--cy2); font-size: 12px; background: rgba(6, 182, 212, 0.05);"></textarea>
-        <button class="btn-primary" style="margin-top: 20px;" onclick="generateAndCopy()">СГЕНЕРИРОВАТЬ И СКОПИРОВАТЬ</button>
+        <textarea id="final-code" style="height:200px; font-family:monospace; font-size:11px; color:var(--cy2);"></textarea>
+        <button class="sb-btn" style="width:100%; justify-content:center; background:var(--cy); color:white; margin-top:15px;" onclick="copyCode()">КОПИРОВАТЬ ДАННЫЕ</button>
       </div>
     </div>
 
@@ -280,6 +154,38 @@ input:focus, select:focus, textarea:focus { border-color: var(--pu); box-shadow:
 </div>
 
 <script>
-// Генерация 12 тем для сетки
-const topicsContainer = document.getElementById('topics-container');
-for (let i = 1; i <= 12; i++) {
+function openTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  
+  if(id === 'tab-export') buildExport();
+}
+
+function buildExport() {
+  const data = {
+    config: {
+      lang: document.getElementById('game-lang').value,
+      topics: Array.from(document.querySelectorAll('.topic-val')).map(i => i.value)
+    },
+    mechanics: {
+      study: { listenLimit: 2, fwBlockAttempt: 3, speed: 0.8, pitchFixed: true },
+      master: { loop: true },
+      test: { duration: 120, blockFW: true, lockMsg: "Time is up" }
+    }
+  };
+  document.getElementById('final-code').value = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+
+function copyCode() {
+  const area = document.getElementById('final-code');
+  area.select();
+  document.execCommand('copy');
+  const t = document.getElementById('toast');
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
+}
+</script>
+</body>
+</html>
