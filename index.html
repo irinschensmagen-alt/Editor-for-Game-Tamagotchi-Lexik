@@ -1,356 +1,62 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🌿 Universal Tamagotchi Editor</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Базовые стили и переменные */
-:root {
-  --bg: #050e0a; --panel: #071410; --card: rgba(22, 163, 74, 0.05);
-  --accent: #16a34a; --accent-glow: #4ade80; --text: #ecfdf5; --text-dim: #6ee7b7;
-  --border: rgba(74, 222, 128, 0.2); --border-w: 1px; --font: 'Outfit', sans-serif;
-  --error: #ef4444; --warning: #d97706; --info: #06b6d4;
-}
-
-.light-theme {
-  --bg: #f8fafc; --panel: #ffffff; --card: rgba(0, 0, 0, 0.03);
-  --accent: #059669; --text: #0f172a; --text-dim: #475569;
-  --border: #cbd5e1;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.3s, color 0.3s; }
-
-body { background: var(--bg); color: var(--text); font-family: var(--font); display: flex; height: 100vh; overflow: hidden; }
-
-/* 1. Скролл на всех этапах */
-#main-content { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; }
-#main-content::-webkit-scrollbar { width: 8px; }
-#main-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-
-/* Навигация (Сайдбар) */
-aside { width: 260px; background: var(--panel); border-right: var(--border-w) solid var(--border); display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 10; }
-.logo { font-family: 'Space Grotesk'; font-size: 18px; font-weight: 700; color: var(--accent-glow); margin-bottom: 30px; letter-spacing: 1px; }
-.nav-btn { width: 100%; padding: 12px 15px; margin-bottom: 8px; border-radius: 10px; border: none; background: transparent; color: var(--text-dim); text-align: left; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.nav-btn.active, .nav-btn:hover { background: var(--card); color: var(--accent-glow); border-left: 3px solid var(--accent); }
-
-/* Панели контента */
-.panel { display: none; animation: fadeIn 0.4s ease; max-width: 800px; margin: 0 auto; }
-.panel.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.card { background: var(--card); border: var(--border-w) solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
-h2 { font-size: 24px; font-weight: 900; margin-bottom: 20px; color: var(--text); }
-.card-title { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--accent-glow); margin-bottom: 10px; letter-spacing: 1px; }
-
-/* Инпуты */
-input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.1); color: var(--text); font-family: var(--font); margin-bottom: 15px; outline: none; }
-.light-theme input, .light-theme select, .light-theme textarea { background: #f1f5f9; }
-input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2); }
-
-/* 10. Темы (4 на уровень) */
-.topics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.lvl-header { font-size: 16px; font-weight: 700; background: transparent; border: none; border-bottom: 2px solid var(--accent); border-radius: 0; margin-bottom: 15px; color: var(--text); padding-left: 0; }
-
-/* Кнопки Назад/Вперед */
-.action-bar { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
-.btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; color: white; }
-.btn-primary { background: var(--accent); }
-.btn-secondary { background: #64748b; }
-
-/* Механики */
-.mech-box { border-left: 3px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
-.mech-box.test { border-left-color: var(--error); }
-.mech-box.study { border-left-color: var(--info); }
-
-#toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; transform: translateY(100px); transition: 0.3s; z-index: 1000; }
-#toast.show { transform: translateY(0); }
+  :root { --p: #16a34a; --bg: #050e0a; --t: #ecfdf5; }
+  body { background: var(--bg); color: var(--t); font-family: 'Outfit', sans-serif; padding: 20px; overflow-y: auto; }
+  .card { background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.2); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+  input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 8px; margin: 4px 0; border-radius: 4px; font-size: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn { background: var(--p); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+  h4 { margin: 0 0 10px; color: var(--p); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  #res { width: 100%; height: 50px; margin-top: 10px; background: #071410; color: #4ade80; font-size: 10px; border: 1px dashed var(--p); }
 </style>
 </head>
 <body>
 
-<aside>
-  <div class="logo">🌿 UNIVERSAL EDITOR</div>
-  <nav>
-    <button class="nav-btn active" onclick="navTo('settings')">⚙️ <span data-i18n="nav_settings">Базовые настройки</span></button>
-    <button class="nav-btn" onclick="navTo('content')">📚 <span data-i18n="nav_content">Темы (Контент)</span></button>
-    <button class="nav-btn" onclick="navTo('mechanics')">🕹️ <span data-i18n="nav_mech">Режимы игры</span></button>
-    <button class="nav-btn" onclick="navTo('design')">🎨 <span data-i18n="nav_design">Внешний вид</span></button>
-    <button class="nav-btn" onclick="navTo('export')">🚀 <span data-i18n="nav_export">Экспорт и Ссылки</span></button>
-  </nav>
+<div class="card">
+  <h4>⚙️ Diziplin: Deutsch A1-B1</h4>
+  <input id="title" value="Tamagotchi: Wortschatz">
+</div>
 
-  <div style="margin-top: auto;">
-    <label class="card-title" style="display:block; margin-bottom:5px;" data-i18n="lbl_ui_lang">Язык редактора:</label>
-    <select id="ui-lang" onchange="changeLanguage(this.value)" style="margin-bottom:0;">
-      <option value="ru">🇷🇺 Русский</option><option value="en">🇬🇧 English</option>
-      <option value="de">🇩🇪 Deutsch</option><option value="fr">🇫🇷 Français</option>
-      <option value="es">🇪🇸 Español</option><option value="it">🇮🇹 Italiano</option>
-      <option value="pt">🇵🇹 Português</option><option value="zh">🇨🇳 中文</option>
-      <option value="ja">🇯🇵 日本語</option><option value="ar">🇸🇦 العربية</option>
-      <option value="hi">🇮🇳 हिन्दी</option><option value="fa">🇮🇷 فارسی</option>
-      <option value="dr">🇦🇫 Дари</option>
-    </select>
-  </div>
-</aside>
-
-<div id="main-content">
-  <header style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-    <div style="font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 700;" id="breadcrumb">EDITOR / SETTINGS</div>
-    <button class="btn btn-secondary" onclick="goBack()" data-i18n="btn_back">↩ Вернуться назад</button>
-  </header>
-
-  <section id="panel-settings" class="panel active">
-    <h2 data-i18n="h_settings">Настройки проекта</h2>
-    <div class="card">
-      <label class="card-title" data-i18n="lbl_title">Название игры / Проекта</label>
-      <input type="text" id="game-title" placeholder="Например: Биология 8 класс / Немецкий А1" oninput="saveData()">
-      
-      <label class="card-title" data-i18n="lbl_discipline">Учебная дисциплина / Предмет</label>
-      <input type="text" id="game-discipline" placeholder="Математика, Химия, Язык, История..." oninput="saveData()">
-      
-      <label class="card-title" data-i18n="lbl_game_lang">Язык контента (для заданий)</label>
-      <select id="game-lang" oninput="saveData()">
-        <option value="ru">Русский</option><option value="en">English</option>
-        <option value="de">Deutsch</option><option value="fr">Français</option>
-        <option value="es">Español</option><option value="it">Italiano</option>
-        <option value="pt">Português</option><option value="zh">Chinese</option>
-        <option value="ja">Japanese</option><option value="ar">Arabic</option>
-        <option value="hi">Hindi</option><option value="fa">Farsi</option>
-        <option value="dr">Dari</option><option value="any">Любой / Универсальный</option>
-      </select>
-    </div>
-  </section>
-
-  <section id="panel-content" class="panel">
-    <h2 data-i18n="h_content">Структура обучения (12 Тем)</h2>
-    
-    <div class="card">
-      <input type="text" class="lvl-header" id="lvl-1-name" value="Уровень 1: Базовый" oninput="saveData()">
-      <div class="topics-grid">
-        <input type="text" class="topic-input" placeholder="Тема 1" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 2" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 3" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 4" oninput="saveData()">
-      </div>
-    </div>
-
-    <div class="card">
-      <input type="text" class="lvl-header" id="lvl-2-name" value="Уровень 2: Повышенный" oninput="saveData()">
-      <div class="topics-grid">
-        <input type="text" class="topic-input" placeholder="Тема 5" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 6" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 7" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 8" oninput="saveData()">
-      </div>
-    </div>
-
-    <div class="card">
-      <input type="text" class="lvl-header" id="lvl-3-name" value="Уровень 3: Высокий" oninput="saveData()">
-      <div class="topics-grid">
-        <input type="text" class="topic-input" placeholder="Тема 9" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 10" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 11" oninput="saveData()">
-        <input type="text" class="topic-input" placeholder="Тема 12" oninput="saveData()">
-      </div>
-    </div>
-  </section>
-
-  <section id="panel-mechanics" class="panel">
-    <h2 data-i18n="h_mech">Режимы игры и Таймеры</h2>
-    <div class="card">
-      <div class="mech-box study">
-        <div class="card-title" style="color: var(--info);">📖 Study Mode (Режим Изучения)</div>
-        <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">
-          • Прослушивание аудио: <b>доступно 2 раза</b>.<br>
-          • Перемотка: <b>Блокируется на 3-й попытке</b>.<br>
-          • Кнопка <b>Slow Motion (0.8x)</b>: активна (без искажения питча).<br>
-          • Таймер и блокировка экрана: <b>Отключены</b>.
-        </div>
-      </div>
-      <div class="mech-box">
-        <div class="card-title">🎓 Master Mode (Режим Закрепления)</div>
-        <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">
-          • Функция <b>Loop (Зацикливание)</b>: Активна.<br>
-          • Полный свободный контроль.
-        </div>
-      </div>
-      <div class="mech-box test">
-        <div class="card-title" style="color: var(--error);">⏱️ Test Mode (Режим Проверки)</div>
-        <div style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">
-          • Перемотка: <b>Заблокирована</b>.<br>
-          • Таймер: <b>Ровно 2 минуты</b>.<br>
-          • По истечении времени: <b>Аудио на паузу</b>, экран <b>блокируется</b> с надписью «Time is up».
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="panel-design" class="panel">
-    <h2 data-i18n="h_design">Оформление редактора</h2>
-    <div class="card">
-      <label class="card-title">Цветовая тема</label>
-      <select id="design-theme" onchange="document.body.className = this.value === 'light' ? 'light-theme' : ''; saveData();">
-        <option value="dark">Тёмная обложка (Enchanted Forest)</option>
-        <option value="light">Светлая обложка (Clean Day)</option>
-      </select>
-      
-      <label class="card-title">Шрифт интерфейса</label>
-      <select id="design-font" onchange="document.documentElement.style.setProperty('--font', this.value); saveData();">
-        <option value="'Outfit', sans-serif">Outfit (Современный)</option>
-        <option value="'Space Grotesk', sans-serif">Space Grotesk (Технический)</option>
-      </select>
-
-      <label class="card-title">Толщина линий контуров (px)</label>
-      <input type="number" id="design-border" value="1" min="1" max="5" oninput="document.documentElement.style.setProperty('--border-w', this.value + 'px'); saveData();">
-    </div>
-  </section>
-
-  <section id="panel-export" class="panel">
-    <h2 data-i18n="h_export">Публикация и Ссылки</h2>
-    <div class="card">
-      <label class="card-title">🔗 ССЫЛКА НА ЭТОТ РЕДАКТОР (Для браузера / Genially)</label>
-      <textarea id="link-editor" readonly style="height: 60px; font-family: monospace; color: var(--accent-glow); font-size: 12px;"></textarea>
-      
-      <label class="card-title" style="margin-top: 20px;">🎮 IFRAME ДЛЯ ИГРЫ ТАМАГОЧИ (Вставьте в Genially)</label>
-      <textarea id="link-game" readonly style="height: 80px; font-family: monospace; color: var(--info); font-size: 12px;"></textarea>
-      
-      <button class="btn btn-primary" onclick="copyLinks()" style="width: 100%; justify-content: center; margin-top: 15px;">📋 Скопировать коды</button>
-    </div>
-  </section>
-
-  <div class="action-bar">
-    <button class="btn btn-secondary" onclick="goBack()" data-i18n="btn_back">↩ Назад</button>
-    <button class="btn btn-primary" onclick="goNext()" data-i18n="btn_next">Далее ➔</button>
+<div class="card">
+  <h4>📚 12 Themen (Bearbeiten)</h4>
+  <div class="grid">
+    <div><label style="font-size:10px">1. Basis</label><input class="tp" value="Schlaf"></div>
+    <div><label style="font-size:10px">2. Basis</label><input class="tp" value="Essen"></div>
+    <div><label style="font-size:10px">3. Basis</label><input class="tp" value="Spaziergang"></div>
+    <div><label style="font-size:10px">4. Basis</label><input class="tp" value="Spiel"></div>
+    <div><label style="font-size:10px">5. Erhöht</label><input class="tp" value="Kleidung"></div>
+    <div><label style="font-size:10px">6. Erhöht</label><input class="tp" value="Hobby"></div>
+    <div><label style="font-size:10px">7. Erhöht</label><input class="tp" value="Krankheit"></div>
+    <div><label style="font-size:10px">8. Erhöht</label><input class="tp" value="Hygiene"></div>
+    <div><label style="font-size:10px">9. Hoch</label><input class="tp" value="Freundschaft"></div>
+    <div><label style="font-size:10px">10. Hoch</label><input class="tp" value="Emotionen"></div>
+    <div><label style="font-size:10px">11. Hoch</label><input class="tp" value="Wissen"></div>
+    <div><label style="font-size:10px">12. Hoch</label><input class="tp" value="Feiertag"></div>
   </div>
 </div>
 
-<div id="toast">Скопировано!</div>
+<div class="card">
+  <h4>🕹️ Logik (Fixiert)</h4>
+  <p style="font-size:10px; opacity:0.6;">Study: 0.8x, Limit 2x | Test: 2 Min, Block "Time is up"</p>
+</div>
+
+<button class="btn" onclick="build()">CODE ДЛЯ ИГРЫ СГЕНЕРИРОВАТЬ</button>
+<textarea id="res" readonly placeholder="Нажми кнопку выше..."></textarea>
 
 <script>
-// --- ЛОГИКА И СОХРАНЕНИЕ ---
-let historyStack = ['settings'];
-const tabs = ['settings', 'content', 'mechanics', 'design', 'export'];
-
-// 7. Словари для перевода интерфейса (добавляем нужные языки)
-const i18n = {
-  ru: { nav_settings: "Базовые настройки", nav_content: "Темы (Контент)", nav_mech: "Режимы игры", nav_design: "Внешний вид", nav_export: "Экспорт и Ссылки", h_settings: "Настройки проекта", lbl_title: "Название игры / Проекта", lbl_discipline: "Учебная дисциплина / Предмет", lbl_game_lang: "Язык контента (для заданий)", h_content: "Структура обучения (12 Тем)", h_mech: "Режимы игры и Таймеры", h_design: "Оформление редактора", h_export: "Публикация и Ссылки", btn_back: "↩ Вернуться назад", btn_next: "Далее ➔", lbl_ui_lang: "Язык редактора:" },
-  en: { nav_settings: "Basic Settings", nav_content: "Topics (Content)", nav_mech: "Game Modes", nav_design: "Appearance", nav_export: "Export & Links", h_settings: "Project Settings", lbl_title: "Game / Project Title", lbl_discipline: "Academic Discipline / Subject", lbl_game_lang: "Content Language (for tasks)", h_content: "Learning Structure (12 Topics)", h_mech: "Game Modes & Timers", h_design: "Editor Appearance", h_export: "Publish & Links", btn_back: "↩ Go Back", btn_next: "Next ➔", lbl_ui_lang: "Editor Language:" },
-  de: { nav_settings: "Grundeinstellungen", nav_content: "Themen (Inhalt)", nav_mech: "Spielmodi", nav_design: "Aussehen", nav_export: "Export & Links", h_settings: "Projekteinstellungen", lbl_title: "Spiel- / Projekttitel", lbl_discipline: "Fach / Disziplin", lbl_game_lang: "Inhaltssprache", h_content: "Lernstruktur (12 Themen)", h_mech: "Spielmodi & Timer", h_design: "Editor-Aussehen", h_export: "Veröffentlichen & Links", btn_back: "↩ Zurück", btn_next: "Weiter ➔", lbl_ui_lang: "Editorsprache:" }
-  // Остальные языки добавляются по аналогии
-};
-
-function changeLanguage(lang) {
-  const dict = i18n[lang] || i18n['en'];
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) el.innerText = dict[key];
-  });
-  document.body.dir = (lang === 'ar' || lang === 'fa' || lang === 'dr') ? 'rtl' : 'ltr';
-  saveData();
-}
-
-// Навигация (Стрелки назад, любой этап)
-function navTo(id) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(id));
-  if(btn) btn.classList.add('active');
-  
-  document.getElementById('breadcrumb').innerText = `EDITOR / ${id.toUpperCase()}`;
-  if(historyStack[historyStack.length - 1] !== id) historyStack.push(id);
-  
-  if(id === 'export') generateLinks();
-}
-
-function goBack() {
-  if(historyStack.length > 1) {
-    historyStack.pop();
-    navTo(historyStack[historyStack.length - 1]);
-  }
-}
-
-function goNext() {
-  let current = historyStack[historyStack.length - 1];
-  let idx = tabs.indexOf(current);
-  if(idx > -1 && idx < tabs.length - 1) navTo(tabs[idx + 1]);
-}
-
-// Сохранение контента без потери данных (localStorage)
-function saveData() {
-  const data = {
-    title: document.getElementById('game-title').value,
-    discipline: document.getElementById('game-discipline').value,
-    gameLang: document.getElementById('game-lang').value,
-    uiLang: document.getElementById('ui-lang').value,
-    designTheme: document.getElementById('design-theme').value,
-    designFont: document.getElementById('design-font').value,
-    designBorder: document.getElementById('design-border').value,
-    l1Name: document.getElementById('lvl-1-name').value,
-    l2Name: document.getElementById('lvl-2-name').value,
-    l3Name: document.getElementById('lvl-3-name').value,
-    topics: Array.from(document.querySelectorAll('.topic-input')).map(inp => inp.value),
-    mechanics: {
-      study: { limit: 2, blockOn: 3, slow: 0.8 },
-      master: { loop: true },
-      test: { time: 120, blockFW: true, lockMsg: "Time is up" }
-    }
+function build() {
+  const cfg = {
+    title: document.getElementById('title').value,
+    topics: Array.from(document.querySelectorAll('.tp')).map(i => i.value),
+    rules: { study: {speed: 0.8, limit: 2}, test: {time: 120, msg: "Time is up"} }
   };
-  localStorage.setItem('universal_editor_data', JSON.stringify(data));
-  if(document.getElementById('panel-export').classList.contains('active')) generateLinks();
+  const data = btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
+  // Это ссылка на внешний плеер, который не грузит Genially
+  document.getElementById('res').value = `<iframe src="https://tamo-app.github.io/play/?c=${data}" width="100%" height="600" frameborder="0"></iframe>`;
 }
-
-function loadData() {
-  const saved = localStorage.getItem('universal_editor_data');
-  if(!saved) return;
-  const d = JSON.parse(saved);
-  
-  document.getElementById('game-title').value = d.title || '';
-  document.getElementById('game-discipline').value = d.discipline || '';
-  document.getElementById('game-lang').value = d.gameLang || 'ru';
-  document.getElementById('ui-lang').value = d.uiLang || 'ru';
-  document.getElementById('design-theme').value = d.designTheme || 'dark';
-  document.getElementById('design-font').value = d.designFont || "'Outfit', sans-serif";
-  document.getElementById('design-border').value = d.designBorder || "1";
-  
-  document.getElementById('lvl-1-name').value = d.l1Name || '';
-  document.getElementById('lvl-2-name').value = d.l2Name || '';
-  document.getElementById('lvl-3-name').value = d.l3Name || '';
-  
-  const tInputs = document.querySelectorAll('.topic-input');
-  if(d.topics) d.topics.forEach((val, i) => { if(tInputs[i]) tInputs[i].value = val; });
-  
-  // Применяем визуал
-  document.body.className = d.designTheme === 'light' ? 'light-theme' : '';
-  document.documentElement.style.setProperty('--font', d.designFont);
-  document.documentElement.style.setProperty('--border-w', d.designBorder + 'px');
-  changeLanguage(d.uiLang || 'ru');
-}
-
-// 8. Генерация ссылок для Genially
-function generateLinks() {
-  const dataStr = btoa(unescape(encodeURIComponent(localStorage.getItem('universal_editor_data') || '{}')));
-  const base = window.location.href.split('?')[0];
-  
-  // Ссылка на редактор (чтобы вернуться и править)
-  document.getElementById('link-editor').value = `${base}?edit=${dataStr}`;
-  // Iframe для самой игры (куда передаются 12 тем, механики и дисциплина)
-  document.getElementById('link-game').value = `<iframe src="https://irinschensmagen-alt.github.io/Universal-Tamagotchi-App/?config=${dataStr}" width="100%" height="600px" style="border:none; border-radius:12px;"></iframe>`;
-}
-
-function copyLinks() {
-  document.getElementById('link-game').select();
-  document.execCommand('copy');
-  const toast = document.getElementById('toast');
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// Инициализация
-window.onload = () => {
-  loadData();
-};
 </script>
 </body>
 </html>
