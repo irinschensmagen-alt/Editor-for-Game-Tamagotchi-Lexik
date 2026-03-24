@@ -3,60 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐾 Тамагочи · Редактор игр</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>🌿 Тамагочи · Редактор игр v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --space:#0a0a1a;--space2:#0f0f2e;--space3:#141440;
-  --pu:#7C3AED;--pu2:#A855F7;--pu3:#DDD6FE;
-  --pk:#EC4899;--pk2:#F9A8D4;
-  --cy:#06B6D4;--cy2:#A5F3FC;
-  --gr:#10B981;--gr2:#A7F3D0;
-  --ye:#F59E0B;--ye2:#FDE68A;
-  --re:#EF4444;
-  --card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);
-  --border:rgba(255,255,255,.12);
-  --tx:#F1F5F9;--tx2:#94A3B8;
-  --fp:'Orbitron',monospace;--fn:'Nunito',sans-serif;
-  --glow-pu:0 0 20px rgba(124,58,237,.5);
-  --glow-pk:0 0 20px rgba(236,72,153,.5);
-  --glow-cy:0 0 20px rgba(6,182,212,.5);
+  /* === Enchanted Forest Palette === */
+  --space:#050e0a;--space2:#071410;--space3:#0d1f17;
+  --pu:#16a34a;--pu2:#4ade80;--pu3:#bbf7d0;
+  --pk:#f43f5e;--pk2:#fda4af;
+  --cy:#06b6d4;--cy2:#67e8f9;
+  --gr:#d97706;--gr2:#fcd34d;
+  --ye:#a3e635;--ye2:#d9f99d;
+  --re:#ef4444;
+  --card:rgba(74,222,128,.05);--card2:rgba(74,222,128,.09);
+  --border:rgba(74,222,128,.14);
+  --tx:#ecfdf5;--tx2:#6ee7b7;
+  --fp:'Outfit',sans-serif;--fn:'Space Grotesk',sans-serif;
+  --glow-pu:0 0 24px rgba(22,163,74,.5);
+  --glow-pk:0 0 24px rgba(244,63,94,.5);
+  --glow-cy:0 0 24px rgba(6,182,212,.5);
 }
 html,body{height:100%;font-family:var(--fn);background:var(--space);color:var(--tx);}
 body{display:flex;flex-direction:column;overflow:hidden;}
 #stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-#topbar{position:relative;z-index:10;background:rgba(10,10,26,.9);backdrop-filter:blur(12px);
+#topbar{position:relative;z-index:10;background:rgba(5,14,10,.9);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;}
-.topbar-logo{font-family:var(--fp);font-size:13px;color:var(--pu2);text-shadow:0 0 14px var(--pu);letter-spacing:2px;white-space:nowrap;}
-.topbar-logo span{color:var(--pk);text-shadow:0 0 14px var(--pk);}
+.topbar-logo{font-family:var(--fp);font-size:14px;font-weight:900;color:var(--pu2);text-shadow:0 0 16px var(--pu);letter-spacing:3px;white-space:nowrap;}
+.topbar-logo span{color:var(--pk);text-shadow:0 0 16px var(--pk);}
 .topbar-sep{flex:1;}
 .tbbtn{background:var(--card);border:1px solid var(--border);border-radius:9px;color:var(--tx2);
   cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:700;padding:7px 14px;transition:all .2s;white-space:nowrap;}
 .tbbtn:hover{background:var(--card2);color:var(--tx);}
-.tbbtn.pri{background:linear-gradient(135deg,var(--pu),var(--pk));border-color:transparent;color:#fff;box-shadow:var(--glow-pu);}
-.tbbtn.pri:hover{filter:brightness(1.1);}
-.tbbtn.sav{background:linear-gradient(135deg,var(--cy),var(--gr));border-color:transparent;color:#fff;}
+.tbbtn.pri{background:linear-gradient(135deg,var(--pu),#059669);border-color:transparent;color:#fff;box-shadow:var(--glow-pu);}
+.tbbtn.pri:hover{filter:brightness(1.12);}
+.tbbtn.sav{background:linear-gradient(135deg,var(--cy),var(--pu));border-color:transparent;color:#fff;}
 #save-status{font-size:11px;color:var(--gr2);min-width:80px;}
 #app{display:flex;flex:1;overflow:hidden;position:relative;z-index:1;}
-#sidebar{width:210px;flex-shrink:0;background:rgba(10,10,26,.8);backdrop-filter:blur(10px);
+#sidebar{width:220px;flex-shrink:0;background:rgba(5,14,10,.85);backdrop-filter:blur(12px);
   border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:4px;}
-.sb-section-lbl{font-family:var(--fp);font-size:8px;color:var(--tx2);letter-spacing:2px;padding:10px 8px 4px;text-transform:uppercase;}
+.sb-section-lbl{font-family:var(--fp);font-size:8px;color:var(--tx2);letter-spacing:2.5px;padding:10px 8px 4px;text-transform:uppercase;}
 .sb-btn{display:flex;align-items:center;gap:9px;border:none;border-radius:10px;background:transparent;
   color:var(--tx2);cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:700;padding:9px 10px;
   transition:all .2s;width:100%;text-align:left;}
 .sb-btn:hover{background:var(--card);color:var(--tx);}
-.sb-btn.active{background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(236,72,153,.2));
-  color:var(--tx);border:1px solid rgba(124,58,237,.4);}
+.sb-btn.active{background:linear-gradient(135deg,rgba(22,163,74,.3),rgba(6,182,212,.2));
+  color:var(--tx);border:1px solid rgba(74,222,128,.4);}
 .sb-btn .ic{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
-#main{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px;}
+#main{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth;}
 .panel{display:none;}
 .panel.active{display:flex;flex-direction:column;gap:18px;}
-.panel-title{font-family:var(--fp);font-size:14px;font-weight:700;
-  background:linear-gradient(90deg,var(--pu2),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.panel-title{font-family:var(--fp);font-size:15px;font-weight:900;
+  background:linear-gradient(90deg,var(--pu2),var(--cy2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
 .panel-sub{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:4px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
-.card-title{font-family:var(--fp);font-size:9px;letter-spacing:2px;color:var(--pu2);text-transform:uppercase;margin-bottom:12px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;}
+.card-title{font-family:var(--fp);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--pu2);text-transform:uppercase;margin-bottom:12px;}
 .card-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
 .card-col{display:flex;flex-direction:column;gap:8px;}
 label.lbl{font-size:11px;color:var(--tx2);font-weight:700;margin-bottom:3px;display:block;}
@@ -76,21 +77,21 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .chip{background:var(--card);border:1.5px solid var(--border);border-radius:20px;color:var(--tx2);
   cursor:pointer;font-size:11px;font-weight:700;padding:5px 13px;transition:all .2s;user-select:none;}
 .chip:hover{border-color:var(--pu2);color:var(--tx);}
-.chip.on{background:linear-gradient(135deg,rgba(124,58,237,.4),rgba(236,72,153,.3));
-  border-color:var(--pu2);color:var(--tx);box-shadow:0 0 10px rgba(124,58,237,.3);}
+.chip.on{background:linear-gradient(135deg,rgba(22,163,74,.4),rgba(6,182,212,.3));
+  border-color:var(--pu2);color:var(--tx);box-shadow:0 0 10px rgba(22,163,74,.3);}
 .topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
 .topic-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
 .topic-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .topic-num{font-family:var(--fp);font-size:8px;color:var(--cy2);letter-spacing:1px;}
 .t-icon{font-size:18px;}
-.audio-player{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.1));
-  border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:16px;}
+.audio-player{background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(6,182,212,.1));
+  border:1px solid rgba(74,222,128,.3);border-radius:16px;padding:16px;}
 .ap-title{font-family:var(--fp);font-size:9px;color:var(--cy2);letter-spacing:2px;margin-bottom:12px;}
 .ap-controls{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
 .ap-btn{background:var(--card2);border:1px solid var(--border);border-radius:50%;color:var(--tx);
   cursor:pointer;font-size:14px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
 .ap-btn:hover{background:var(--pu);border-color:var(--pu);}
-.ap-btn.play-btn{background:linear-gradient(135deg,var(--pu),var(--pk));border:none;width:44px;height:44px;font-size:16px;box-shadow:var(--glow-pu);}
+.ap-btn.play-btn{background:linear-gradient(135deg,var(--pu),#059669);border:none;width:44px;height:44px;font-size:16px;box-shadow:var(--glow-pu);}
 .ap-time{font-family:var(--fp);font-size:9px;color:var(--tx2);min-width:70px;}
 .ap-progress{flex:1;min-width:100px;}
 .ap-vol{display:flex;align-items:center;gap:6px;flex:0 0 120px;}
@@ -105,7 +106,7 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .tama-slot{background:var(--card);border:1.5px solid var(--border);border-radius:14px;
   padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
 .tama-slot:hover{border-color:var(--pu2);transform:translateY(-2px);}
-.tama-slot.sel{border-color:var(--pk);background:rgba(236,72,153,.15);box-shadow:0 0 14px rgba(236,72,153,.3);}
+.tama-slot.sel{border-color:var(--pu2);background:rgba(74,222,128,.15);box-shadow:0 0 14px rgba(74,222,128,.3);}
 .tama-emoji{font-size:32px;display:block;margin-bottom:5px;}
 .tama-name{font-size:10px;color:var(--tx2);font-weight:700;}
 .tama-slot .sel-badge{position:absolute;top:5px;right:7px;font-size:10px;color:var(--pk);display:none;}
@@ -127,9 +128,9 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .lvl-tab{background:var(--card);border:1.5px solid var(--border);border-radius:10px;
   color:var(--tx2);cursor:pointer;font-size:11px;font-weight:800;padding:7px 16px;transition:all .2s;}
 .lvl-tab.active{color:#fff;border-color:transparent;}
-.lvl-tab[data-lv="1"].active{background:linear-gradient(135deg,#3B82F6,#06B6D4);}
-.lvl-tab[data-lv="2"].active{background:linear-gradient(135deg,var(--pu),var(--pu2));}
-.lvl-tab[data-lv="3"].active{background:linear-gradient(135deg,var(--pk),#F97316);}
+.lvl-tab[data-lv="1"].active{background:linear-gradient(135deg,#0891b2,#06b6d4);}
+.lvl-tab[data-lv="2"].active{background:linear-gradient(135deg,var(--pu),#059669);}
+.lvl-tab[data-lv="3"].active{background:linear-gradient(135deg,var(--pk),#f97316);}
 .mech-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
 .mech-row:last-child{border-bottom:none;}
 .mech-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
@@ -143,7 +144,7 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .toggle input:checked+.toggle-slider{background:var(--pu);}
 .toggle input:checked+.toggle-slider:before{transform:translateX(20px);}
 /* ── IFRAME GENERATOR ── */
-.iframe-gen{background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(16,185,129,.08));
+.iframe-gen{background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(22,163,74,.08));
   border:1.5px solid rgba(6,182,212,.35);border-radius:18px;padding:20px;}
 .iframe-gen .ig-title{font-family:var(--fp);font-size:10px;letter-spacing:2px;color:var(--cy2);text-transform:uppercase;margin-bottom:14px;}
 .platform-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
@@ -171,38 +172,44 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .pb-green{background:rgba(16,185,129,.2);color:var(--gr2);}
 .pb-yellow{background:rgba(245,158,11,.2);color:#FDE68A;}
 .pb-red{background:rgba(239,68,68,.2);color:#FCA5A5;}
-.export-card{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(236,72,153,.15));
-  border:1px solid rgba(124,58,237,.4);border-radius:18px;padding:24px;text-align:center;}
+.export-card{background:linear-gradient(135deg,rgba(22,163,74,.2),rgba(6,182,212,.15));
+  border:1px solid rgba(74,222,128,.4);border-radius:18px;padding:24px;text-align:center;}
 .export-icon{font-size:56px;margin-bottom:14px;}
 .export-title{font-family:var(--fp);font-size:14px;color:var(--pu2);margin-bottom:8px;}
 .export-sub{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:18px;max-width:460px;margin-left:auto;margin-right:auto;}
 .export-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 .ebtn{border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:var(--fn);font-size:13px;font-weight:800;padding:12px 26px;transition:all .2s;}
-.ebtn.json{background:linear-gradient(135deg,var(--cy),var(--gr));}
-.ebtn.html{background:linear-gradient(135deg,var(--pu),var(--pk));}
-.ebtn.copy{background:linear-gradient(135deg,var(--ye),#F97316);}
+.ebtn.json{background:linear-gradient(135deg,var(--cy),#0891b2);}
+.ebtn.html{background:linear-gradient(135deg,var(--pu),#059669);}
+.ebtn.copy{background:linear-gradient(135deg,var(--gr),#d97706);}
 .ebtn:hover{filter:brightness(1.1);transform:translateY(-2px);}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(124,58,237,.4);border-radius:3px;}
+::-webkit-scrollbar-thumb{background:rgba(74,222,128,.35);border-radius:3px;}
+/* RTL support */
+[dir="rtl"] #sidebar{border-right:none;border-left:1px solid var(--border);}
+[dir="rtl"] .sb-btn{text-align:right;}
+[dir="rtl"] .card-row{flex-direction:row-reverse;}
+[dir="rtl"] .phrase-tag{margin-top:2px;margin-right:0;margin-left:8px;}
+[dir="rtl"] input,[dir="rtl"] textarea,[dir="rtl"] select{direction:rtl;text-align:right;}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);
-  background:linear-gradient(135deg,var(--pu),var(--pk));color:#fff;border-radius:12px;
+  background:linear-gradient(135deg,var(--pu),#059669);color:#fff;border-radius:14px;
   padding:11px 22px;font-weight:700;font-size:13px;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);}
 .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(6,182,212,.15);
   border:1px solid rgba(6,182,212,.3);border-radius:20px;padding:4px 11px;font-size:10px;color:var(--cy2);font-weight:700;}
 .preview-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;
   padding:6px 14px;font-size:11px;color:var(--tx2);font-weight:700;display:inline-flex;align-items:center;gap:6px;}
-.upload-zone{border:2px dashed rgba(124,58,237,.4);border-radius:12px;padding:18px;
-  text-align:center;cursor:pointer;transition:all .2s;background:rgba(124,58,237,.05);}
-.upload-zone:hover{border-color:var(--pu2);background:rgba(124,58,237,.1);}
+.upload-zone{border:2px dashed rgba(74,222,128,.4);border-radius:12px;padding:18px;
+  text-align:center;cursor:pointer;transition:all .2s;background:rgba(74,222,128,.05);}
+.upload-zone:hover{border-color:var(--pu2);background:rgba(74,222,128,.1);}
 .upload-zone input{display:none;}
 .upload-icon{font-size:28px;margin-bottom:6px;}
 .upload-text{font-size:11px;color:var(--tx2);}
-.preview-tama{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.1));
-  border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;}
-.pt-egg{font-size:48px;animation:cosmicBob 3s ease-in-out infinite;}
-@keyframes cosmicBob{0%,100%{transform:rotate(-6deg);}50%{transform:rotate(6deg) translateY(-4px);}}
+.preview-tama{background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(6,182,212,.1));
+  border:1px solid rgba(74,222,128,.3);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;}
+.pt-egg{font-size:48px;animation:forestBob 3s ease-in-out infinite;}
+@keyframes forestBob{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) translateY(-6px) scale(1.05);}}
 .pt-info{flex:1;}
 .pt-name{font-family:var(--fp);font-size:10px;color:var(--pk2);margin-bottom:4px;}
 .pt-stats{display:flex;gap:8px;flex-wrap:wrap;}
@@ -210,9 +217,11 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .anim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
 .anim-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;}
 .anim-card:hover{border-color:var(--ye2);transform:translateY(-2px);}
-.anim-card.on{border-color:var(--ye);background:rgba(245,158,11,.12);box-shadow:0 0 12px rgba(245,158,11,.2);}
+.anim-card.on{border-color:var(--ye);background:rgba(163,230,53,.12);box-shadow:0 0 12px rgba(163,230,53,.2);}
 .anim-demo{font-size:28px;display:block;margin-bottom:5px;}
 .anim-label{font-size:10px;color:var(--tx2);font-weight:700;}
+@keyframes cosmicBob{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) translateY(-6px) scale(1.05);}}
+@keyframes forestBob{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) translateY(-6px) scale(1.05);}}
 
 /* ── DICTIONARY ── */
 .dict-panel{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.08));
@@ -307,8 +316,8 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 
 <!-- TOP BAR -->
 <div id="topbar">
-  <div class="topbar-logo">🐾 ТАМАГОЧИ <span>EDITOR</span></div>
-  <div class="preview-pill" id="config-preview">🥚 Новая игра</div>
+  <div class="topbar-logo">🌿 ТАМАГОЧИ <span>EDITOR</span></div>
+  <div class="preview-pill" id="config-preview">🦊 Новая игра</div>
   <div class="topbar-sep"></div>
   <span id="save-status"></span>
   <button class="tbbtn sav" onclick="saveConfig()" id="btn-save">💾 Сохранить</button>
@@ -359,9 +368,9 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
   <div class="panel-sub" data-i18n="sub_settings">Выберите уровень, язык, формат заданий и параметры таймера.</div>
 
   <!-- PREVIEW CARD -->
-  <div class="card" style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.1));border-color:rgba(124,58,237,.4);">
+  <div class="card" style="background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(6,182,212,.1));border-color:rgba(74,222,128,.4);">
     <div style="display:flex;align-items:center;gap:16px;">
-      <div style="font-size:52px;animation:cosmicBob 3s ease-in-out infinite;" id="preview-tama-icon">🥚</div>
+      <div style="font-size:52px;animation:forestBob 3s ease-in-out infinite;" id="preview-tama-icon">🦊</div>
       <div style="flex:1;">
         <div style="font-family:var(--fp);font-size:11px;color:var(--pk2);margin-bottom:4px;" id="preview-title-big">Моя игра</div>
         <div style="font-size:11px;color:var(--tx2);" id="preview-meta-line">—</div>
@@ -404,6 +413,11 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
           <option value="en">🇬🇧 English</option>
           <option value="fr">🇫🇷 Français</option>
           <option value="es">🇪🇸 Español</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="hi">🇮🇳 हिन्दी</option>
+          <option value="fa">🇮🇷 فارسی</option>
         </select>
       </div>
     </div>
@@ -536,6 +550,19 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
           <option value="skip">⏭ Пропустить вопрос</option>
           <option value="none">✅ Нет штрафа</option>
         </select>
+      </div>
+    </div>
+    <!-- Custom timer presets -->
+    <div id="timer-presets-row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+      <label class="lbl" style="margin-bottom:8px;display:block;">⚡ Быстрые пресеты таймера (сек/вопрос)</label>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;">
+        <button class="tbbtn" onclick="applyTimerPreset(10)" style="background:rgba(239,68,68,.2);border-color:var(--re);color:#fca5a5;">10с 🔥</button>
+        <button class="tbbtn" onclick="applyTimerPreset(15)" style="background:rgba(245,158,11,.2);border-color:var(--gr);color:var(--gr2);">15с ⚡</button>
+        <button class="tbbtn" onclick="applyTimerPreset(20)" style="background:rgba(163,230,53,.2);border-color:var(--ye);color:var(--ye2);">20с 🕐</button>
+        <button class="tbbtn" onclick="applyTimerPreset(30)" style="background:rgba(74,222,128,.2);border-color:var(--pu2);color:var(--pu2);">30с 🏖</button>
+        <button class="tbbtn" onclick="applyTimerPreset(45)" style="background:rgba(6,182,212,.2);border-color:var(--cy);color:var(--cy2);">45с 💭</button>
+        <button class="tbbtn" onclick="applyTimerPreset(60)" style="background:rgba(255,255,255,.1);border-color:var(--border);color:var(--tx2);">60с 🧘</button>
+        <span style="font-size:11px;color:var(--tx2);">Применяется ко всем уровням</span>
       </div>
     </div>
   </div>
@@ -1366,6 +1393,219 @@ const UI_T = {
     m_timer:'Temporizador', m_coins:'Monedas', m_lives:'Vidas', m_progress:'Barra de progreso',
     m_shop:'Tienda', m_growth:'Crecimiento del Tamagotchi', m_hint:'Pista tras error',
     m_results:'Tabla de resultados', m_restart:'Botón Jugar de nuevo',
+  },
+  ja: {
+    nav_main:'メイン', nav_settings:'ゲーム設定', nav_content:'コンテンツ · 12テーマ',
+    nav_phrases:'たまごっちのセリフ', nav_dict:'辞書 · ことわざ', nav_media:'メディア',
+    nav_audio:'音楽 · オーディオ', nav_visuals:'ビジュアル · 背景', nav_tamas:'12たまごっち',
+    nav_media2:'スタンプ · GIF', nav_game:'ゲーム', nav_effects:'特殊効果',
+    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_export:'ゲームエクスポート',
+    h_settings:'⚙️ ゲーム設定', sub_settings:'レベル、言語、タスク形式、タイマーを選択してください。',
+    h_content:'📚 コンテンツ · 12テーマ', sub_content:'単語やフレーズをカンマ区切りで入力してください。',
+    h_phrases:'💬 たまごっちのセリフ', sub_phrases:'テーマとレベルに応じてペットのセリフを設定します。',
+    h_dict:'📖 二言語辞書 · ことわざ', sub_dict:'内蔵辞書。「＋テーマへ」をクリックして追加。',
+    h_audio:'🎵 音楽プレーヤー', sub_audio:'コンピューターまたはURLから音楽をアップロード。',
+    h_visuals:'🎨 ビジュアル · 背景', h_tamas:'🐱 12たまごっち', sub_tamas:'アクティブなペットを選択。',
+    h_media:'🖼️ スタンプ · GIF', h_effects:'✨ 特殊効果', h_anim:'🎭 アニメーション',
+    h_mech:'🏆 ゲームメカニクス', h_export:'📤 エクスポート · 埋め込み · iFrame',
+    ct_identity:'🏷️ タイトルと著者', ct_lang:'🌍 ゲーム言語', ct_levels:'📊 難易度',
+    ct_formats:'📝 タスク形式', ct_score:'🏆 採点システム',
+    ct_discipline:'🎓 科目', ct_ok_phrases:'✅ 正解時のセリフ',
+    ct_err_phrases:'❌ 不正解時のセリフ', ct_themed:'💬 テーマ別セリフ',
+    ct_playlist:'📋 プレイリスト', ct_theme:'🌌 カラースキーム',
+    ct_tamas_base:'🐾 ベースペット', ct_tamas_custom:'✨ カスタムペット',
+    ct_media:'📁 メディアギャラリー', ct_fx_correct:'🎊 正解時',
+    ct_fx_win:'🏆 勝利時', ct_fx_fail:'😢 敗北時',
+    ct_anim:'🎬 アニメーションを有効化', ct_mech:'⚙️ オン / オフ',
+    lbl_title:'ゲームタイトル', lbl_author:'著者 / 科目', lbl_audience:'クラス / 対象',
+    lbl_year:'学年 / 学期', lbl_uilang:'インターフェース言語',
+    lbl_targetlang:'学習言語', lbl_lvname:'名前', lbl_q:'問題数',
+    lbl_timer:'タイマー（秒）', lbl_lives:'ライフ', lbl_emoji:'レベル絵文字',
+    lbl_coins:'正解ごとのコイン', lbl_ctype:'コンテンツタイプ',
+    lbl_custom_type:'カスタムタイプ', lbl_ai_context:'テーマ / コンテキスト',
+    lbl_ai_count:'セリフ数', lbl_to_topic:'テーマ番号に追加',
+    lbl_game_url:'🌐 公開ゲームのURL',
+    lbl_iw:'幅', lbl_ih:'高さ', lbl_radius:'角の丸み',
+    lbl_shadow:'影 / ボーダー', lbl_scroll:'スクロール', lbl_allow:'権限',
+    ig_title:'🔲 iFrame ジェネレーター',
+    export_ready:'エクスポート準備完了！', export_sub:'HTMLをダウンロードするかiFrameコードを生成。',
+    btn_dl_game:'🎮 ゲームをダウンロード', btn_dl_cfg:'📋 設定 (JSON)',
+    btn_copy_link:'🔗 リンクをコピー', btn_save:'💾 保存', btn_export:'📤 エクスポート',
+    btn_add:'＋ 追加',
+    lv1_head:'レベル1 · 基礎', lv2_head:'レベル2 · 中級', lv3_head:'レベル3 · 上級',
+    m_timer:'タイマー', m_coins:'コイン', m_lives:'ライフ', m_progress:'プログレスバー',
+    m_shop:'ショップ', m_growth:'たまごっちの成長', m_hint:'エラー後のヒント',
+    m_results:'結果テーブル', m_restart:'もう一度プレイ',
+  },
+  zh: {
+    nav_main:'主要', nav_settings:'游戏设置', nav_content:'内容 · 12主题',
+    nav_phrases:'宠物台词', nav_dict:'词典 · 谚语', nav_media:'媒体',
+    nav_audio:'音乐 · 音频', nav_visuals:'视觉 · 背景', nav_tamas:'12宠物',
+    nav_media2:'贴纸 · GIF', nav_game:'游戏', nav_effects:'特效',
+    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_export:'导出游戏',
+    h_settings:'⚙️ 游戏设置', sub_settings:'选择级别、语言、任务格式和计时器。',
+    h_content:'📚 内容 · 12主题', sub_content:'用逗号分隔输入单词、短语或学习内容。',
+    h_phrases:'💬 宠物台词', sub_phrases:'为不同主题和级别配置宠物台词。',
+    h_dict:'📖 双语词典 · 谚语', sub_dict:'内置词典。点击「+到主题」插入单词。',
+    h_audio:'🎵 音乐播放器', sub_audio:'从电脑或URL上传音乐。',
+    h_visuals:'🎨 视觉 · 背景', h_tamas:'🐱 12宠物', sub_tamas:'选择活跃宠物。',
+    h_media:'🖼️ 贴纸 · GIF', h_effects:'✨ 特效', h_anim:'🎭 动画',
+    h_mech:'🏆 游戏机制', h_export:'📤 导出 · 嵌入 · iFrame',
+    ct_identity:'🏷️ 标题和作者', ct_lang:'🌍 游戏语言', ct_levels:'📊 难度等级',
+    ct_formats:'📝 任务格式', ct_score:'🏆 评分系统',
+    ct_discipline:'🎓 学科', ct_ok_phrases:'✅ 正确答案台词',
+    ct_err_phrases:'❌ 错误答案台词', ct_themed:'💬 主题台词',
+    ct_playlist:'📋 播放列表', ct_theme:'🌌 颜色主题',
+    ct_tamas_base:'🐾 基础宠物', ct_tamas_custom:'✨ 自定义宠物',
+    ct_media:'📁 媒体库', ct_fx_correct:'🎊 正确时', ct_fx_win:'🏆 胜利时', ct_fx_fail:'😢 失败时',
+    ct_anim:'🎬 启用动画', ct_mech:'⚙️ 开 / 关',
+    lbl_title:'游戏标题', lbl_author:'作者 / 科目', lbl_audience:'班级 / 受众',
+    lbl_year:'学年 / 学期', lbl_uilang:'界面语言',
+    lbl_targetlang:'目标语言', lbl_lvname:'名称', lbl_q:'题目数',
+    lbl_timer:'计时器（秒）', lbl_lives:'生命', lbl_emoji:'等级表情',
+    lbl_coins:'每题奖励金币', lbl_ctype:'内容类型',
+    lbl_custom_type:'自定义类型', lbl_ai_context:'主题 / 背景',
+    lbl_ai_count:'台词数量', lbl_to_topic:'添加到主题号',
+    lbl_game_url:'🌐 已发布游戏的URL',
+    lbl_iw:'宽度', lbl_ih:'高度', lbl_radius:'圆角',
+    lbl_shadow:'阴影 / 边框', lbl_scroll:'滚动', lbl_allow:'权限',
+    ig_title:'🔲 iFrame 生成器',
+    export_ready:'准备导出！', export_sub:'下载HTML文件或生成iFrame代码。',
+    btn_dl_game:'🎮 下载游戏 (HTML)', btn_dl_cfg:'📋 配置 (JSON)',
+    btn_copy_link:'🔗 复制链接', btn_save:'💾 保存', btn_export:'📤 导出',
+    btn_add:'＋ 添加',
+    lv1_head:'第1级 · 基础', lv2_head:'第2级 · 中级', lv3_head:'第3级 · 高级',
+    m_timer:'计时器', m_coins:'金币', m_lives:'生命', m_progress:'进度条',
+    m_shop:'商店', m_growth:'宠物成长', m_hint:'错误后提示',
+    m_results:'结果表', m_restart:'再玩一次',
+  },
+  ar: {
+    nav_main:'الرئيسية', nav_settings:'إعدادات اللعبة', nav_content:'المحتوى · 12 موضوع',
+    nav_phrases:'عبارات الحيوان', nav_dict:'قواميس · أمثال', nav_media:'وسائط',
+    nav_audio:'موسيقى · صوت', nav_visuals:'مرئيات · خلفية', nav_tamas:'12 حيوان',
+    nav_media2:'ملصقات · GIF', nav_game:'لعبة', nav_effects:'مؤثرات خاصة',
+    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_export:'تصدير اللعبة',
+    h_settings:'⚙️ إعدادات اللعبة', sub_settings:'اختر المستوى واللغة وتنسيق المهام والمؤقت.',
+    h_content:'📚 المحتوى · 12 موضوع', sub_content:'أدخل الكلمات أو العبارات مفصولة بفواصل.',
+    h_phrases:'💬 عبارات الحيوان', sub_phrases:'اضبط عبارات الحيوان لمواضيع ومستويات مختلفة.',
+    h_dict:'📖 قواميس ثنائية اللغة · أمثال', sub_dict:'قواميس مدمجة. انقر «+ إلى الموضوع».',
+    h_audio:'🎵 مشغل الموسيقى', sub_audio:'ارفع الموسيقى من جهازك أو عبر رابط.',
+    h_visuals:'🎨 مرئيات · خلفيات', h_tamas:'🐱 12 حيوان', sub_tamas:'اختر الحيوانات النشطة.',
+    h_media:'🖼️ ملصقات · GIF', h_effects:'✨ مؤثرات خاصة', h_anim:'🎭 رسوم متحركة',
+    h_mech:'🏆 آليات اللعبة', h_export:'📤 تصدير · تضمين · iFrame',
+    ct_identity:'🏷️ العنوان والمؤلف', ct_lang:'🌍 لغة اللعبة', ct_levels:'📊 مستويات الصعوبة',
+    ct_formats:'📝 تنسيقات المهام', ct_score:'🏆 نظام التقييم',
+    ct_discipline:'🎓 المادة', ct_ok_phrases:'✅ عبارات الإجابة الصحيحة',
+    ct_err_phrases:'❌ عبارات الإجابة الخاطئة', ct_themed:'💬 عبارات موضوعية',
+    ct_playlist:'📋 قائمة التشغيل', ct_theme:'🌌 نظام الألوان',
+    ct_tamas_base:'🐾 الحيوانات الأساسية', ct_tamas_custom:'✨ حيوانات مخصصة',
+    ct_media:'📁 معرض الوسائط', ct_fx_correct:'🎊 عند الإجابة الصحيحة',
+    ct_fx_win:'🏆 عند الفوز', ct_fx_fail:'😢 عند الخسارة',
+    ct_anim:'🎬 تفعيل الرسوم', ct_mech:'⚙️ تشغيل / إيقاف',
+    lbl_title:'عنوان اللعبة', lbl_author:'المؤلف / المادة', lbl_audience:'الصف / الجمهور',
+    lbl_year:'السنة الدراسية', lbl_uilang:'لغة الواجهة',
+    lbl_targetlang:'اللغة المستهدفة', lbl_lvname:'الاسم', lbl_q:'عدد الأسئلة',
+    lbl_timer:'المؤقت (ثانية)', lbl_lives:'أرواح', lbl_emoji:'رمز المستوى',
+    lbl_coins:'عملات لكل إجابة صحيحة', lbl_ctype:'نوع المحتوى',
+    lbl_custom_type:'نوع مخصص', lbl_ai_context:'الموضوع / السياق',
+    lbl_ai_count:'عدد العبارات', lbl_to_topic:'أضف إلى الموضوع رقم',
+    lbl_game_url:'🌐 رابط لعبتك المنشورة',
+    lbl_iw:'العرض', lbl_ih:'الارتفاع', lbl_radius:'تقريب الزوايا',
+    lbl_shadow:'ظل / إطار', lbl_scroll:'تمرير', lbl_allow:'أذونات',
+    ig_title:'🔲 مولّد iFrame',
+    export_ready:'جاهز للتصدير!', export_sub:'نزّل ملف HTML أو أنشئ كود iFrame.',
+    btn_dl_game:'🎮 تنزيل اللعبة (HTML)', btn_dl_cfg:'📋 الإعدادات (JSON)',
+    btn_copy_link:'🔗 نسخ الرابط', btn_save:'💾 حفظ', btn_export:'📤 تصدير',
+    btn_add:'＋ إضافة',
+    lv1_head:'المستوى 1 · أساسي', lv2_head:'المستوى 2 · متوسط', lv3_head:'المستوى 3 · متقدم',
+    m_timer:'مؤقت', m_coins:'عملات', m_lives:'أرواح', m_progress:'شريط التقدم',
+    m_shop:'متجر', m_growth:'نمو الحيوان', m_hint:'تلميح بعد الخطأ',
+    m_results:'جدول النتائج', m_restart:'العب مرة أخرى',
+  },
+  hi: {
+    nav_main:'मुख्य', nav_settings:'गेम सेटिंग्स', nav_content:'सामग्री · 12 विषय',
+    nav_phrases:'पालतू के संवाद', nav_dict:'शब्दकोश · कहावतें', nav_media:'मीडिया',
+    nav_audio:'संगीत · ऑडियो', nav_visuals:'विजुअल · पृष्ठभूमि', nav_tamas:'12 पालतू',
+    nav_media2:'स्टिकर · GIF', nav_game:'गेम', nav_effects:'विशेष प्रभाव',
+    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_export:'गेम निर्यात',
+    h_settings:'⚙️ गेम सेटिंग्स', sub_settings:'स्तर, भाषा, कार्य प्रारूप और टाइमर चुनें।',
+    h_content:'📚 सामग्री · 12 विषय', sub_content:'शब्द या वाक्यांश अल्पविराम से अलग करके दर्ज करें।',
+    h_phrases:'💬 पालतू के संवाद', sub_phrases:'विभिन्न विषयों और स्तरों के लिए संवाद सेट करें।',
+    h_dict:'📖 द्विभाषी शब्दकोश', sub_dict:'अंतर्निहित शब्दकोश। «+ विषय में» पर क्लिक करें।',
+    h_audio:'🎵 संगीत प्लेयर', sub_audio:'अपने कंप्यूटर या URL से संगीत अपलोड करें।',
+    h_visuals:'🎨 विजुअल · पृष्ठभूमि', h_tamas:'🐱 12 पालतू', sub_tamas:'सक्रिय पालतू चुनें।',
+    h_media:'🖼️ स्टिकर · GIF', h_effects:'✨ विशेष प्रभाव', h_anim:'🎭 एनिमेशन',
+    h_mech:'🏆 गेम मैकेनिक्स', h_export:'📤 निर्यात · एम्बेड · iFrame',
+    ct_identity:'🏷️ शीर्षक और लेखक', ct_lang:'🌍 गेम भाषा', ct_levels:'📊 कठिनाई स्तर',
+    ct_formats:'📝 कार्य प्रारूप', ct_score:'🏆 स्कोरिंग सिस्टम',
+    ct_discipline:'🎓 विषय', ct_ok_phrases:'✅ सही उत्तर के संवाद',
+    ct_err_phrases:'❌ गलत उत्तर के संवाद', ct_themed:'💬 थीम संवाद',
+    ct_playlist:'📋 प्लेलिस्ट', ct_theme:'🌌 रंग योजना',
+    ct_tamas_base:'🐾 बेस पालतू', ct_tamas_custom:'✨ कस्टम पालतू',
+    ct_media:'📁 मीडिया गैलरी', ct_fx_correct:'🎊 सही उत्तर पर',
+    ct_fx_win:'🏆 जीत पर', ct_fx_fail:'😢 हार पर',
+    ct_anim:'🎬 एनिमेशन सक्षम करें', ct_mech:'⚙️ चालू / बंद',
+    lbl_title:'गेम शीर्षक', lbl_author:'लेखक / विषय', lbl_audience:'कक्षा / दर्शक',
+    lbl_year:'शैक्षणिक वर्ष', lbl_uilang:'इंटरफ़ेस भाषा',
+    lbl_targetlang:'लक्षित भाषा', lbl_lvname:'नाम', lbl_q:'प्रश्नों की संख्या',
+    lbl_timer:'टाइमर (सेकंड)', lbl_lives:'जीवन', lbl_emoji:'स्तर इमोजी',
+    lbl_coins:'प्रति सही उत्तर सिक्के', lbl_ctype:'सामग्री का प्रकार',
+    lbl_custom_type:'कस्टम प्रकार', lbl_ai_context:'विषय / संदर्भ',
+    lbl_ai_count:'संवाद संख्या', lbl_to_topic:'विषय संख्या में जोड़ें',
+    lbl_game_url:'🌐 प्रकाशित गेम का URL',
+    lbl_iw:'चौड़ाई', lbl_ih:'ऊंचाई', lbl_radius:'कोने की गोलाई',
+    lbl_shadow:'छाया / सीमा', lbl_scroll:'स्क्रॉल', lbl_allow:'अनुमतियाँ',
+    ig_title:'🔲 iFrame जेनरेटर',
+    export_ready:'निर्यात के लिए तैयार!', export_sub:'HTML डाउनलोड करें या iFrame कोड जेनरेट करें।',
+    btn_dl_game:'🎮 गेम डाउनलोड करें', btn_dl_cfg:'📋 कॉन्फिग (JSON)',
+    btn_copy_link:'🔗 लिंक कॉपी करें', btn_save:'💾 सहेजें', btn_export:'📤 निर्यात',
+    btn_add:'＋ जोड़ें',
+    lv1_head:'स्तर 1 · बुनियादी', lv2_head:'स्तर 2 · मध्यम', lv3_head:'स्तर 3 · उन्नत',
+    m_timer:'टाइमर', m_coins:'सिक्के', m_lives:'जीवन', m_progress:'प्रगति बार',
+    m_shop:'दुकान', m_growth:'पालतू विकास', m_hint:'त्रुटि के बाद संकेत',
+    m_results:'परिणाम तालिका', m_restart:'फिर से खेलें',
+  },
+  fa: {
+    nav_main:'اصلی', nav_settings:'تنظیمات بازی', nav_content:'محتوا · ۱۲ موضوع',
+    nav_phrases:'دیالوگ‌های حیوان', nav_dict:'فرهنگ‌لغت · ضرب‌المثل', nav_media:'رسانه',
+    nav_audio:'موسیقی · صدا', nav_visuals:'تصویری · پس‌زمینه', nav_tamas:'۱۲ حیوان',
+    nav_media2:'استیکر · GIF', nav_game:'بازی', nav_effects:'جلوه‌های ویژه',
+    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_export:'صادرکردن',
+    h_settings:'⚙️ تنظیمات بازی', sub_settings:'سطح، زبان، قالب تکلیف و تایمر را انتخاب کنید.',
+    h_content:'📚 محتوا · ۱۲ موضوع', sub_content:'کلمات یا عبارات را با ویرگول جدا کنید.',
+    h_phrases:'💬 دیالوگ‌های حیوان', sub_phrases:'دیالوگ‌ها را برای موضوعات و سطوح مختلف تنظیم کنید.',
+    h_dict:'📖 فرهنگ‌لغت دوزبانه', sub_dict:'فرهنگ‌لغت داخلی. روی «+ به موضوع» کلیک کنید.',
+    h_audio:'🎵 پخش‌کننده موسیقی', sub_audio:'موسیقی را از رایانه یا URL آپلود کنید.',
+    h_visuals:'🎨 تصویری · پس‌زمینه', h_tamas:'🐱 ۱۲ حیوان', sub_tamas:'حیوانات فعال را انتخاب کنید.',
+    h_media:'🖼️ استیکر · GIF', h_effects:'✨ جلوه‌های ویژه', h_anim:'🎭 انیمیشن',
+    h_mech:'🏆 مکانیک بازی', h_export:'📤 صادرکردن · جاسازی · iFrame',
+    ct_identity:'🏷️ عنوان و نویسنده', ct_lang:'🌍 زبان بازی', ct_levels:'📊 سطوح دشواری',
+    ct_formats:'📝 قالب‌های تکلیف', ct_score:'🏆 سیستم نمره‌دهی',
+    ct_discipline:'🎓 رشته / درس', ct_ok_phrases:'✅ دیالوگ پاسخ صحیح',
+    ct_err_phrases:'❌ دیالوگ پاسخ اشتباه', ct_themed:'💬 دیالوگ‌های موضوعی',
+    ct_playlist:'📋 لیست پخش', ct_theme:'🌌 طرح رنگی',
+    ct_tamas_base:'🐾 حیوانات پایه', ct_tamas_custom:'✨ حیوانات سفارشی',
+    ct_media:'📁 گالری رسانه', ct_fx_correct:'🎊 پاسخ صحیح', ct_fx_win:'🏆 پیروزی', ct_fx_fail:'😢 شکست',
+    ct_anim:'🎬 فعال‌کردن انیمیشن', ct_mech:'⚙️ روشن / خاموش',
+    lbl_title:'عنوان بازی', lbl_author:'نویسنده / درس', lbl_audience:'کلاس / مخاطب',
+    lbl_year:'سال تحصیلی', lbl_uilang:'زبان رابط کاربری',
+    lbl_targetlang:'زبان هدف', lbl_lvname:'نام', lbl_q:'تعداد سؤالات',
+    lbl_timer:'تایمر (ثانیه)', lbl_lives:'جان', lbl_emoji:'ایموجی سطح',
+    lbl_coins:'سکه به ازای پاسخ صحیح', lbl_ctype:'نوع محتوا',
+    lbl_custom_type:'نوع سفارشی', lbl_ai_context:'موضوع / زمینه',
+    lbl_ai_count:'تعداد دیالوگ', lbl_to_topic:'افزودن به موضوع شماره',
+    lbl_game_url:'🌐 URL بازی منتشرشده',
+    lbl_iw:'عرض', lbl_ih:'ارتفاع', lbl_radius:'گوشه‌های گرد',
+    lbl_shadow:'سایه / کادر', lbl_scroll:'اسکرول', lbl_allow:'مجوزها',
+    ig_title:'🔲 مولد iFrame',
+    export_ready:'آماده صادرکردن!', export_sub:'HTML را دانلود کنید یا کد iFrame تولید کنید.',
+    btn_dl_game:'🎮 دانلود بازی (HTML)', btn_dl_cfg:'📋 تنظیمات (JSON)',
+    btn_copy_link:'🔗 کپی لینک', btn_save:'💾 ذخیره', btn_export:'📤 صادرکردن',
+    btn_add:'＋ افزودن',
+    lv1_head:'سطح ۱ · پایه', lv2_head:'سطح ۲ · متوسط', lv3_head:'سطح ۳ · پیشرفته',
+    m_timer:'تایمر', m_coins:'سکه', m_lives:'جان', m_progress:'نوار پیشرفت',
+    m_shop:'فروشگاه', m_growth:'رشد حیوان', m_hint:'راهنما بعد از خطا',
+    m_results:'جدول نتایج', m_restart:'دوباره بازی کن',
   }
 };
 
@@ -1379,6 +1619,13 @@ function applyUiLang(lang) {
   const btnExp = document.getElementById('btn-export');
   if (btnSave) btnSave.textContent = (t.btn_save || '💾');
   if (btnExp) btnExp.textContent = (t.btn_export || '📤');
+  // RTL support for Arabic, Hebrew, Farsi
+  const rtlLangs = ['ar','fa','he'];
+  const isRTL = rtlLangs.includes(lang);
+  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang;
+  // Rebuild dynamic topic labels if needed
+  buildTopics();
 }
 
 function toggleLangPicker(){
@@ -2187,8 +2434,8 @@ const CFG = {
   formats:['choice','match','fill'],
   score:{5:90,4:75,3:60,coins:1},
   topics: Array.from({length:12},(_,i) => ({
-    num:i+1, name:`Тема ${i+1}`, icon:'📌', color:'#7C3AED',
-    words:[], pairs:[], proverbs:[], desc:''})),
+    num:i+1, name:`Тема ${i+1}`, icon:'📌', color:'#16a34a',
+    words:[], pairs:[], proverbs:[], desc:'', subject:''})),
   phrases:{ok:{1:[],2:[],3:[]},err:{1:[],2:[],3:[]},themed:{}},
   audio:{playlist:[],sfx:{ok:'synth',err:'synth',birth:'synth',win:'synth'}},
   visuals:{backgrounds:{},colors:{main:'#7C3AED',accent:'#EC4899',bg:'#0a0a1a'}},
@@ -2217,10 +2464,10 @@ const BASE_PHRASES_ERR = {
 };
 
 const TAMAS_BASE = [
-  {e:'🐱',n:'Котёнок'},{e:'🐶',n:'Щенок'},{e:'🦜',n:'Попугайчик'},
-  {e:'🐹',n:'Хомяк'},{e:'🐷',n:'Мини-пиг'},{e:'🐮',n:'Коровка'},
-  {e:'🐐',n:'Козлёнок'},{e:'🐑',n:'Барашек'},{e:'🐢',n:'Черепашка'},
-  {e:'🐥',n:'Цыплёнок'},{e:'🦆',n:'Утёнок'},{e:'🐴',n:'Лошадка'}
+  {e:'🦊',n:'Лисёнок'},{e:'🐺',n:'Волчонок'},{e:'🦝',n:'Енот'},
+  {e:'🐸',n:'Лягушонок'},{e:'🦔',n:'Ёжик'},{e:'🦉',n:'Совёнок'},
+  {e:'🐰',n:'Зайка'},{e:'🦌',n:'Олень'},{e:'🐻',n:'Медвежонок'},
+  {e:'🦋',n:'Бабочка'},{e:'🐿️',n:'Бельчонок'},{e:'🐇',n:'Кролик'}
 ];
 
 const FX_LIST = [
@@ -2281,18 +2528,32 @@ const ANIM_LIST = [
 // ════════════════════════════════════════════════════════
 (function initStars(){
   const c=document.getElementById('stars-bg');
-  for(let i=0;i<120;i++){
+  // Forest fireflies + particles
+  const colors=['#4ade80','#67e8f9','#d9f99d','#fcd34d','#a3e635','#86efac'];
+  for(let i=0;i<90;i++){
     const s=document.createElement('div');
-    const sz=0.5+Math.random()*2.5;
+    const sz=0.8+Math.random()*2.8;
     s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;
       width:${sz}px;height:${sz}px;border-radius:50%;
-      background:${['#fff','#C4B0FF','#FFD700','#FF6B9D','#7DF9FF'][Math.floor(Math.random()*5)]};
-      opacity:${.2+Math.random()*.8};
-      animation:stTw ${1.5+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite alternate;`;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${.1+Math.random()*.7};
+      animation:stTw ${2+Math.random()*4}s ease-in-out ${Math.random()*5}s infinite alternate;`;
+    c.appendChild(s);
+  }
+  // Larger glowing orbs
+  for(let i=0;i<15;i++){
+    const s=document.createElement('div');
+    const sz=3+Math.random()*8;
+    s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${.05+Math.random()*.15};
+      filter:blur(${sz/2}px);
+      animation:stTw ${3+Math.random()*5}s ease-in-out ${Math.random()*6}s infinite alternate;`;
     c.appendChild(s);
   }
   const st=document.createElement('style');
-  st.textContent='@keyframes stTw{from{opacity:.1;transform:scale(.6);}to{opacity:1;transform:scale(1.4);}}';
+  st.textContent='@keyframes stTw{from{opacity:.05;transform:scale(.5) translateY(0);}to{opacity:.8;transform:scale(1.6) translateY(-8px);}}';
   document.head.appendChild(st);
 })();
 
@@ -2337,30 +2598,57 @@ function buildTopics(){
       <div class="topic-header">
         <span class="topic-num">📌 ТЕМА ${i+1}</span>
         <div style="display:flex;gap:5px;align-items:center;">
-          <input type="text" value="${TOPIC_ICONS[i]}" style="width:36px;text-align:center;padding:4px;font-size:16px;"
+          <input type="text" value="${t.icon||TOPIC_ICONS[i]}" style="width:36px;text-align:center;padding:4px;font-size:16px;"
             oninput="CFG.topics[${i}].icon=this.value">
-          <input type="color" value="${TOPIC_COLORS[i]}" style="width:32px;height:28px;"
+          <input type="color" value="${t.color||TOPIC_COLORS[i]}" style="width:32px;height:28px;"
             oninput="CFG.topics[${i}].color=this.value">
         </div>
       </div>
       <div class="fgrp"><label class="lbl">Название темы</label>
-        <input type="text" value="${t.name}" oninput="CFG.topics[${i}].name=this.value"></div>
+        <input type="text" value="${t.name}" oninput="CFG.topics[${i}].name=this.value;updateTopicLabel(${i},this.value)"></div>
+      <div class="fgrp" style="margin-top:8px;"><label class="lbl" style="color:var(--cy2);">🏷️ Тема / Предмет задания</label>
+        <input type="text" value="${t.subject||''}" placeholder="напр. Семья, Числа, Глаголы движения..."
+          oninput="CFG.topics[${i}].subject=this.value"
+          style="border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.05);"></div>
       <div class="fgrp" style="margin-top:8px;"><label class="lbl">Слова через запятую</label>
-        <textarea placeholder="сон, кровать, ночь, подушка..."
+        <textarea id="topic-words-${i}" placeholder="сон, кровать, ночь, подушка..."
           oninput="CFG.topics[${i}].words=this.value.split(',').map(s=>s.trim()).filter(Boolean)"
           style="min-height:60px;">${t.words.join(', ')}</textarea></div>
       <div class="fgrp" style="margin-top:6px;"><label class="lbl">Пары (слово:значение)</label>
-        <textarea placeholder="спать:sleep, кровать:bed..."
+        <textarea id="topic-pairs-${i}" placeholder="спать:sleep, кровать:bed..."
           oninput="CFG.topics[${i}].pairs=parsePairs(this.value)"
           style="min-height:48px;">${pairsToStr(t.pairs)}</textarea></div>
       <div class="fgrp" style="margin-top:6px;"><label class="lbl">📜 Пословицы (_____ = пропуск) | ответ</label>
-        <textarea placeholder="Век живи — век _____. | учись&#10;Ученье — _____, а неученье — тьма. | свет"
+        <textarea id="topic-proverbs-${i}" placeholder="Век живи — век _____. | учись&#10;Ученье — _____, а неученье — тьма. | свет"
           oninput="CFG.topics[${i}].proverbs=parseProverbs(this.value)"
           style="min-height:70px;">${proverbsToStr(t.proverbs)}</textarea></div>
       <div class="fgrp" style="margin-top:6px;"><label class="lbl">Примечание к теме</label>
-        <input type="text" placeholder="Необязательно..." oninput="CFG.topics[${i}].desc=this.value" value="${t.desc}"></div>`;
+        <input type="text" id="topic-desc-${i}" placeholder="Необязательно..." oninput="CFG.topics[${i}].desc=this.value" value="${t.desc||''}"></div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="tbbtn" style="font-size:10px;padding:5px 10px;background:rgba(6,182,212,.15);border-color:var(--cy);color:var(--cy2);"
+          onclick="clearTopic(${i})">🗑 Очистить</button>
+        <button class="tbbtn" style="font-size:10px;padding:5px 10px;background:rgba(74,222,128,.15);border-color:var(--pu2);color:var(--pu2);"
+          onclick="copyTopicToClipboard(${i})">📋 Копировать</button>
+      </div>`;
     g.appendChild(d);
   });
+}
+
+function updateTopicLabel(i,name){
+  const btn=document.querySelector(`[data-panel="content"] .sb-label`);
+}
+
+function clearTopic(i){
+  if(!confirm('Очистить всё содержимое темы ' + (i+1) + '?')) return;
+  CFG.topics[i].words=[];CFG.topics[i].pairs=[];CFG.topics[i].proverbs=[];
+  CFG.topics[i].desc='';CFG.topics[i].subject='';
+  buildTopics();showToast('🗑 Тема ' + (i+1) + ' очищена');
+}
+
+function copyTopicToClipboard(i){
+  const t=CFG.topics[i];
+  const txt=`Тема: ${t.name}\nПредмет: ${t.subject||''}\nСлова: ${t.words.join(', ')}\nПары: ${pairsToStr(t.pairs)}\nПословицы:\n${proverbsToStr(t.proverbs)}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Тема скопирована!')).catch(()=>showToast('⚠ Скопируйте вручную'));
 }
 function parsePairs(s){return s.split(',').map(p=>{const[a,b]=p.split(':');return a&&b?{s:a.trim(),e:b.trim()}:null;}).filter(Boolean);}
 function pairsToStr(arr){return arr.map(p=>`${p.s}:${p.e}`).join(', ');}
@@ -2569,7 +2857,7 @@ function updatePreview(){
   const lv=lvEl?lvEl.dataset.v:'A1';
   const langEl=document.querySelector('#lang-chips .chip.on');
   const lang=langEl?langEl.textContent.trim():'';
-  document.getElementById('config-preview').innerHTML=`🥚 ${t}`;
+  document.getElementById('config-preview').innerHTML=`🦊 ${t}`;
   const big=document.getElementById('preview-title-big');
   if(big)big.textContent=t;
   const meta=document.getElementById('preview-meta-line');
@@ -2645,7 +2933,7 @@ function buildGameHTML(cfgJson){
 </head>
 <body style="margin:0;background:#0a0a1a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;">
 <div>
-  <div style="font-size:64px;margin-bottom:16px;animation:bob 2s ease-in-out infinite;">🥚</div>
+  <div style="font-size:64px;margin-bottom:16px;animation:bob 2s ease-in-out infinite;">🦊</div>
   <h1 style="font-size:20px;margin-bottom:8px;">${CFG.title}</h1>
   <p style="color:#94A3B8;margin-bottom:20px;">${CFG.audience||''}</p>
   <p style="color:#C4B0FF;font-size:13px;line-height:1.8;">
@@ -2658,7 +2946,7 @@ function buildGameHTML(cfgJson){
     🐾 Открыть базовую игру
   </a>
 </div>
-<style>@keyframes bob{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg) translateY(-6px);}}</style>
+<style>@keyframes bob{0%,100%{transform:rotate(-6deg) scale(1);}50%{transform:rotate(6deg) translateY(-8px) scale(1.08);}}</style>
 </body></html>`;}
 
 function copyGameLink(){
@@ -2760,6 +3048,13 @@ function openInTab(){
   const url=(document.getElementById('iframe-url')?.value||'').trim();
   if(url)window.open(url,'_blank');
   else showToast('⚠ Введите URL игры');
+}
+
+function applyTimerPreset(secs){
+  document.getElementById('lv1-t').value=secs;
+  document.getElementById('lv2-t').value=Math.max(5,secs-5);
+  document.getElementById('lv3-t').value=Math.max(5,secs-10);
+  showToast(`⏱ Таймер: ${secs}с / ${Math.max(5,secs-5)}с / ${Math.max(5,secs-10)}с`);
 }
 
 function updateTimerModeUI(){
