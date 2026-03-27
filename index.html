@@ -186,9 +186,63 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 .ebtn.html{background:linear-gradient(135deg,var(--pu),#059669);}
 .ebtn.copy{background:linear-gradient(135deg,var(--gr),#d97706);}
 .ebtn:hover{filter:brightness(1.1);transform:translateY(-2px);}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(74,222,128,.35);border-radius:3px;}
+/* ══════════════════════════════════════════
+   EDITOR BACKGROUND THEMES
+   ══════════════════════════════════════════ */
+body{transition:background .5s ease,color .3s;}
+
+/* ☀️ Light/Paper */
+body.theme-light{--space:#f8fafc;--space2:#f1f5f9;--space3:#e2e8f0;--card:rgba(0,0,0,.04);--card2:rgba(0,0,0,.07);--border:rgba(0,0,0,.11);--tx:#1e293b;--tx2:#475569;--pu:#059669;--pu2:#16a34a;--pu3:#bbf7d0;background:linear-gradient(135deg,#f8fafc 0%,#e0f2fe 50%,#f0fdf4 100%)!important;}
+body.theme-light #topbar,body.theme-light #sidebar{background:rgba(248,250,252,.93)!important;}
+body.theme-light .card{background:rgba(255,255,255,.85)!important;border-color:rgba(0,0,0,.1)!important;}
+body.theme-light input,body.theme-light textarea,body.theme-light select{background:rgba(255,255,255,.9)!important;color:#1e293b!important;}
+body.theme-light #stars-bg{opacity:0;pointer-events:none;}
+
+/* 🌌 Cosmic/Galaxy */
+body.theme-cosmic{--space:#020408;--space2:#030611;--space3:#050e1a;--pu:#7c3aed;--pu2:#a78bfa;--pu3:#ddd6fe;--pk:#ec4899;--pk2:#f9a8d4;--cy:#06b6d4;--cy2:#67e8f9;--card:rgba(167,139,250,.06);--card2:rgba(167,139,250,.1);--border:rgba(167,139,250,.16);--tx:#f5f3ff;--tx2:#c4b5fd;background:radial-gradient(ellipse at 20% 50%,#1e1b4b 0%,#020408 60%)!important;}
+
+/* 🌊 Ocean/Sea */
+body.theme-ocean{--space:#030d18;--space2:#041525;--space3:#062035;--pu:#0ea5e9;--pu2:#38bdf8;--pu3:#bae6fd;--pk:#f472b6;--pk2:#fbcfe8;--cy:#06b6d4;--cy2:#67e8f9;--card:rgba(56,189,248,.06);--card2:rgba(56,189,248,.1);--border:rgba(56,189,248,.18);--tx:#f0f9ff;--tx2:#7dd3fc;background:linear-gradient(180deg,#030d18 0%,#062035 40%,#041525 100%)!important;}
+
+/* 🍭 Candy/Neon-Pink */
+body.theme-candy{--space:#0d0014;--space2:#160020;--space3:#1e002c;--pu:#d946ef;--pu2:#e879f9;--pu3:#fae8ff;--pk:#f43f5e;--pk2:#fda4af;--cy:#00ffff;--cy2:#67e8f9;--card:rgba(217,70,239,.08);--card2:rgba(217,70,239,.14);--border:rgba(217,70,239,.22);--tx:#fdf4ff;--tx2:#f0abfc;--glow-pu:0 0 30px rgba(217,70,239,.7);background:linear-gradient(135deg,#0d0014 0%,#1e002c 50%,#0d0014 100%)!important;}
+
+/* ⚡ Neon/Cyberpunk */
+body.theme-neon{--space:#000a00;--space2:#001400;--space3:#001e00;--pu:#00ff41;--pu2:#39ff14;--pu3:#ccffcc;--pk:#ff0080;--pk2:#ff69b4;--cy:#00ffff;--cy2:#aeffff;--card:rgba(57,255,20,.05);--card2:rgba(57,255,20,.09);--border:rgba(57,255,20,.2);--tx:#e0ffe0;--tx2:#80ff80;--glow-pu:0 0 24px rgba(57,255,20,.6);background:#000a00!important;}
+
+/* 🌅 Sunset/Warm */
+body.theme-sunset{--space:#1a0a00;--space2:#2d1200;--space3:#3d1a00;--pu:#f97316;--pu2:#fb923c;--pu3:#fed7aa;--pk:#f43f5e;--pk2:#fda4af;--cy:#fbbf24;--cy2:#fde68a;--card:rgba(249,115,22,.07);--card2:rgba(249,115,22,.12);--border:rgba(249,115,22,.2);--tx:#fff7ed;--tx2:#fdba74;background:linear-gradient(160deg,#1a0a00 0%,#3d1a00 40%,#2d0a1a 100%)!important;}
+
+/* 🌿 Garden/Nature */
+body.theme-garden{--space:#041208;--space2:#061a0c;--space3:#0a2410;--pu:#22c55e;--pu2:#4ade80;--pu3:#bbf7d0;--pk:#f472b6;--pk2:#fbcfe8;--cy:#84cc16;--cy2:#bef264;--card:rgba(74,222,128,.07);--card2:rgba(74,222,128,.12);--border:rgba(74,222,128,.2);--tx:#f0fdf4;--tx2:#86efac;background:linear-gradient(160deg,#041208 0%,#0a2410 50%,#061a0c 100%)!important;}
+
+/* 🪞 Mirror/Dark Elegant */
+body.theme-mirror{--space:#0a0a0a;--space2:#111111;--space3:#1a1a1a;--pu:#e2e8f0;--pu2:#f8fafc;--pu3:#ffffff;--pk:#ec4899;--pk2:#f9a8d4;--cy:#94a3b8;--cy2:#cbd5e1;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.09);--border:rgba(255,255,255,.12);--tx:#f8fafc;--tx2:#cbd5e1;background:linear-gradient(160deg,#0a0a0a 0%,#1a1a1a 100%)!important;}
+body.theme-mirror .card{backdrop-filter:blur(16px)!important;}
+
+/* ❄️ Ice/Arctic */
+body.theme-ice{--space:#f0f9ff;--space2:#e0f2fe;--space3:#bae6fd;--pu:#0284c7;--pu2:#0ea5e9;--pu3:#bae6fd;--pk:#e879f9;--pk2:#fae8ff;--cy:#06b6d4;--cy2:#67e8f9;--card:rgba(2,132,199,.06);--card2:rgba(2,132,199,.1);--border:rgba(2,132,199,.2);--tx:#0c4a6e;--tx2:#0369a1;background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 60%,#cffafe 100%)!important;}
+body.theme-ice #stars-bg{opacity:0;pointer-events:none;}
+body.theme-ice input,body.theme-ice textarea,body.theme-ice select{color:#0c4a6e!important;}
+
+/* 🌸 Sakura */
+body.theme-sakura{--space:#1a0010;--space2:#2d0020;--space3:#3d0030;--pu:#f43f5e;--pu2:#fb7185;--pu3:#fecdd3;--pk:#ec4899;--pk2:#f9a8d4;--cy:#f472b6;--cy2:#fbcfe8;--card:rgba(244,63,94,.07);--card2:rgba(244,63,94,.12);--border:rgba(244,63,94,.2);--tx:#fff1f2;--tx2:#fda4af;background:linear-gradient(160deg,#1a0010 0%,#3d0030 50%,#2d0020 100%)!important;}
+
+/* 🏜️ Desert/Sand */
+body.theme-desert{--space:#1c1309;--space2:#2a1d0e;--space3:#3a2814;--pu:#d97706;--pu2:#fbbf24;--pu3:#fef3c7;--pk:#f97316;--pk2:#fed7aa;--cy:#84cc16;--cy2:#d9f99d;--card:rgba(217,119,6,.08);--card2:rgba(217,119,6,.13);--border:rgba(217,119,6,.2);--tx:#fef9ee;--tx2:#fcd34d;background:linear-gradient(160deg,#1c1309 0%,#3a2814 50%,#2a1d0e 100%)!important;}
+
+/* 🎭 Retro/Vintage */
+body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;--pu2:#4ade80;--pu3:#bbf7d0;--pk:#f59e0b;--pk2:#fcd34d;--cy:#10b981;--cy2:#6ee7b7;--card:rgba(74,222,128,.07);--card2:rgba(74,222,128,.11);--border:rgba(74,222,128,.22);--tx:#e5e5e5;--tx2:#a3a3a3;background:#0d0d0d!important;}
+
+/* SCROLL ENHANCEMENTS */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:3px;}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(74,222,128,.5),rgba(103,232,249,.5));border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--pu2);}
+.panel.active{animation:panelIn .22s cubic-bezier(.4,0,.2,1) both;}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.card{transition:box-shadow .2s,transform .15s;}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.25);}
 /* RTL support */
 [dir="rtl"] #sidebar{border-right:none;border-left:1px solid var(--border);}
 [dir="rtl"] .sb-btn{text-align:right;}
@@ -374,9 +428,9 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 
   <span class="sb-section-lbl" data-i18n="nav_output">Вывод</span>
   <button class="sb-btn" onclick="showPanel('design')" data-panel="design">
-    <span class="ic">🖌️</span><span class="sb-label">Дизайн</span></button>
+    <span class="ic">🖌️</span><span class="sb-label" data-i18n="nav_design">Дизайн редактора</span></button>
   <button class="sb-btn" onclick="showPanel('preview')" data-panel="preview">
-    <span class="ic">👁️</span><span class="sb-label">Предпросмотр</span></button>
+    <span class="ic">👁️</span><span class="sb-label" data-i18n="nav_preview">Предпросмотр</span></button>
   <button class="sb-btn" onclick="showPanel('export')" data-panel="export">
     <span class="ic">📤</span><span class="sb-label" data-i18n="nav_export">Экспорт игры</span></button>
 </nav>
@@ -951,91 +1005,103 @@ input[type=color]{width:40px;height:36px;border-radius:8px;border:1px solid var(
 
 <!-- ═══ DESIGN PANEL ═══ -->
 <div id="panel-design" class="panel">
-  <div class="panel-title" style="background:linear-gradient(90deg,#d97706,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🖌️ Дизайн редактора</div>
-  <div class="panel-sub">Настройте внешний вид, шрифты, цвета и фоновую музыку редактора.</div>
+  <div class="panel-title" data-i18n="h_design" style="background:linear-gradient(90deg,#d97706,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🖌️ Дизайн редактора</div>
+  <div class="panel-sub">Настройте внешний вид редактора: фон, шрифт, цвета, анимации и музыка.</div>
+
   <div class="card">
-    <div class="card-title">🎨 Тема оформления</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;">
-      <div onclick="applyEditorTheme('forest',this)" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;" class="theme-btn on">
-        <div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#050e0a,#16a34a);margin-bottom:6px;"></div>
-        <div style="font-size:10px;font-weight:700;color:var(--tx2);">🌿 Forest</div>
-      </div>
-      <div onclick="applyEditorTheme('light',this)" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;" class="theme-btn">
-        <div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#f0fdf4,#16a34a);margin-bottom:6px;"></div>
-        <div style="font-size:10px;font-weight:700;color:var(--tx2);">☀️ Light</div>
-      </div>
-      <div onclick="applyEditorTheme('cosmic',this)" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;" class="theme-btn">
-        <div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#0a0a1a,#7c3aed);margin-bottom:6px;"></div>
-        <div style="font-size:10px;font-weight:700;color:var(--tx2);">🌌 Cosmic</div>
-      </div>
-      <div onclick="applyEditorTheme('ocean',this)" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;" class="theme-btn">
-        <div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#020c1b,#06b6d4);margin-bottom:6px;"></div>
-        <div style="font-size:10px;font-weight:700;color:var(--tx2);">🌊 Ocean</div>
-      </div>
-      <div onclick="applyEditorTheme('candy',this)" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;" class="theme-btn">
-        <div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#1a0a1e,#ec4899);margin-bottom:6px;"></div>
-        <div style="font-size:10px;font-weight:700;color:var(--tx2);">🍭 Candy</div>
-      </div>
+    <div class="card-title">🎨 Тема — Фон и цвета</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;" id="theme-grid">
+<div onclick="applyEditorTheme('forest',this)" class="theme-btn on" style="border:2px solid var(--pu2);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#050e0a,#0d1f17,#16a34a);margin-bottom:5px;"></div><div style="font-size:14px;">🌲</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Лес</div></div>
+<div onclick="applyEditorTheme('light',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#f8fafc,#e0f2fe,#f0fdf4);margin-bottom:5px;"></div><div style="font-size:14px;">☀️</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Светлый</div></div>
+<div onclick="applyEditorTheme('cosmic',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#020408,#1e1b4b,#7c3aed);margin-bottom:5px;"></div><div style="font-size:14px;">🌌</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Космос</div></div>
+<div onclick="applyEditorTheme('ocean',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#030d18,#062035,#0ea5e9);margin-bottom:5px;"></div><div style="font-size:14px;">🌊</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Океан</div></div>
+<div onclick="applyEditorTheme('candy',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#0d0014,#1e002c,#d946ef);margin-bottom:5px;"></div><div style="font-size:14px;">🍭</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Неон</div></div>
+<div onclick="applyEditorTheme('neon',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#000a00,#001400,#39ff14);margin-bottom:5px;"></div><div style="font-size:14px;">⚡</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Киберпанк</div></div>
+<div onclick="applyEditorTheme('sunset',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#1a0a00,#3d1a00,#f97316);margin-bottom:5px;"></div><div style="font-size:14px;">🌅</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Закат</div></div>
+<div onclick="applyEditorTheme('garden',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#041208,#0a2410,#22c55e);margin-bottom:5px;"></div><div style="font-size:14px;">🌿</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Сад</div></div>
+<div onclick="applyEditorTheme('mirror',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a,#e2e8f0);margin-bottom:5px;"></div><div style="font-size:14px;">🪞</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Тёмный</div></div>
+<div onclick="applyEditorTheme('ice',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#f0f9ff,#bae6fd,#0ea5e9);margin-bottom:5px;"></div><div style="font-size:14px;">❄️</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Лёд</div></div>
+<div onclick="applyEditorTheme('sakura',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#1a0010,#3d0030,#f43f5e);margin-bottom:5px;"></div><div style="font-size:14px;">🌸</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Сакура</div></div>
+<div onclick="applyEditorTheme('desert',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#1c1309,#3a2814,#fbbf24);margin-bottom:5px;"></div><div style="font-size:14px;">🏜️</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Пустыня</div></div>
+<div onclick="applyEditorTheme('retro',this)" class="theme-btn" style="border:2px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:all .25s;"><div style="width:100%;height:28px;border-radius:6px;background:linear-gradient(135deg,#0d0d0d,#262626,#4ade80);margin-bottom:5px;"></div><div style="font-size:14px;">🎭</div><div style="font-size:9px;color:var(--tx2);font-weight:700;margin-top:2px;">Ретро</div></div>
     </div>
+    <div style="font-size:10px;color:var(--tx2);margin-top:8px;padding:6px 10px;background:rgba(74,222,128,.06);border-radius:8px;">✨ Тема применяется мгновенно и сохраняется в браузере</div>
   </div>
-  <div class="card">
-    <div class="card-title">🔤 Шрифт и размер</div>
-    <div class="row2">
-      <div class="fgrp"><label class="lbl">Шрифт</label>
-        <select id="design-font" onchange="applyFontFamily(this.value)">
-          <option value="'Space Grotesk',sans-serif">Space Grotesk</option>
+
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">🔤 Шрифт и размер</div>
+      <div class="fgrp">
+        <label class="lbl">Гарнитура</label>
+        <select id="editor-font-sel" onchange="applyFontFamily(this.value)" style="background:var(--card);">
+          <option value="'Space Grotesk',sans-serif">Space Grotesk (по умолчанию)</option>
           <option value="'Outfit',sans-serif">Outfit</option>
-          <option value="system-ui,sans-serif">System UI</option>
-          <option value="Georgia,serif">Georgia (serif)</option>
-          <option value="'Courier New',monospace">Courier New (mono)</option>
+          <option value="'Inter',sans-serif">Inter</option>
+          <option value="'Roboto',sans-serif">Roboto</option>
+          <option value="'Nunito',sans-serif">Nunito</option>
+          <option value="'Courier New',monospace">Monospace</option>
         </select>
       </div>
-      <div class="fgrp"><label class="lbl">Размер: <span id="fs-val">13</span>px</label>
-        <input type="range" id="design-size" min="11" max="17" value="13" oninput="applyFontSize(this.value)">
+      <div class="fgrp" style="margin-top:10px;">
+        <label class="lbl">Размер: <span id="fs-val">13</span>px</label>
+        <input type="range" min="10" max="18" value="13" oninput="applyFontSize(this.value)">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📏 Толщина линий</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div class="chip on" onclick="applyBorderWidth('1px',this)">Тонкие</div>
+        <div class="chip" onclick="applyBorderWidth('1.5px',this)">Средние</div>
+        <div class="chip" onclick="applyBorderWidth('2px',this)">Толстые</div>
+        <div class="chip" onclick="applyBorderWidth('0px',this)">Без рамок</div>
+      </div>
+      <div class="fgrp" style="margin-top:10px;">
+        <label class="lbl">Скругление</label>
+        <input type="range" id="card-radius-r" min="0" max="28" value="18" oninput="applyCardRadius(this.value)">
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">📐 Толщина линий</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;">
-      <div class="chip" onclick="applyBorderWidth('0.5px',this)">0.5px</div>
-      <div class="chip on" onclick="applyBorderWidth('1px',this)">1px</div>
-      <div class="chip" onclick="applyBorderWidth('2px',this)">2px</div>
-      <div class="chip" onclick="applyBorderWidth('3px',this)">3px</div>
-    </div>
-  </div>
+
   <div class="card">
     <div class="card-title">✨ Визуальные эффекты</div>
-    <div class="mech-row"><div class="mech-icon">🌟</div><div class="mech-info"><div class="mech-name">Частицы / Светлячки</div></div><label class="toggle"><input type="checkbox" id="vfx-particles" checked onchange="toggleParticles(this.checked)"><span class="toggle-slider"></span></label></div>
-    <div class="mech-row"><div class="mech-icon">💫</div><div class="mech-info"><div class="mech-name">Неоновое свечение</div></div><label class="toggle"><input type="checkbox" id="vfx-glow" checked onchange="toggleGlow(this.checked)"><span class="toggle-slider"></span></label></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <div class="mech-row"><div class="mech-icon">🌟</div><div class="mech-info"><div class="mech-name">Частицы</div></div><label class="toggle"><input type="checkbox" id="cb-particles" checked onchange="toggleParticles(this.checked)"><span class="toggle-slider"></span></label></div>
+      <div class="mech-row"><div class="mech-icon">💡</div><div class="mech-info"><div class="mech-name">Свечение</div></div><label class="toggle"><input type="checkbox" id="cb-glow" checked onchange="toggleGlow(this.checked)"><span class="toggle-slider"></span></label></div>
+      <div class="mech-row"><div class="mech-icon">🎬</div><div class="mech-info"><div class="mech-name">Анимации</div></div><label class="toggle"><input type="checkbox" id="cb-anim" checked onchange="toggleAnimations(this.checked)"><span class="toggle-slider"></span></label></div>
+      <div class="mech-row"><div class="mech-icon">🔲</div><div class="mech-info"><div class="mech-name">Размытие</div></div><label class="toggle"><input type="checkbox" id="cb-blur" checked onchange="toggleBlur(this.checked)"><span class="toggle-slider"></span></label></div>
+    </div>
   </div>
+
   <div class="card">
-    <div class="card-title">🎶 Фоновая музыка редактора</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:9px;">
-      <label class="tbbtn" style="cursor:pointer;">📁 Загрузить <input type="file" accept="audio/*" onchange="setEditorMusic(event)" style="display:none;"></label>
-      <div style="flex:1;min-width:140px;display:flex;gap:5px;">
-        <input type="url" id="editor-music-url" placeholder="https://... mp3 URL" style="flex:1;">
-        <button class="tbbtn" onclick="setEditorMusicUrl()">→ OK</button>
-      </div>
+    <div class="card-title">🎵 Фоновая музыка</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="tbbtn" onclick="playPresetMusic('lofi')" style="background:rgba(99,102,241,.2);border-color:#818cf8;color:#a5b4fc;">🎧 Lo-fi</button>
+      <button class="tbbtn" onclick="playPresetMusic('jazz')" style="background:rgba(245,158,11,.2);border-color:var(--gr);color:var(--gr2);">🎷 Jazz</button>
+      <button class="tbbtn" onclick="playPresetMusic('nature')" style="background:rgba(16,185,129,.2);border-color:var(--pu2);color:var(--pu2);">🌿 Природа</button>
+      <button class="tbbtn" onclick="playPresetMusic('classic')" style="background:rgba(239,68,68,.2);border-color:var(--re);color:#fca5a5;">🎻 Классика</button>
     </div>
-    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-      <button class="tbbtn" id="editor-music-play" onclick="toggleEditorMusic()">▶ Играть</button>
-      <button class="tbbtn" onclick="stopEditorMusic()">■ Стоп</button>
-      <div style="display:flex;align-items:center;gap:5px;flex:1;min-width:100px;">
-        <span>🔊</span><input type="range" id="editor-music-vol" min="0" max="1" step="0.1" value="0.3" oninput="document.getElementById('editor-bg-music').volume=this.value" style="flex:1;">
-      </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+      <label class="tbbtn" style="cursor:pointer;">📁 MP3 <input type="file" accept="audio/*" style="display:none;" onchange="setEditorMusic(event)"></label>
+      <input type="url" id="editor-music-url" placeholder="https://... mp3" style="flex:1;min-width:140px;">
+      <button class="tbbtn" onclick="setEditorMusicUrl()">+ URL</button>
     </div>
-    <div style="font-size:10px;color:var(--tx2);margin-bottom:6px;">Встроенные темы:</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button class="tbbtn" onclick="playPresetMusic('lofi')" style="font-size:10px;">🎵 Lo-Fi</button>
-      <button class="tbbtn" onclick="playPresetMusic('jazz')" style="font-size:10px;">🎷 Jazz</button>
-      <button class="tbbtn" onclick="playPresetMusic('nature')" style="font-size:10px;">🌿 Nature</button>
-      <button class="tbbtn" onclick="playPresetMusic('classic')" style="font-size:10px;">🎻 Classic</button>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="tbbtn" id="editor-music-play" onclick="toggleEditorMusic()">▶</button>
+      <button class="tbbtn" onclick="stopEditorMusic()">⏹</button>
+      <span style="font-size:11px;color:var(--tx2);">🔊</span>
+      <input type="range" id="editor-music-vol" min="0" max="1" step="0.05" value="0.3" oninput="document.getElementById('editor-bg-music').volume=this.value" style="flex:1;">
+    </div>
+    <audio id="editor-bg-music" loop style="display:none;"></audio>
+  </div>
+
+  <div class="card" style="border-color:rgba(74,222,128,.3);">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="tbbtn" style="background:linear-gradient(135deg,var(--pu),#059669);border:none;color:#fff;" onclick="saveDesignSettings()">💾 Сохранить дизайн</button>
+      <button class="tbbtn" onclick="resetDesign()">↩ Сбросить</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ EXPORT ═══ -->
 <div id="panel-export" class="panel">
   <div class="panel-title" data-i18n="h_export">📤 Экспорт · Встраивание · iFrame</div>
 
@@ -1371,7 +1437,8 @@ const UI_T = {
     nav_phrases:'Реплики Тамагочи', nav_dict:'Словари · Пословицы', nav_media:'Медиа',
     nav_audio:'Аудио · Музыка', nav_visuals:'Визуал · Фон', nav_tamas:'12 Тамагочи',
     nav_media2:'Стикеры · Гифы', nav_game:'Игра', nav_effects:'Спецэффекты',
-    nav_anim:'Анимации · 3D', nav_mech:'Механики игры', nav_output:'Вывод', nav_export:'Экспорт игры',
+    nav_anim:'Анимации · 3D', nav_mech:'Механики игры', nav_output:'Вывод', nav_design_section:'Дизайн', nav_design:'Дизайн редактора', nav_preview:'Предпросмотр',
+    nav_export:'Экспорт игры',
     h_settings:'⚙️ Настройки игры', sub_settings:'Выберите уровень, язык, формат заданий и параметры таймера.',
     h_content:'📚 Контент · 12 тем', sub_content:'Введите слова, словосочетания или любой учебный контент через запятую.',
     h_phrases:'💬 Реплики Тамагочи', sub_phrases:'Настройте реплики питомца для разных тем и уровней.',
@@ -1379,7 +1446,9 @@ const UI_T = {
     h_audio:'🎵 Аудио · Музыкальный плеер', sub_audio:'Загружайте музыку с компьютера или по ссылке.',
     h_visuals:'🎨 Визуал · Фоны', h_tamas:'🐱 12 Тамагочи', sub_tamas:'Выберите активных питомцев.',
     h_media:'🖼️ Стикеры · Гифки', h_effects:'✨ Спецэффекты', h_anim:'🎭 Анимации',
-    h_mech:'🏆 Механики игры', h_export:'📤 Экспорт · Встраивание · iFrame',
+    h_mech:'🏆 Механики игры', h_design:'🖌️ Дизайн редактора',
+    h_preview:'👁️ Предпросмотр игры',
+    h_export:'📤 Экспорт · Встраивание · iFrame',
     ct_identity:'🏷️ Название и автор', ct_lang:'🌍 Язык игры', ct_levels:'📊 Уровни сложности',
     ct_formats:'📝 Форматы заданий', ct_score:'🏆 Система оценивания',
     ct_discipline:'🎓 Учебная дисциплина', ct_ok_phrases:'✅ Реплики при ПРАВИЛЬНОМ ответе',
@@ -1414,7 +1483,8 @@ const UI_T = {
     nav_phrases:'Tamagotchi-Dialoge', nav_dict:'Wörterbücher · Sprichwörter', nav_media:'Medien',
     nav_audio:'Audio · Musik', nav_visuals:'Visuals · Hintergrund', nav_tamas:'12 Tamagotchis',
     nav_media2:'Sticker · GIFs', nav_game:'Spiel', nav_effects:'Spezialeffekte',
-    nav_anim:'Animationen · 3D', nav_mech:'Spielmechanik', nav_output:'Ausgabe', nav_export:'Spiel exportieren',
+    nav_anim:'Animationen · 3D', nav_mech:'Spielmechanik', nav_output:'Ausgabe', nav_design_section:'Design', nav_design:'Editor-Design', nav_preview:'Vorschau',
+    nav_export:'Spiel exportieren',
     h_settings:'⚙️ Spieleinstellungen', sub_settings:'Wählen Sie Stufe, Sprache, Aufgabenformat und Timer.',
     h_content:'📚 Inhalt · 12 Themen', sub_content:'Geben Sie Wörter, Phrasen oder Lerninhalt durch Komma getrennt ein.',
     h_phrases:'💬 Tamagotchi-Dialoge', sub_phrases:'Konfigurieren Sie die Dialoge des Haustiers.',
@@ -1422,7 +1492,9 @@ const UI_T = {
     h_audio:'🎵 Audio · Musikplayer', sub_audio:'Laden Sie Musik vom Computer oder per Link.',
     h_visuals:'🎨 Visuals · Hintergründe', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Wählen Sie aktive Haustiere.',
     h_media:'🖼️ Sticker · GIFs', h_effects:'✨ Spezialeffekte', h_anim:'🎭 Animationen',
-    h_mech:'🏆 Spielmechanik', h_export:'📤 Export · Einbettung · iFrame',
+    h_mech:'🏆 Spielmechanik', h_design:'🖌️ Editor-Design',
+    h_preview:'👁️ Spielvorschau',
+    h_export:'📤 Export · Einbettung · iFrame',
     ct_identity:'🏷️ Name und Autor', ct_lang:'🌍 Spielsprache', ct_levels:'📊 Schwierigkeitsstufen',
     ct_formats:'📝 Aufgabenformate', ct_score:'🏆 Bewertungssystem',
     ct_discipline:'🎓 Fach / Disziplin', ct_ok_phrases:'✅ Dialoge bei RICHTIGER Antwort',
@@ -1470,7 +1542,8 @@ const UI_T = {
     nav_phrases:'Tamagotchi Phrases', nav_dict:'Dictionaries · Proverbs', nav_media:'Media',
     nav_audio:'Audio · Music', nav_visuals:'Visuals · Background', nav_tamas:'12 Tamagotchis',
     nav_media2:'Stickers · GIFs', nav_game:'Game', nav_effects:'Special Effects',
-    nav_anim:'Animations · 3D', nav_mech:'Game Mechanics', nav_output:'Output', nav_export:'Export Game',
+    nav_anim:'Animations · 3D', nav_mech:'Game Mechanics', nav_output:'Output', nav_design_section:'Design', nav_design:'Editor Design', nav_preview:'Preview',
+    nav_export:'Export Game',
     h_settings:'⚙️ Game Settings', sub_settings:'Choose level, language, task format and timer.',
     h_content:'📚 Content · 12 Topics', sub_content:'Enter words, phrases or any learning content, comma-separated.',
     h_phrases:'💬 Tamagotchi Phrases', sub_phrases:'Configure pet phrases for different topics and levels.',
@@ -1478,7 +1551,9 @@ const UI_T = {
     h_audio:'🎵 Audio · Music Player', sub_audio:'Upload music from your computer or via URL.',
     h_visuals:'🎨 Visuals · Backgrounds', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Select active pets.',
     h_media:'🖼️ Stickers · GIFs', h_effects:'✨ Special Effects', h_anim:'🎭 Animations',
-    h_mech:'🏆 Game Mechanics', h_export:'📤 Export · Embed · iFrame',
+    h_mech:'🏆 Game Mechanics', h_design:'🖌️ Editor Design',
+    h_preview:'👁️ Game Preview',
+    h_export:'📤 Export · Embed · iFrame',
     ct_identity:'🏷️ Title and Author', ct_lang:'🌍 Game Language', ct_levels:'📊 Difficulty Levels',
     ct_formats:'📝 Task Formats', ct_score:'🏆 Scoring System',
     ct_discipline:'🎓 Subject / Discipline', ct_ok_phrases:'✅ Phrases for CORRECT answers',
@@ -1526,7 +1601,8 @@ const UI_T = {
     nav_phrases:'Répliques Tamagotchi', nav_dict:'Dictionnaires · Proverbes', nav_media:'Médias',
     nav_audio:'Audio · Musique', nav_visuals:'Visuels · Fond', nav_tamas:'12 Tamagotchis',
     nav_media2:'Stickers · GIFs', nav_game:'Jeu', nav_effects:'Effets spéciaux',
-    nav_anim:'Animations · 3D', nav_mech:'Mécaniques du jeu', nav_output:'Exportation', nav_export:'Exporter le jeu',
+    nav_anim:'Animations · 3D', nav_mech:'Mécaniques du jeu', nav_output:'Exportation', nav_design_section:'Design', nav_design:'Design éditeur', nav_preview:'Aperçu',
+    nav_export:'Exporter le jeu',
     h_settings:'⚙️ Paramètres du jeu', sub_settings:'Choisissez le niveau, la langue et le format des tâches.',
     h_content:'📚 Contenu · 12 thèmes', sub_content:'Entrez des mots, phrases ou contenu pédagogique séparé par des virgules.',
     h_phrases:'💬 Répliques Tamagotchi', sub_phrases:'Configurez les répliques de l\'animal.',
@@ -1534,7 +1610,9 @@ const UI_T = {
     h_audio:'🎵 Audio · Lecteur musical', sub_audio:'Chargez de la musique depuis votre ordinateur.',
     h_visuals:'🎨 Visuels · Fonds', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Sélectionnez les animaux actifs.',
     h_media:'🖼️ Stickers · GIFs', h_effects:'✨ Effets spéciaux', h_anim:'🎭 Animations',
-    h_mech:'🏆 Mécaniques du jeu', h_export:'📤 Export · Intégration · iFrame',
+    h_mech:'🏆 Mécaniques du jeu', h_design:'🖌️ Design éditeur',
+    h_preview:'👁️ Aperçu du jeu',
+    h_export:'📤 Export · Intégration · iFrame',
     ct_identity:'🏷️ Titre et auteur', ct_lang:'🌍 Langue du jeu', ct_levels:'📊 Niveaux de difficulté',
     ct_formats:'📝 Formats des tâches', ct_score:'🏆 Système de notation',
     ct_discipline:'🎓 Matière / Discipline', ct_ok_phrases:'✅ Répliques pour BONNE réponse',
@@ -1582,7 +1660,8 @@ const UI_T = {
     nav_phrases:'Frases Tamagotchi', nav_dict:'Diccionarios · Refranes', nav_media:'Medios',
     nav_audio:'Audio · Música', nav_visuals:'Visuales · Fondo', nav_tamas:'12 Tamagotchis',
     nav_media2:'Pegatinas · GIFs', nav_game:'Juego', nav_effects:'Efectos especiales',
-    nav_anim:'Animaciones · 3D', nav_mech:'Mecánicas', nav_output:'Exportar', nav_export:'Exportar juego',
+    nav_anim:'Animaciones · 3D', nav_mech:'Mecánicas', nav_output:'Exportar', nav_design_section:'Diseño', nav_design:'Diseño del editor', nav_preview:'Vista previa',
+    nav_export:'Exportar juego',
     h_settings:'⚙️ Configuración del juego', sub_settings:'Elige nivel, idioma, formato y temporizador.',
     h_content:'📚 Contenido · 12 temas', sub_content:'Introduce palabras o frases separadas por comas.',
     h_phrases:'💬 Frases Tamagotchi', sub_phrases:'Configura frases para distintos temas y niveles.',
@@ -1590,7 +1669,9 @@ const UI_T = {
     h_audio:'🎵 Audio · Reproductor', sub_audio:'Sube música desde tu ordenador o por enlace.',
     h_visuals:'🎨 Visuales · Fondos', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Selecciona mascotas activas.',
     h_media:'🖼️ Pegatinas · GIFs', h_effects:'✨ Efectos especiales', h_anim:'🎭 Animaciones',
-    h_mech:'🏆 Mecánicas', h_export:'📤 Exportar · Incrustar · iFrame',
+    h_mech:'🏆 Mecánicas', h_design:'🖌️ Diseño del editor',
+    h_preview:'👁️ Vista previa del juego',
+    h_export:'📤 Exportar · Incrustar · iFrame',
     ct_identity:'🏷️ Título y autor', ct_lang:'🌍 Idioma del juego', ct_levels:'📊 Niveles de dificultad',
     ct_formats:'📝 Formatos', ct_score:'🏆 Sistema de puntuación',
     ct_discipline:'🎓 Materia / Disciplina', ct_ok_phrases:'✅ Frases para respuesta CORRECTA',
@@ -1638,7 +1719,8 @@ const UI_T = {
     nav_phrases:'たまごっちのセリフ', nav_dict:'辞書 · ことわざ', nav_media:'メディア',
     nav_audio:'音楽 · オーディオ', nav_visuals:'ビジュアル · 背景', nav_tamas:'12たまごっち',
     nav_media2:'スタンプ · GIF', nav_game:'ゲーム', nav_effects:'特殊効果',
-    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_export:'ゲームエクスポート',
+    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_design_section:'デザイン', nav_design:'エディタデザイン', nav_preview:'プレビュー',
+    nav_export:'ゲームエクスポート',
     h_settings:'⚙️ ゲーム設定', sub_settings:'レベル、言語、タスク形式、タイマーを選択してください。',
     h_content:'📚 コンテンツ · 12テーマ', sub_content:'単語やフレーズをカンマ区切りで入力してください。',
     h_phrases:'💬 たまごっちのセリフ', sub_phrases:'テーマとレベルに応じてペットのセリフを設定します。',
@@ -1646,7 +1728,9 @@ const UI_T = {
     h_audio:'🎵 音楽プレーヤー', sub_audio:'コンピューターまたはURLから音楽をアップロード。',
     h_visuals:'🎨 ビジュアル · 背景', h_tamas:'🐱 12たまごっち', sub_tamas:'アクティブなペットを選択。',
     h_media:'🖼️ スタンプ · GIF', h_effects:'✨ 特殊効果', h_anim:'🎭 アニメーション',
-    h_mech:'🏆 ゲームメカニクス', h_export:'📤 エクスポート · 埋め込み · iFrame',
+    h_mech:'🏆 ゲームメカニクス', h_design:'🖌️ エディタデザイン',
+    h_preview:'👁️ ゲームプレビュー',
+    h_export:'📤 エクスポート · 埋め込み · iFrame',
     ct_identity:'🏷️ タイトルと著者', ct_lang:'🌍 ゲーム言語', ct_levels:'📊 難易度',
     ct_formats:'📝 タスク形式', ct_score:'🏆 採点システム',
     ct_discipline:'🎓 科目', ct_ok_phrases:'✅ 正解時のセリフ',
@@ -1702,7 +1786,8 @@ const UI_T = {
     nav_phrases:'宠物台词', nav_dict:'词典 · 谚语', nav_media:'媒体',
     nav_audio:'音乐 · 音频', nav_visuals:'视觉 · 背景', nav_tamas:'12宠物',
     nav_media2:'贴纸 · GIF', nav_game:'游戏', nav_effects:'特效',
-    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_export:'导出游戏',
+    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_design_section:'设计', nav_design:'编辑器设计', nav_preview:'预览',
+    nav_export:'导出游戏',
     h_settings:'⚙️ 游戏设置', sub_settings:'选择级别、语言、任务格式和计时器。',
     h_content:'📚 内容 · 12主题', sub_content:'用逗号分隔输入单词、短语或学习内容。',
     h_phrases:'💬 宠物台词', sub_phrases:'为不同主题和级别配置宠物台词。',
@@ -1710,7 +1795,9 @@ const UI_T = {
     h_audio:'🎵 音乐播放器', sub_audio:'从电脑或URL上传音乐。',
     h_visuals:'🎨 视觉 · 背景', h_tamas:'🐱 12宠物', sub_tamas:'选择活跃宠物。',
     h_media:'🖼️ 贴纸 · GIF', h_effects:'✨ 特效', h_anim:'🎭 动画',
-    h_mech:'🏆 游戏机制', h_export:'📤 导出 · 嵌入 · iFrame',
+    h_mech:'🏆 游戏机制', h_design:'🖌️ 编辑器设计',
+    h_preview:'👁️ 游戏预览',
+    h_export:'📤 导出 · 嵌入 · iFrame',
     ct_identity:'🏷️ 标题和作者', ct_lang:'🌍 游戏语言', ct_levels:'📊 难度等级',
     ct_formats:'📝 任务格式', ct_score:'🏆 评分系统',
     ct_discipline:'🎓 学科', ct_ok_phrases:'✅ 正确答案台词',
@@ -1765,7 +1852,8 @@ const UI_T = {
     nav_phrases:'عبارات الحيوان', nav_dict:'قواميس · أمثال', nav_media:'وسائط',
     nav_audio:'موسيقى · صوت', nav_visuals:'مرئيات · خلفية', nav_tamas:'12 حيوان',
     nav_media2:'ملصقات · GIF', nav_game:'لعبة', nav_effects:'مؤثرات خاصة',
-    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_export:'تصدير اللعبة',
+    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_design_section:'تصميم', nav_design:'تصميم المحرر', nav_preview:'معاينة',
+    nav_export:'تصدير اللعبة',
     h_settings:'⚙️ إعدادات اللعبة', sub_settings:'اختر المستوى واللغة وتنسيق المهام والمؤقت.',
     h_content:'📚 المحتوى · 12 موضوع', sub_content:'أدخل الكلمات أو العبارات مفصولة بفواصل.',
     h_phrases:'💬 عبارات الحيوان', sub_phrases:'اضبط عبارات الحيوان لمواضيع ومستويات مختلفة.',
@@ -1773,7 +1861,9 @@ const UI_T = {
     h_audio:'🎵 مشغل الموسيقى', sub_audio:'ارفع الموسيقى من جهازك أو عبر رابط.',
     h_visuals:'🎨 مرئيات · خلفيات', h_tamas:'🐱 12 حيوان', sub_tamas:'اختر الحيوانات النشطة.',
     h_media:'🖼️ ملصقات · GIF', h_effects:'✨ مؤثرات خاصة', h_anim:'🎭 رسوم متحركة',
-    h_mech:'🏆 آليات اللعبة', h_export:'📤 تصدير · تضمين · iFrame',
+    h_mech:'🏆 آليات اللعبة', h_design:'🖌️ تصميم المحرر',
+    h_preview:'👁️ معاينة اللعبة',
+    h_export:'📤 تصدير · تضمين · iFrame',
     ct_identity:'🏷️ العنوان والمؤلف', ct_lang:'🌍 لغة اللعبة', ct_levels:'📊 مستويات الصعوبة',
     ct_formats:'📝 تنسيقات المهام', ct_score:'🏆 نظام التقييم',
     ct_discipline:'🎓 المادة', ct_ok_phrases:'✅ عبارات الإجابة الصحيحة',
@@ -1829,7 +1919,8 @@ const UI_T = {
     nav_phrases:'पालतू के संवाद', nav_dict:'शब्दकोश · कहावतें', nav_media:'मीडिया',
     nav_audio:'संगीत · ऑडियो', nav_visuals:'विजुअल · पृष्ठभूमि', nav_tamas:'12 पालतू',
     nav_media2:'स्टिकर · GIF', nav_game:'गेम', nav_effects:'विशेष प्रभाव',
-    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_export:'गेम निर्यात',
+    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_design_section:'डिज़ाइन', nav_design:'एडिटर डिज़ाइन', nav_preview:'पूर्वावलोकन',
+    nav_export:'गेम निर्यात',
     h_settings:'⚙️ गेम सेटिंग्स', sub_settings:'स्तर, भाषा, कार्य प्रारूप और टाइमर चुनें।',
     h_content:'📚 सामग्री · 12 विषय', sub_content:'शब्द या वाक्यांश अल्पविराम से अलग करके दर्ज करें।',
     h_phrases:'💬 पालतू के संवाद', sub_phrases:'विभिन्न विषयों और स्तरों के लिए संवाद सेट करें।',
@@ -1837,7 +1928,9 @@ const UI_T = {
     h_audio:'🎵 संगीत प्लेयर', sub_audio:'अपने कंप्यूटर या URL से संगीत अपलोड करें।',
     h_visuals:'🎨 विजुअल · पृष्ठभूमि', h_tamas:'🐱 12 पालतू', sub_tamas:'सक्रिय पालतू चुनें।',
     h_media:'🖼️ स्टिकर · GIF', h_effects:'✨ विशेष प्रभाव', h_anim:'🎭 एनिमेशन',
-    h_mech:'🏆 गेम मैकेनिक्स', h_export:'📤 निर्यात · एम्बेड · iFrame',
+    h_mech:'🏆 गेम मैकेनिक्स', h_design:'🖌️ एडिटर डिज़ाइन',
+    h_preview:'👁️ गेम प्रीव्यू',
+    h_export:'📤 निर्यात · एम्बेड · iFrame',
     ct_identity:'🏷️ शीर्षक और लेखक', ct_lang:'🌍 गेम भाषा', ct_levels:'📊 कठिनाई स्तर',
     ct_formats:'📝 कार्य प्रारूप', ct_score:'🏆 स्कोरिंग सिस्टम',
     ct_discipline:'🎓 विषय', ct_ok_phrases:'✅ सही उत्तर के संवाद',
@@ -1893,7 +1986,8 @@ const UI_T = {
     nav_phrases:'دیالوگ‌های حیوان', nav_dict:'فرهنگ‌لغت · ضرب‌المثل', nav_media:'رسانه',
     nav_audio:'موسیقی · صدا', nav_visuals:'تصویری · پس‌زمینه', nav_tamas:'۱۲ حیوان',
     nav_media2:'استیکر · GIF', nav_game:'بازی', nav_effects:'جلوه‌های ویژه',
-    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_export:'صادرکردن',
+    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_design_section:'طراحی', nav_design:'طراحی ویرایشگر', nav_preview:'پیش‌نمایش',
+    nav_export:'صادرکردن',
     h_settings:'⚙️ تنظیمات بازی', sub_settings:'سطح، زبان، قالب تکلیف و تایمر را انتخاب کنید.',
     h_content:'📚 محتوا · ۱۲ موضوع', sub_content:'کلمات یا عبارات را با ویرگول جدا کنید.',
     h_phrases:'💬 دیالوگ‌های حیوان', sub_phrases:'دیالوگ‌ها را برای موضوعات و سطوح مختلف تنظیم کنید.',
@@ -1901,7 +1995,9 @@ const UI_T = {
     h_audio:'🎵 پخش‌کننده موسیقی', sub_audio:'موسیقی را از رایانه یا URL آپلود کنید.',
     h_visuals:'🎨 تصویری · پس‌زمینه', h_tamas:'🐱 ۱۲ حیوان', sub_tamas:'حیوانات فعال را انتخاب کنید.',
     h_media:'🖼️ استیکر · GIF', h_effects:'✨ جلوه‌های ویژه', h_anim:'🎭 انیمیشن',
-    h_mech:'🏆 مکانیک بازی', h_export:'📤 صادرکردن · جاسازی · iFrame',
+    h_mech:'🏆 مکانیک بازی', h_design:'🖌️ طراحی ویرایشگر',
+    h_preview:'👁️ پیش‌نمایش بازی',
+    h_export:'📤 صادرکردن · جاسازی · iFrame',
     ct_identity:'🏷️ عنوان و نویسنده', ct_lang:'🌍 زبان بازی', ct_levels:'📊 سطوح دشواری',
     ct_formats:'📝 قالب‌های تکلیف', ct_score:'🏆 سیستم نمره‌دهی',
     ct_discipline:'🎓 رشته / درس', ct_ok_phrases:'✅ دیالوگ پاسخ صحیح',
@@ -2089,15 +2185,37 @@ function applyUiLang(lang) {
   ['ui-lang','tb-lang-quick'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value=lang;
   });
+  // Update sidebar section labels
+  const sectionLabels = {
+    nav_main: t.nav_main, nav_media: t.nav_media, nav_game: t.nav_game,
+    nav_design_section: t.nav_design_section, nav_output: t.nav_output
+  };
+  document.querySelectorAll('.sb-section-lbl[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if(sectionLabels[k]) el.textContent = sectionLabels[k];
+  });
   // Rebuild dynamic content with new language labels
   buildTopics();
   renderPhrases();
-  // Update content panel sidebar label
-  const navContent=document.querySelector('[data-panel="content"] .sb-label');
-  if(navContent&&t.nav_content)navContent.textContent=t.nav_content;
+  // Update panel title (breadcrumb)
+  const curPanel = window._currentPanel || 'settings';
+  const pname = document.getElementById('tb-panel-name');
+  if(pname){
+    const curBtn = document.querySelector(`[data-panel="${curPanel}"] .sb-label`);
+    if(curBtn) pname.textContent = curBtn.textContent;
+  }
+  // Update back button text
+  const bbackSpan = document.querySelector('#btn-back span');
+  if(bbackSpan) bbackSpan.textContent = t.btn_back || 'Назад';
   // Update document title
-  document.title = '🌿 '+(t.h_settings?.replace('⚙️ ','')||'Tamagotchi Editor');
-  showToast('🌐 '+(t.lbl_uilang||'Language')+': '+lang.toUpperCase());
+  document.title = '🌿 Tamagotchi Editor · ' + lang.toUpperCase();
+  // Update content-type select options
+  const ctSel = document.getElementById('content-type');
+  if(ctSel && t.content_types) {
+    const vals = Object.keys(t.content_types);
+    [...ctSel.options].forEach(o => { if(t.content_types[o.value]) o.text = t.content_types[o.value]; });
+  }
+  showToast('🌐 ' + lang.toUpperCase());
 }
 
 function toggleLangPicker(){
@@ -2942,6 +3060,7 @@ const BASE_PHRASES_ERR = {
 };
 
 const TAMAS_BASE = [
+  {e:'🐱',n:'Котёнок'},{e:'🐈',n:'Кот рыжий'},          // ← Новые котята!
   {e:'🦊',n:'Лисёнок'},{e:'🐺',n:'Волчонок'},{e:'🦝',n:'Енот'},
   {e:'🐸',n:'Лягушонок'},{e:'🦔',n:'Ёжик'},{e:'🦉',n:'Совёнок'},
   {e:'🐰',n:'Зайка'},{e:'🦌',n:'Олень'},{e:'🐻',n:'Медвежонок'},
@@ -3005,7 +3124,7 @@ const ANIM_LIST = [
 //  STARS INIT
 // ════════════════════════════════════════════════════════
 (function initParticles(){
-  const c=document.getElementById('particles')||document.getElementById('particles')||document.getElementById('stars-bg');
+  const c=document.getElementById('stars-bg');
   if(!c)return;
   const colors=['#4ade80','#67e8f9','#d9f99d','#fcd34d','#a3e635','#86efac'];
   for(let i=0;i<90;i++){
@@ -3819,15 +3938,84 @@ function applyEditorTheme(theme, el){
   document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
   if(el)el.classList.add('on');
   const body=document.body;
-  body.className=''; // remove old theme classes
-  if(theme==='forest'){body.removeAttribute('class');}
-  else if(theme==='light'){body.classList.add('theme-light');}
-  else if(theme==='cosmic'){body.classList.add('theme-cosmic');}
-  else if(theme==='ocean'){body.classList.add('theme-ocean');}
-  else if(theme==='candy'){body.classList.add('theme-candy');}
+  const allThemes=['theme-light','theme-cosmic','theme-ocean','theme-candy',
+    'theme-neon','theme-sunset','theme-garden','theme-mirror','theme-ice',
+    'theme-sakura','theme-desert','theme-retro'];
+  allThemes.forEach(t=>body.classList.remove(t));
+  if(theme!=='forest') body.classList.add('theme-'+theme);
+  const hiddenStars=['light','ice'];
+  const sb=document.getElementById('stars-bg');
+  if(sb) sb.style.opacity=hiddenStars.includes(theme)?'0':'1';
   CFG.editorTheme=theme;
-  showToast('🎨 Тема: '+theme);
+  localStorage.setItem('tama-editor-theme',theme);
+  const names={forest:'🌲 Лес',light:'☀️ Светлый',cosmic:'🌌 Космос',
+    ocean:'🌊 Океан',candy:'🍭 Неон',neon:'⚡ Киберпанк',sunset:'🌅 Закат',
+    garden:'🌿 Сад',mirror:'🪞 Тёмный',ice:'❄️ Лёд',
+    sakura:'🌸 Сакура',desert:'🏜️ Пустыня',retro:'🎭 Ретро'};
+  showToast('🎨 '+(names[theme]||theme));
 }
+
+function toggleAnimations(on){
+  const style=document.getElementById('anim-toggle-style')||document.createElement('style');
+  style.id='anim-toggle-style';
+  style.textContent=on?'':'.card,.tama-slot,.fx-card,.anim-card,.chip,.sb-btn{transition:none!important;animation:none!important;}@keyframes forestBob,@keyframes cosmicBob{0%,100%{transform:none;}}';
+  document.head.appendChild(style);
+  CFG.editorAnimations=on;
+}
+function toggleBlur(on){
+  const els=document.querySelectorAll('#topbar,#sidebar');
+  els.forEach(e=>e.style.backdropFilter=on?'blur(16px)':'none');
+  CFG.editorBlur=on;
+}
+function applyCardRadius(v){
+  document.documentElement.style.setProperty('--card-radius',v+'px');
+  document.querySelectorAll('.card,.topic-card,.tama-slot').forEach(el=>el.style.borderRadius=v+'px');
+  CFG.editorCardRadius=v;
+}
+function saveDesignSettings(){
+  const data={
+    theme:CFG.editorTheme||'forest',
+    font:CFG.editorFont||'',
+    fontSize:CFG.editorFontSize||13,
+    animations:CFG.editorAnimations!==false,
+    blur:CFG.editorBlur!==false,
+    glow:CFG.editorGlow!==false,
+    particles:CFG.editorParticles!==false,
+  };
+  localStorage.setItem('tama-design-cfg',JSON.stringify(data));
+  showToast('💾 Дизайн сохранён!');
+}
+function loadDesignSettings(){
+  try{
+    const raw=localStorage.getItem('tama-design-cfg');
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(d.theme&&d.theme!=='forest'){
+      applyEditorTheme(d.theme,null);
+      // highlight btn
+      // find active theme btn by data attribute
+      document.querySelectorAll('.theme-btn').forEach(b => {
+        if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+d.theme+"'")) b.classList.add('on');
+      });
+      if(btn){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+    }
+    if(d.font) applyFontFamily(d.font);
+    if(d.fontSize) applyFontSize(d.fontSize);
+    if(d.animations===false) toggleAnimations(false);
+    if(d.blur===false) toggleBlur(false);
+    if(d.glow===false) toggleGlow(false);
+    if(d.particles===false) toggleParticles(false);
+  }catch(e){}
+}
+function resetDesign(){
+  localStorage.removeItem('tama-design-cfg');
+  document.body.className='';
+  document.documentElement.style.cssText='';
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
+  const fb=document.querySelector('.theme-btn');if(fb)fb.classList.add('on');
+  showToast('↩ Дизайн сброшен');
+}
+
 function applyFontFamily(font){
   document.documentElement.style.setProperty('--fn',font);
   CFG.editorFont=font;
@@ -3844,7 +4032,8 @@ function applyBorderWidth(bw, el){
   CFG.editorBorderWidth=bw;
 }
 function toggleParticles(on){
-  document.getElementById('particles').style.display=on?'block':'none';
+  const el=document.getElementById('stars-bg');
+  if(el)el.style.opacity=on?'1':'0';
   CFG.editorParticles=on;
 }
 function toggleGlow(on){
@@ -3927,6 +4116,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   // Apply UI language (must come after buildTopics so i18n keys are in DOM)
   if(savedLang!=='ru')applyUiLang(savedLang);
+  // Load saved design
+  loadDesignSettings();
   // Auto-save every 30s
   setInterval(saveConfig, 30000);
   // Auto-refresh preview when switching to preview panel
