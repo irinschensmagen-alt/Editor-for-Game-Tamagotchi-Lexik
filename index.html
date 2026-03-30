@@ -25,7 +25,7 @@
   --glow-cy:0 0 24px rgba(6,182,212,.5);
 }
 html,body{height:100%;font-family:var(--fn);background:var(--bg,var(--space));color:var(--tx);}
-body{display:flex;flex-direction:column;overflow:hidden;}
+body{display:flex;flex-direction:column;overflow:hidden;height:100vh;}
 #stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
 #topbar{position:relative;z-index:10;background:color-mix(in srgb,var(--bg,#050e0a) 90%,transparent);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;}
@@ -39,7 +39,7 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 .tbbtn.pri:hover{filter:brightness(1.12);}
 .tbbtn.sav{background:linear-gradient(135deg,var(--cy),var(--pu));border-color:transparent;color:#fff;}
 #save-status{font-size:11px;color:var(--gr2);min-width:80px;}
-#app{display:flex;flex:1;overflow:hidden;position:relative;z-index:1;}
+#app{display:flex;flex:1;overflow:hidden;position:relative;z-index:1;min-height:0;}
 #sidebar{width:220px;flex-shrink:0;background:color-mix(in srgb,var(--bg,#050e0a) 88%,transparent);backdrop-filter:blur(12px);
   border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:4px;}
 .sb-section-lbl{font-family:var(--fp);font-size:8px;color:var(--tx2);letter-spacing:2.5px;padding:10px 8px 4px;text-transform:uppercase;}
@@ -50,7 +50,7 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 .sb-btn.active{background:linear-gradient(135deg,rgba(22,163,74,.3),rgba(6,182,212,.2));
   color:var(--tx);border:1px solid rgba(74,222,128,.4);}
 .sb-btn .ic{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
-#main{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 24px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth;}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 24px 40px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth;min-height:0;}
 .panel{display:none;}
 .panel.active{display:flex;flex-direction:column;gap:18px;}
 .panel-title{font-family:var(--fp);font-size:15px;font-weight:900;
@@ -241,6 +241,20 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
 ::-webkit-scrollbar-thumb:hover{background:var(--pu2);}
 .panel.active{animation:panelIn .22s cubic-bezier(.4,0,.2,1) both;}
 @keyframes panelIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+/* ══ SCROLL EVERYWHERE ══ */
+.panel.active{overflow-y:visible;}
+#sidebar{overflow-y:auto;overflow-x:hidden;min-height:0;}
+.topic-card textarea,.code-area{resize:vertical;}
+/* Phrase lists */
+#ok-phrases-list,#err-phrases-list{max-height:360px;overflow-y:auto;}
+/* Theme btn hover */
+.theme-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.35);}
+.theme-btn.on{box-shadow:0 0 0 2px var(--pu2),0 4px 14px rgba(0,0,0,.4)!important;}
+/* Sidebar tooltip */
+.sb-btn[title]{position:relative;}
+/* Chip active glow */
+.chip.on{box-shadow:0 0 10px rgba(74,222,128,.35);}
+
 .card{transition:box-shadow .2s,transform .15s;}
 .card:hover{box-shadow:0 4px 20px rgba(0,0,0,.25);}
 /* RTL support */
@@ -373,10 +387,10 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
 
 <!-- TOP BAR -->
 <div id="topbar">
-  <div class="topbar-logo">🌿 ТАМАГОЧИ <span>EDITOR</span></div>
+  <div class="topbar-logo">🐱 ТАМАГОЧИ <span>EDITOR</span></div>
   <button id="btn-back" onclick="navBack()" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:9px;color:var(--tx2);cursor:pointer;font-size:12px;font-weight:700;padding:6px 12px;transition:all .2s;white-space:nowrap;">← Назад</button>
   <span id="tb-panel-name" style="font-size:11px;color:var(--tx2);font-weight:600;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 10px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;">⚙️ Настройки</span>
-  <div class="preview-pill" id="config-preview">🦊 Новая игра</div>
+  <div class="preview-pill" id="config-preview">🐱 Игра Тамагочи</div>
   <div class="topbar-sep"></div>
   <select id="tb-lang-quick" onchange="applyUiLang(this.value);syncLangSelectors(this.value)" style="background:var(--card);border:1px solid var(--border);border-radius:9px;color:var(--tx);font-size:11px;padding:5px 8px;cursor:pointer;outline:none;flex-shrink:0;">
     <option value="ru">🇷🇺 RU</option>
@@ -399,39 +413,39 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
 <!-- SIDEBAR -->
 <nav id="sidebar">
   <span class="sb-section-lbl" data-i18n="nav_main">Основное</span>
-  <button class="sb-btn active" onclick="showPanel('settings')" data-panel="settings">
+  <button class="sb-btn active" onclick="showPanel('settings')" data-panel="settings" title="Настройки игры — Язык, уровни, форматы">
     <span class="ic">⚙️</span><span class="sb-label" data-i18n="nav_settings">Настройки игры</span></button>
-  <button class="sb-btn" onclick="showPanel('content')" data-panel="content">
+  <button class="sb-btn" onclick="showPanel('content')" data-panel="content" title="Контент · 12 тем — Слова, пары, пословицы">
     <span class="ic">📚</span><span class="sb-label" data-i18n="nav_content">Контент · 12 тем</span></button>
-  <button class="sb-btn" onclick="showPanel('phrases')" data-panel="phrases">
+  <button class="sb-btn" onclick="showPanel('phrases')" data-panel="phrases" title="Реплики Тамагочи — Что говорит питомец">
     <span class="ic">💬</span><span class="sb-label" data-i18n="nav_phrases">Реплики Тамагочи</span></button>
-  <button class="sb-btn" onclick="showPanel('dict')" data-panel="dict">
+  <button class="sb-btn" onclick="showPanel('dict')" data-panel="dict" title="Словари · Пословицы — Встроенные словари">
     <span class="ic">📖</span><span class="sb-label" data-i18n="nav_dict">Словари · Пословицы</span></button>
 
   <span class="sb-section-lbl" data-i18n="nav_media">Медиа</span>
-  <button class="sb-btn" onclick="showPanel('audio')" data-panel="audio">
+  <button class="sb-btn" onclick="showPanel('audio')" data-panel="audio" title="Аудио · Музыка — Загрузить музыку">
     <span class="ic">🎵</span><span class="sb-label" data-i18n="nav_audio">Аудио · Музыка</span></button>
-  <button class="sb-btn" onclick="showPanel('visuals')" data-panel="visuals">
+  <button class="sb-btn" onclick="showPanel('visuals')" data-panel="visuals" title="Визуал · Фоны — Цвета и фоновые картинки">
     <span class="ic">🎨</span><span class="sb-label" data-i18n="nav_visuals">Визуал · Фон</span></button>
-  <button class="sb-btn" onclick="showPanel('tamas')" data-panel="tamas">
+  <button class="sb-btn" onclick="showPanel('tamas')" data-panel="tamas" title="12 Тамагочи — Выбрать питомца">
     <span class="ic">🐱</span><span class="sb-label" data-i18n="nav_tamas">12 Тамагочи</span></button>
-  <button class="sb-btn" onclick="showPanel('media')" data-panel="media">
+  <button class="sb-btn" onclick="showPanel('media')" data-panel="media" title="Стикеры · Гифы — Медиагалерея">
     <span class="ic">🖼️</span><span class="sb-label" data-i18n="nav_media2">Стикеры · Гифы</span></button>
 
   <span class="sb-section-lbl" data-i18n="nav_game">Игра</span>
-  <button class="sb-btn" onclick="showPanel('effects')" data-panel="effects">
+  <button class="sb-btn" onclick="showPanel('effects')" data-panel="effects" title="Спецэффекты — Анимации при ответах">
     <span class="ic">✨</span><span class="sb-label" data-i18n="nav_effects">Спецэффекты</span></button>
-  <button class="sb-btn" onclick="showPanel('animations')" data-panel="animations">
+  <button class="sb-btn" onclick="showPanel('animations')" data-panel="animations" title="Анимации · 3D — Действия питомца">
     <span class="ic">🎭</span><span class="sb-label" data-i18n="nav_anim">Анимации · 3D</span></button>
-  <button class="sb-btn" onclick="showPanel('mechanics')" data-panel="mechanics">
+  <button class="sb-btn" onclick="showPanel('mechanics')" data-panel="mechanics" title="Механики игры — Таймер, монеты, жизни">
     <span class="ic">🏆</span><span class="sb-label" data-i18n="nav_mech">Механики игры</span></button>
 
   <span class="sb-section-lbl" data-i18n="nav_output">Вывод</span>
-  <button class="sb-btn" onclick="showPanel('design')" data-panel="design">
+  <button class="sb-btn" onclick="showPanel('design')" data-panel="design" title="Дизайн редактора — Тема, шрифт, музыка">
     <span class="ic">🖌️</span><span class="sb-label" data-i18n="nav_design">Дизайн редактора</span></button>
-  <button class="sb-btn" onclick="showPanel('preview')" data-panel="preview">
+  <button class="sb-btn" onclick="showPanel('preview')" data-panel="preview" title="Предпросмотр — Как выглядит игра">
     <span class="ic">👁️</span><span class="sb-label" data-i18n="nav_preview">Предпросмотр</span></button>
-  <button class="sb-btn" onclick="showPanel('export')" data-panel="export">
+  <button class="sb-btn" onclick="showPanel('export')" data-panel="export" title="Экспорт игры — Скачать HTML или iFrame">
     <span class="ic">📤</span><span class="sb-label" data-i18n="nav_export">Экспорт игры</span></button>
 </nav>
 
@@ -445,11 +459,10 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
   <!-- PREVIEW CARD -->
   <div class="card" style="background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(6,182,212,.1));border-color:rgba(74,222,128,.4);">
     <div style="display:flex;align-items:center;gap:16px;">
-      <div style="font-size:52px;animation:forestBob 3s ease-in-out infinite;" id="preview-tama-icon">🦊</div>
+      <div style="font-size:52px;animation:forestBob 3s ease-in-out infinite;" id="preview-tama-icon">🐱</div>
       <div style="flex:1;">
-        <div style="font-family:var(--fp);font-size:11px;color:var(--pk2);margin-bottom:4px;" id="preview-title-big">Моя игра</div>
-        <div style="font-size:11px;color:var(--tx2);" id="preview-meta-line">—</div>
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;" id="preview-badges"></div>
+        <div style="font-family:var(--fp);font-size:13px;font-weight:900;color:var(--pu2);margin-bottom:3px;" id="preview-title-big">—</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;" id="preview-badges"></div>
       </div>
       <div style="text-align:right;">
         <div style="font-family:var(--fp);font-size:10px;color:var(--cy2);" id="preview-level-badge">A1</div>
@@ -859,13 +872,19 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
   <div class="card">
     <div class="card-title" data-i18n="ct_theme">🌌 Цветовая схема</div>
     <div class="chips" id="theme-chips">
-      <div class="chip on" onclick="selChip(this,'theme')" data-v="cosmic">🌌 Космос (базовый)</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="forest">🌲 Лес</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="ocean">🌊 Океан</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="candy">🍭 Леденцы</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="retro">👾 Ретро</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="dark">🖤 Тёмный</div>
-      <div class="chip" onclick="selChip(this,'theme')" data-v="light">🤍 Светлый</div>
+      <div class="chip on" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="forest">🌲 Лес</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="cosmic">🌌 Космос</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="ocean">🌊 Океан</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="candy">🍭 Неон</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="neon">⚡ Киберпанк</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="sunset">🌅 Закат</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="garden">🌿 Сад</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="mirror">🪞 Зеркало</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="ice">❄️ Лёд</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="sakura">🌸 Сакура</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="desert">🏜️ Пустыня</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="retro">🎭 Ретро</div>
+      <div class="chip" onclick="selChip(this,'theme');applyEditorTheme(this.dataset.v,null);syncDesignBtn(this.dataset.v)" data-v="light">☀️ Светлый</div>
     </div>
   </div>
   <div class="row2">
@@ -1385,7 +1404,7 @@ body.theme-retro{--space:#0d0d0d;--space2:#1a1a1a;--space3:#262626;--pu:#16a34a;
   <div class="panel-sub">Визуальный предпросмотр игры Тамагочи с вашим контентом и настройками.</div>
   <!-- PREVIEW CARD -->
   <div style="background:linear-gradient(135deg,rgba(22,163,74,.12),rgba(6,182,212,.08));border:1px solid rgba(74,222,128,.35);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">
-    <div id="preview-hero" style="font-size:72px;animation:forestBob 3s ease-in-out infinite;display:block;margin-bottom:12px;">🦊</div>
+    <div id="preview-hero" style="font-size:72px;animation:forestBob 3s ease-in-out infinite;display:block;margin-bottom:12px;">🐱</div>
     <div id="preview-game-title" style="font-family:var(--fp);font-size:16px;font-weight:900;color:var(--a2,#4ade80);margin-bottom:4px;">Моя игра</div>
     <div id="preview-game-meta" style="font-size:11px;color:var(--tx2);margin-bottom:12px;">—</div>
     <div id="preview-badges-row" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;"></div>
@@ -1473,6 +1492,7 @@ const UI_T = {
     btn_dl_game:'🎮 Скачать игру (HTML)', btn_dl_cfg:'📋 Конфиг (JSON)',
     btn_copy_link:'🔗 Скопировать ссылку', btn_save:'💾 Сохранить', btn_export:'📤 Экспорт',
     btn_add:'+ Добавить',
+    words_label:'слов',pairs_label:'пар',preview_updated:'Предпросмотр обновлён!',topics_count:'тем',
     lv1_head:'УРОВЕНЬ 1 · БАЗОВЫЙ', lv2_head:'УРОВЕНЬ 2 · ПОВЫШЕННЫЙ', lv3_head:'УРОВЕНЬ 3 · ВЫСОКИЙ',
     m_timer:'Таймер', m_coins:'Монеты', m_lives:'Жизни', m_progress:'Прогресс-бар',
     m_shop:'Магазин', m_growth:'Рост Тамагочи', m_hint:'Подсказка после ошибки',
@@ -1524,6 +1544,7 @@ const UI_T = {
     m_shop:'Laden', m_growth:'Tamagotchi-Wachstum', m_hint:'Hinweis nach Fehler',
     m_results:'Ergebnistabelle', m_restart:'Nochmal spielen',
     lv_prefix:'ST.',theme_word:'THEMA',q_translate:'Wie übersetzt man:',
+    words_label:'Wörter',pairs_label:'Paare',preview_updated:'Vorschau aktualisiert!',topics_count:'Themen',
     no_content:'Wörter zu Themen hinzufügen für Vorschau',
     lbl_theme_name:'Themenname',lbl_theme_subject:'Thema / Fach',
     lbl_theme_words:'Wörter (kommagetrennt)',lbl_theme_pairs:'Paare (Wort:Übersetzung)',
@@ -1583,6 +1604,7 @@ const UI_T = {
     m_shop:'Shop', m_growth:'Tamagotchi Growth', m_hint:'Hint after error',
     m_results:'Results table', m_restart:'Play Again button',
     lv_prefix:'LV.',theme_word:'THEME',q_translate:'How to translate:',
+    words_label:'words',pairs_label:'pairs',preview_updated:'Preview updated!',topics_count:'topics',
     no_content:'Add words to themes for preview',
     lbl_theme_name:'Theme Name',lbl_theme_subject:'Topic / Subject',
     lbl_theme_words:'Words (comma-separated)',lbl_theme_pairs:'Pairs (word:translation)',
@@ -1642,6 +1664,7 @@ const UI_T = {
     m_shop:'Boutique', m_growth:'Croissance du Tamagotchi', m_hint:'Indice après erreur',
     m_results:'Tableau des résultats', m_restart:'Bouton Rejouer',
     lv_prefix:'NV.',theme_word:'THÈME',q_translate:'Comment se traduit :',
+    words_label:'mots',pairs_label:'paires',preview_updated:'Aperçu mis à jour!',topics_count:'thèmes',
     no_content:'Ajoutez des mots aux thèmes pour la prévisualisation',
     lbl_theme_name:'Nom du thème',lbl_theme_subject:'Thème / Matière',
     lbl_theme_words:'Mots (séparés par virgules)',lbl_theme_pairs:'Paires (mot:traduction)',
@@ -2197,6 +2220,9 @@ function applyUiLang(lang) {
   // Rebuild dynamic content with new language labels
   buildTopics();
   renderPhrases();
+  updatePreview();
+  // If preview panel is open, refresh it
+  if(window._currentPanel==='preview') setTimeout(refreshPreview,50);
   // Update panel title (breadcrumb)
   const curPanel = window._currentPanel || 'settings';
   const pname = document.getElementById('tb-panel-name');
@@ -3518,21 +3544,23 @@ function addToGallery(url,name){const g=document.getElementById('media-gallery')
 //  PREVIEW / UPDATE
 // ════════════════════════════════════════════════════════
 function updatePreview(){
-  const t=document.getElementById('g-title')?.value||'Моя игра';
+  const t=document.getElementById('g-title')?.value||'';
   const lvEl=document.querySelector('#lang-level-chips .chip.on');
   const lv=lvEl?lvEl.dataset.v:'A1';
-  const langEl=document.querySelector('#lang-chips .chip.on');
-  const lang=langEl?langEl.textContent.trim():'';
-  document.getElementById('config-preview').innerHTML=`🦊 ${t}`;
+  const heroEmoji=TAMAS_BASE?.[CFG?.tamas?.active?.[0]||0]?.e||'🐱';
+  // topbar preview pill — just show name
+  const cp=document.getElementById('config-preview');
+  if(cp)cp.innerHTML=heroEmoji+' '+(t||'Тамагочи');
+  // settings preview card
+  const icon=document.getElementById('preview-tama-icon');
+  if(icon)icon.textContent=heroEmoji;
   const big=document.getElementById('preview-title-big');
-  if(big)big.textContent=t;
-  const meta=document.getElementById('preview-meta-line');
-  if(meta)meta.textContent=lang||'—';
+  if(big)big.textContent=t||'—';
   const lvBadge=document.getElementById('preview-level-badge');
   if(lvBadge)lvBadge.textContent=lv;
   const topics=CFG?CFG.topics.filter(tp=>tp.words.length>0).length:0;
   const tc=document.getElementById('preview-topics-count');
-  if(tc)tc.textContent=topics+' тем';
+  if(tc){const T=getT();tc.textContent=topics+' '+(T.topics_count||'тем');}
 }
 // ════════════════════════════════════════════════════════
 //  SAVE / LOAD
@@ -3850,10 +3878,15 @@ function refreshPreview(){
   // title
   const titleEl=document.getElementById('preview-game-title');
   if(titleEl)titleEl.textContent=CFG.title||'Моя игра';
-  // meta
+  // meta — show language label in current UI lang
   const metaEl=document.getElementById('preview-game-meta');
   const langEl=document.querySelector('#lang-chips .chip.on');
-  if(metaEl)metaEl.textContent=(langEl?langEl.textContent.trim():'—')+' · '+(CFG.langLevel||'A1');
+  const langCode=langEl?.dataset?.v||'';
+  const T2=getT();
+  // Language name in current UI lang
+  const langNames = T2.lang_names || {};
+  const displayLang = langNames[langCode] || (langEl?langEl.textContent.trim():'');
+  if(metaEl)metaEl.textContent=(langCode?langCode.toUpperCase()+' ':'')+displayLang+(displayLang?' · ':' · ')+(CFG.langLevel||'A1');
   // badges
   const badgesEl=document.getElementById('preview-badges-row');
   if(badgesEl){
@@ -3903,19 +3936,20 @@ function refreshPreview(){
   // topics overview
   const overviewEl=document.getElementById('preview-topics-overview');
   if(overviewEl){
+    const T=getT();
     const lvColors=['rgba(6,182,212,.15)','rgba(22,163,74,.15)','rgba(244,63,94,.15)'];
     const lvBorders=['rgba(6,182,212,.4)','rgba(74,222,128,.4)','rgba(244,63,94,.4)'];
     overviewEl.innerHTML=CFG.topics.map((t,i)=>{
       const lv=Math.floor(i/4);
       return`<div style="background:${lvColors[lv]||'var(--card)'};border:1px solid ${lvBorders[lv]||'var(--border)'};border-radius:10px;padding:10px;">
-        <div style="font-size:9px;font-family:var(--fp);color:var(--cy2);letter-spacing:1px;margin-bottom:4px;">УР.${lv+1} · ТМ.${(i%4)+1}</div>
+        <div style="font-size:9px;font-family:var(--fp);color:var(--cy2);letter-spacing:1px;margin-bottom:4px;">${T.lv_prefix||'УР.'} ${lv+1} · ${T.theme_word||'ТМ.'} ${(i%4)+1}</div>
         <div style="font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px;">${t.icon||'📌'} ${escHtml(t.name)}</div>
         ${t.subject?`<div style="font-size:9px;color:var(--tx2);">🏷️ ${escHtml(t.subject)}</div>`:''}
-        <div style="font-size:10px;color:var(--a2);margin-top:4px;">${t.words.length} слов · ${t.pairs.length} пар · ${t.proverbs.length} пословиц</div>
+        <div style="font-size:10px;color:var(--pu2);margin-top:4px;">${t.words.length} ${T.words_label||'слов'} · ${t.pairs.length} ${T.pairs_label||'пар'}</div>
       </div>`;
     }).join('');
   }
-  showToast('👁 Предпросмотр обновлён!');
+  showToast('👁️ '+(getT().preview_updated||'Предпросмотр обновлён!'));
 }
 
 let _previewInterval=null;
@@ -3935,24 +3969,48 @@ function startPreviewTimer(){
 
 // ═══ DESIGN PANEL FUNCTIONS ═══════════════════════════════════════════
 function applyEditorTheme(theme, el){
-  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
-  if(el)el.classList.add('on');
+  // Highlight the design panel button
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    b.classList.remove('on');
+    b.style.border='2px solid var(--border)';
+  });
+  if(el && el.classList.contains('theme-btn')){
+    el.classList.add('on');
+    el.style.border='2px solid var(--pu2)';
+  }
+  // Remove all theme classes
   const body=document.body;
   const allThemes=['theme-light','theme-cosmic','theme-ocean','theme-candy',
     'theme-neon','theme-sunset','theme-garden','theme-mirror','theme-ice',
     'theme-sakura','theme-desert','theme-retro'];
   allThemes.forEach(t=>body.classList.remove(t));
   if(theme!=='forest') body.classList.add('theme-'+theme);
-  const hiddenStars=['light','ice'];
+  // Stars visibility
   const sb=document.getElementById('stars-bg');
-  if(sb) sb.style.opacity=hiddenStars.includes(theme)?'0':'1';
+  if(sb) sb.style.opacity=['light','ice'].includes(theme)?'0':'1';
   CFG.editorTheme=theme;
   localStorage.setItem('tama-editor-theme',theme);
+  // Sync design panel buttons
+  syncDesignBtn(theme);
+  // Sync visuals chips
+  document.querySelectorAll('#theme-chips .chip').forEach(c=>{
+    c.classList.toggle('on', c.dataset.v===theme);
+  });
   const names={forest:'🌲 Лес',light:'☀️ Светлый',cosmic:'🌌 Космос',
     ocean:'🌊 Океан',candy:'🍭 Неон',neon:'⚡ Киберпанк',sunset:'🌅 Закат',
     garden:'🌿 Сад',mirror:'🪞 Тёмный',ice:'❄️ Лёд',
     sakura:'🌸 Сакура',desert:'🏜️ Пустыня',retro:'🎭 Ретро'};
   showToast('🎨 '+(names[theme]||theme));
+}
+
+// Sync the design panel theme-btn highlight
+function syncDesignBtn(theme){
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    const onc = b.getAttribute('onclick')||'';
+    const isActive = onc.includes("'"+theme+"'");
+    b.classList.toggle('on', isActive);
+    b.style.border = isActive ? '2px solid var(--pu2)' : '2px solid var(--border)';
+  });
 }
 
 function toggleAnimations(on){
@@ -3987,26 +4045,25 @@ function saveDesignSettings(){
 }
 function loadDesignSettings(){
   try{
-    const raw=localStorage.getItem('tama-design-cfg');
-    if(!raw)return;
-    const d=JSON.parse(raw);
-    if(d.theme&&d.theme!=='forest'){
-      applyEditorTheme(d.theme,null);
-      // highlight btn
-      // find active theme btn by data attribute
-      document.querySelectorAll('.theme-btn').forEach(b => {
-        if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+d.theme+"'")) b.classList.add('on');
-      });
-      if(btn){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
-    }
+    // Check both storage keys
+    const directTheme = localStorage.getItem('tama-editor-theme');
+    const raw = localStorage.getItem('tama-design-cfg');
+    const d = raw ? JSON.parse(raw) : {};
+    // Apply theme
+    const theme = d.theme || directTheme || 'forest';
+    applyEditorTheme(theme, null);
+    syncDesignBtn(theme);
+    // Apply font
     if(d.font) applyFontFamily(d.font);
     if(d.fontSize) applyFontSize(d.fontSize);
+    // Apply effects
     if(d.animations===false) toggleAnimations(false);
     if(d.blur===false) toggleBlur(false);
     if(d.glow===false) toggleGlow(false);
     if(d.particles===false) toggleParticles(false);
-  }catch(e){}
+  }catch(e){console.warn('loadDesignSettings error:',e);}
 }
+
 function resetDesign(){
   localStorage.removeItem('tama-design-cfg');
   document.body.className='';
