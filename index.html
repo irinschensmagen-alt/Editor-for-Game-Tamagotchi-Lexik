@@ -367,22 +367,416 @@ html,body{height:100%;overflow:hidden;}
   .row2,.row3{grid-template-columns:1fr;}
 }
 
-/* ── Alphabet helper ── */
-#alpha-helper{background:linear-gradient(135deg,rgba(74,222,128,.06),rgba(6,182,212,.04));border:1.5px solid rgba(74,222,128,.2);border-radius:16px;padding:14px 16px;}
-.alpha-title{font-family:var(--fp);font-size:8px;color:var(--cy2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.alpha-lang-badge{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:10px;padding:2px 10px;font-size:10px;color:var(--pu2);font-weight:900;letter-spacing:1px;}
-#alpha-chars{display:flex;flex-wrap:wrap;gap:5px;max-height:140px;overflow-y:auto;padding:2px 0;}
-#alpha-chars::-webkit-scrollbar{width:4px;}
-#alpha-chars::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
-.abt{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.22);border-radius:8px;color:var(--pu2);cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;padding:5px 9px;min-width:32px;text-align:center;transition:all .15s;user-select:none;-webkit-tap-highlight-color:transparent;}
-.abt:hover{background:rgba(74,222,128,.25);border-color:var(--pu2);transform:scale(1.1);}
-.abt:active{transform:scale(.95);}
-/* Special letters highlight (Ä, Ö, Ü, ß etc.) */
-.abt.special{background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.4);color:var(--cy2);}
-.abt.special:hover{background:rgba(6,182,212,.3);}
+bash
+
+python3 << 'PYEOF'
+import json
+c = open('/home/claude/ed.html', encoding='utf-8').read()
+
+# ══════════════════════════════════════════════════════════════════════════
+# FIX 10: Replace buildGameHTML with complete multilingual game
+# Including: alphabet keyboard, full language UI, colored text output
+# ══════════════════════════════════════════════════════════════════════════
+
+ALPHABETS = {
+    'de':['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','Ä','Ö','Ü','ß'],
+    'en':['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+    'fr':['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','À','Â','Ç','É','È','Ê','Î','Ô','Ù','Û'],
+    'es':['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+    'ru':['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ы','Э','Ю','Я'],
+    'it':['A','B','C','D','E','F','G','H','I','L','M','N','O','P','Q','R','S','T','U','V','Z','À','È','É','Ì','Ò','Ù'],
+    'pt':['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','Á','À','Â','Ã','Ç','É','Ê','Í','Ó','Ô','Õ','Ú'],
+    'ja':['あ','い','う','え','お','か','き','く','け','こ','さ','し','す','せ','そ','た','ち','つ','て','と','な','に','ぬ','ね','の','は','ひ','ふ','へ','ほ','ま','み','む','め','も','や','ゆ','よ','ら','り','る','れ','ろ','わ','を','ん'],
+    'zh':['你','好','是','的','我','了','在','人','有','大','来','中','国','到','他','们','时','年','也','就'],
+    'ar':['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'],
+    'hi':['अ','आ','इ','ई','उ','ऊ','ए','ओ','क','ख','ग','घ','च','छ','ज','झ','ट','ड','त','थ','द','ध','न','प','फ','ब','भ','म','य','र','ल','व','श','स','ह'],
+    'fa':['ا','ب','پ','ت','ث','ج','چ','ح','خ','د','ر','ز','ژ','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','گ','ل','م','ن','و','ه','ی'],
+}
+ALPHA_JSON = json.dumps(ALPHABETS, ensure_ascii=False)
+
+idx_bg = c.find('function buildGameHTML(cfgJson)')
+idx_bg_end = c.find('\nfunction copyGameLink', idx_bg)
+old_bg = c[idx_bg:idx_bg_end]
+
+new_bg = r"""function buildGameHTML(cfgJson){
+  collectConfig();
+  const C=CFG;
+  const lang=C.uiLang||C.gameLocale||C.exportLang||'ru';
+  const T2=UI_T[lang]||UI_T.ru;
+  const hero=TAMAS_BASE[C.tamas.active[0]||0]?.e||'🦊';
+  const filledTopics=C.topics.filter(t=>t.words.length>0||t.pairs.length>0);
+  const basePh=LANG_PHRASES[lang]||LANG_PHRASES.ru;
+  const allOk={
+    1:[...(basePh.ok[1]||[]),...(C.phrases?.ok?.[1]||[])],
+    2:[...(basePh.ok[2]||[]),...(C.phrases?.ok?.[2]||[])],
+    3:[...(basePh.ok[3]||[]),...(C.phrases?.ok?.[3]||[])]
+  };
+  const allErr={
+    1:[...(basePh.err[1]||[]),...(C.phrases?.err?.[1]||[])],
+    2:[...(basePh.err[2]||[]),...(C.phrases?.err?.[2]||[])],
+    3:[...(basePh.err[3]||[]),...(C.phrases?.err?.[3]||[])]
+  };
+  const ALPHABETS="""+ ALPHA_JSON +r""";
+  const alphaKeys=ALPHABETS[lang]||ALPHABETS['en'];
+  // All UI labels in chosen language
+  const UI={
+    welcome:{ru:'Привет! Как назовём питомца?',de:'Hallo! Wie heißt dein Haustier?',en:"Hi! What's your pet's name?",fr:"Salut! Comment s'appelle ton animal?",es:'¡Hola! ¿Cómo se llama tu mascota?',ja:'こんにちは！ペットの名前は？',zh:'你好！宠物叫什么名字？',ar:'!مرحباً! ما اسم حيوانك',hi:'नमस्ते! पालतू का नाम?',fa:'!سلام! نام حیوانت چیست',it:'Ciao! Come si chiama il tuo animale?',pt:'Olá! Como se chama o teu animal?'}[lang]||"Hi! Name your pet!",
+    enterName:{ru:'Введи имя',de:'Name eingeben',en:'Enter name',fr:'Entrez le nom',es:'Escribe el nombre',ja:'名前を入力',zh:'输入名字',ar:'أدخل الاسم',hi:'नाम दर्ज करें',fa:'نام وارد کنید',it:'Inserisci nome',pt:'Digite o nome'}[lang]||'Name',
+    startGame:{ru:'🚀 Начать игру!',de:'🚀 Spiel starten!',en:'🚀 Start game!',fr:'🚀 Commencer!',es:'🚀 ¡Iniciar!',ja:'🚀 スタート！',zh:'🚀 开始！',ar:'!🚀 ابدأ',hi:'🚀 खेल शुरू!',fa:'!🚀 شروع',it:'🚀 Inizia!',pt:'🚀 Iniciar!'}[lang]||'🚀 Start!',
+    kbdLabel:{ru:'⌨️ Клавиатура',de:'⌨️ Tastatur',en:'⌨️ Keyboard',fr:'⌨️ Clavier',es:'⌨️ Teclado',ja:'⌨️ キーボード',zh:'⌨️ 键盘',ar:'⌨️ لوحة المفاتيح',hi:'⌨️ कीबोर्ड',fa:'⌨️ صفحه‌کلید'}[lang]||'⌨️',
+    correct:{ru:'✓ Правильно!',de:'✓ Richtig!',en:'✓ Correct!',fr:'✓ Correct!',es:'✓ ¡Correcto!',ja:'✓ 正解！',zh:'✓ 正确！',ar:'!✓ صحيح',hi:'✓ सही!',fa:'!✓ درست'}[lang]||'✓',
+    wrong:{ru:'✗ Не верно',de:'✗ Falsch',en:'✗ Wrong',fr:'✗ Faux',es:'✗ Incorrecto',ja:'✗ 不正解',zh:'✗ 错误',ar:'✗ خطأ',hi:'✗ गलत',fa:'✗ اشتباه'}[lang]||'✗',
+    question:{ru:'Как переводится:',de:'Wie übersetzt man:',en:'Translate:',fr:'Traduire:',es:'Traducir:',ja:'翻訳してください:',zh:'翻译:',ar:'ترجم:',hi:'अनुवाद करें:',fa:'ترجمه کنید:'}[lang]||'Translate:',
+    lv1:C.levels[1]?.name||T2.lv1_short||'Lv.1',
+    lv2:C.levels[2]?.name||T2.lv2_short||'Lv.2',
+    lv3:C.levels[3]?.name||T2.lv3_short||'Lv.3',
+    openGame:T2.btn_dl_game||'🎮 Play',
+    openEditor:T2.lbl_editor_link||'🖊️ Editor',
+    langName:{ru:'Русский',de:'Deutsch',en:'English',fr:'Français',es:'Español',ja:'日本語',zh:'中文',ar:'العربية',hi:'हिन्दी',fa:'فارسی'}[lang]||lang.toUpperCase(),
+  };
+  const topicCards=filledTopics.slice(0,9).map(t=>`<div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.14);border-radius:9px;padding:8px 10px;font-size:11px;color:#86efac;"><b>${t.icon||'📌'}</b> <span style="color:#ecfdf5;font-weight:700;">${t.name}</span>${t.subject?`<span style="opacity:.6;font-size:10px;"> · ${t.subject}</span>`:''}<div style="font-size:9px;color:#4ade80;margin-top:2px;">${t.words.length}w${t.pairs.length?' · '+t.pairs.length+'p':''}</div></div>`).join('');
+  const exportCFG={...C,lang,uiLang:lang,gameLocale:lang,exportLang:lang,phrases:{ok:allOk,err:allErr},alphaKeys,UI,exportedAt:new Date().toISOString(),editorVersion:'v4'};
+  const isRTL=['ar','fa','he'].includes(lang);
+  return `<!DOCTYPE html>
+<html lang="${lang}" dir="${isRTL?'rtl':'ltr'}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${C.title||'Tamagotchi'} · ${lang.toUpperCase()}</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script>window.TAMA_CONFIG=${JSON.stringify(exportCFG)};<\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;scroll-behavior:smooth;}
+body{font-family:'Outfit',system-ui,sans-serif;background:linear-gradient(135deg,#050e0a 0%,#0d1f17 60%,#071410 100%);color:#ecfdf5;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 12px 32px;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:rgba(74,222,128,.35);border-radius:3px;}
+.screen{max-width:500px;width:100%;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;}}
+@keyframes bob{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) translateY(-10px) scale(1.08);}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.45);}50%{box-shadow:0 0 0 12px rgba(74,222,128,0);}}
+.hero{font-size:72px;display:block;margin:14px auto 10px;animation:bob 2.5s ease-in-out infinite;cursor:pointer;user-select:none;transition:transform .15s;}
+h1{font-size:22px;font-weight:900;background:linear-gradient(90deg,#4ade80,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;text-align:center;}
+.sub{color:#86efac;font-size:12px;margin-bottom:4px;text-align:center;}
+/* --- CARD --- */
+.card{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.16);border-radius:16px;padding:18px;margin:10px 0;}
+/* --- NAME INPUT --- */
+.name-display{font-size:30px;font-weight:900;color:#4ade80;letter-spacing:5px;min-height:44px;padding:4px 0;text-shadow:0 0 18px rgba(74,222,128,.55);text-align:center;margin-bottom:8px;}
+.name-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(74,222,128,.32);border-radius:10px;color:#ecfdf5;font-size:16px;padding:10px 16px;width:100%;outline:none;text-align:center;font-family:inherit;margin-bottom:10px;}
+.name-input:focus{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.14);}
+.name-input::placeholder{color:rgba(134,239,172,.5);}
+/* --- ALPHABET --- */
+.kbd-label{font-size:10px;color:#86efac;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;text-align:center;}
+.alpha-grid{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:10px;max-height:220px;overflow-y:auto;padding:2px;}
+.alpha-grid::-webkit-scrollbar{width:4px;}.alpha-grid::-webkit-scrollbar-thumb{background:rgba(74,222,128,.3);border-radius:2px;}
+.akey{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);border-radius:7px;color:#4ade80;cursor:pointer;font-size:14px;font-weight:700;padding:6px 9px;min-width:34px;text-align:center;transition:all .12s;user-select:none;touch-action:manipulation;}
+.akey:hover,.akey:active{background:rgba(74,222,128,.28);transform:scale(1.14);}
+.akey.del{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.akey.spc{min-width:80px;}
+/* --- BUTTONS --- */
+.btn-start{display:block;width:100%;border:none;border-radius:12px;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;padding:15px 28px;margin-top:10px;transition:all .2s;animation:glow 2s ease-in-out infinite;touch-action:manipulation;}
+.btn-start:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-link{display:block;width:100%;border:1.5px solid rgba(74,222,128,.3);border-radius:10px;background:transparent;color:#4ade80;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;padding:10px 20px;margin-top:7px;text-decoration:none;text-align:center;transition:all .2s;}
+.btn-link:hover{background:rgba(74,222,128,.08);}
+/* --- GAME ELEMENTS --- */
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0;}
+.badge{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:8px;color:#86efac;font-size:11px;padding:4px 10px;font-weight:700;}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:8px 0;}
+.lv{border-radius:10px;padding:10px 6px;text-align:center;}
+.lv:nth-child(1){background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);}
+.lv:nth-child(2){background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);}
+.lv:nth-child(3){background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);}
+.lv-em{font-size:20px;display:block;margin-bottom:3px;}
+.lv-name{font-size:11px;font-weight:800;margin-bottom:2px;color:#ecfdf5;}
+.lv-info{font-size:9px;color:#86efac;}
+.topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px;margin-top:8px;}
+/* --- GAME SCREENS (hidden initially) --- */
+.game-screen{display:none;}
+.question-card{background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px;margin:10px 0;text-align:left;}
+.question-text{font-size:16px;font-weight:700;color:#ecfdf5;margin-bottom:14px;line-height:1.4;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opt{background:rgba(255,255,255,.07);border:1.5px solid rgba(74,222,128,.2);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;color:#ecfdf5;}
+.opt:hover{background:rgba(74,222,128,.15);border-color:#4ade80;}
+.opt.correct{background:rgba(22,163,74,.3);border-color:#4ade80;color:#4ade80;}
+.opt.wrong{background:rgba(239,68,68,.2);border-color:#ef4444;color:#fca5a5;}
+.stats{display:flex;gap:12px;justify-content:center;align-items:center;margin:10px 0;flex-wrap:wrap;}
+.stat{font-size:14px;font-weight:700;}
+.progress-bar{height:7px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin:8px 0;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#16a34a,#06b6d4);border-radius:4px;transition:width .4s;}
+.phrase-bubble{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:10px 14px;font-size:13px;color:#4ade80;text-align:center;margin:8px 0;min-height:38px;}
+.result-screen{text-align:center;padding:20px;}
+.stars{font-size:40px;letter-spacing:6px;margin:10px 0;}
+/* --- POPUP --- */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeUp .25s ease;}
+.popup-box{background:linear-gradient(135deg,#050e0a,#0d1f17);border:1px solid rgba(74,222,128,.3);border-radius:18px;padding:26px;text-align:center;max-width:320px;width:92%;}
+@media(max-width:400px){.levels{grid-template-columns:1fr;}.options{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
+<!-- ═══ WELCOME SCREEN ═══ -->
+<div class="screen" id="screen-welcome">
+  <span class="hero" id="hero">${hero}</span>
+  <h1>${C.title||'Tamagotchi'}</h1>
+  <p class="sub">${C.audience||''} ${C.year?'· '+C.year:''}</p>
+
+  <!-- Pet name input -->
+  <div class="card" style="text-align:center;">
+    <p style="font-size:13px;color:#86efac;margin-bottom:12px;">${UI.welcome}</p>
+    <div class="name-display" id="name-display">?</div>
+    <input type="text" class="name-input" id="pet-name" maxlength="14"
+      placeholder="${UI.enterName}"
+      oninput="document.getElementById('name-display').textContent=this.value||'?'">
+    <div class="kbd-label">${UI.kbdLabel} · ${lang.toUpperCase()} · ${UI.langName}</div>
+    <div class="alpha-grid" id="alpha-grid"></div>
+    <button class="btn-start" onclick="doStart()">${UI.startGame}</button>
+  </div>
+
+  <!-- Game info -->
+  <div class="card">
+    <div class="badges">
+      <span class="badge">🌐 ${lang.toUpperCase()}</span>
+      <span class="badge">📊 ${C.langLevel||'A1'}</span>
+      <span class="badge">📚 ${filledTopics.length}/12</span>
+    </div>
+    <div class="levels">
+      <div class="lv"><span class="lv-em">${C.levels[1].emoji||'🐣'}</span><div class="lv-name">${UI.lv1}</div><div class="lv-info">⏱${C.levels[1].timer}s ❤${C.levels[1].lives}</div></div>
+      <div class="lv"><span class="lv-em">${C.levels[2].emoji||'🐥'}</span><div class="lv-name">${UI.lv2}</div><div class="lv-info">⏱${C.levels[2].timer}s ❤${C.levels[2].lives}</div></div>
+      <div class="lv"><span class="lv-em">${C.levels[3].emoji||'🌟'}</span><div class="lv-name">${UI.lv3}</div><div class="lv-info">⏱${C.levels[3].timer}s ❤${C.levels[3].lives}</div></div>
+    </div>
+    ${filledTopics.length>0?'<div class="topics-grid">'+topicCards+'</div>':''}
+  </div>
+
+  <a href="https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/?lang=${lang}" target="_blank" class="btn-link">🎮 ${UI.openGame}</a>
+  <a href="https://irinschensmagen-alt.github.io/Editor-for-Game-Tamagotchi-Lexik/" target="_blank" class="btn-link">🖊️ ${UI.openEditor}</a>
+</div>
+
+<!-- ═══ GAME SCREEN ═══ -->
+<div class="screen game-screen" id="screen-game">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+    <span id="game-hero" style="font-size:36px;">${hero}</span>
+    <div style="flex:1;">
+      <div class="stats">
+        <span class="stat">❤️ <span id="g-lives">${C.levels[1].lives||3}</span></span>
+        <span class="stat">🪙 <span id="g-coins">0</span></span>
+        <span class="stat">⏱ <span id="g-timer">${C.levels[1].timer||30}</span></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="g-progress" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="phrase-bubble" id="g-phrase">${(basePh.ok[1]||['👋'])[0]}</div>
+  <div class="question-card">
+    <div class="question-text" id="g-question">${UI.question}</div>
+    <div class="options" id="g-options"></div>
+  </div>
+  <button onclick="endGame()" class="btn-link" style="margin-top:10px;font-size:11px;opacity:.6;">✕ ${lang==='de'?'Beenden':lang==='fr'?'Terminer':lang==='es'?'Terminar':'Quit'}</button>
+</div>
+
+<!-- ═══ RESULT SCREEN ═══ -->
+<div class="screen game-screen" id="screen-result">
+  <div class="result-screen">
+    <span style="font-size:64px;" id="r-hero">${hero}</span>
+    <h1 id="r-title"></h1>
+    <div class="stars" id="r-stars"></div>
+    <div id="r-phrase" class="phrase-bubble" style="margin:14px 0;"></div>
+    <div id="r-stats" style="font-size:13px;color:#86efac;line-height:2;margin-bottom:16px;"></div>
+    <button class="btn-start" onclick="restartGame()" style="animation:none;">${lang==='de'?'Nochmal spielen!':lang==='fr'?'Rejouer!':lang==='es'?'¡Volver a jugar!':lang==='ru'?'Играть снова!':'Play again!'}</button>
+    <button onclick="goHome()" class="btn-link" style="margin-top:8px;">${lang==='de'?'← Hauptmenü':lang==='fr'?'← Menu':lang==='es'?'← Menú':lang==='ru'?'← Главная':'← Menu'}</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const CFG=window.TAMA_CONFIG||{};
+  const alphaKeys=CFG.alphaKeys||[];
+  const UI=CFG.UI||{};
+  const lang=CFG.lang||'ru';
+  const inp=document.getElementById('pet-name');
+  const disp=document.getElementById('name-display');
+  const grid=document.getElementById('alpha-grid');
+  const heroEl=document.getElementById('hero');
+  let petName='';
+
+  // ── Build alphabet keyboard ──────────────────────────────────────────
+  alphaKeys.forEach(ch=>{
+    const b=document.createElement('button');
+    b.className='akey';b.textContent=ch;
+    b.addEventListener('click',()=>{ if(inp.value.length<14){inp.value+=ch;disp.textContent=inp.value||'?';} });
+    grid.appendChild(b);
+  });
+  // Space
+  const sp=document.createElement('button');sp.className='akey spc';sp.textContent='␣';
+  sp.addEventListener('click',()=>{ if(inp.value.length<14){inp.value+=' ';disp.textContent=inp.value||'?';} });
+  grid.appendChild(sp);
+  // Backspace
+  const del=document.createElement('button');del.className='akey del';del.textContent='⌫';
+  del.addEventListener('click',()=>{ inp.value=inp.value.slice(0,-1);disp.textContent=inp.value||'?'; });
+  grid.appendChild(del);
+  // Clear
+  const clr=document.createElement('button');clr.className='akey del';clr.textContent='✕';
+  clr.addEventListener('click',()=>{ inp.value='';disp.textContent='?'; });
+  grid.appendChild(clr);
+
+  // ── Hero interaction ──────────────────────────────────────────────────
+  heroEl.addEventListener('click',()=>{
+    heroEl.style.transform='scale(1.4) rotate(20deg)';
+    setTimeout(()=>{heroEl.style.transform='';},220);
+    showPhrase((CFG.phrases?.ok?.[1]||['👋'])[Math.floor(Math.random()*3)]);
+  });
+
+  // ── Game state ────────────────────────────────────────────────────────
+  let lives=CFG.levels?.[1]?.lives||3;
+  let timer=CFG.levels?.[1]?.timer||30;
+  let coins=0;
+  let currentQ=0;
+  let totalQ=10;
+  let correct=0;
+  let timerInterval=null;
+  let currentLevel=1;
+  const topics=CFG.topics?.filter(t=>t.words?.length>0||t.pairs?.length>0)||[];
+  let questions=[];
+
+  function buildQuestions(){
+    questions=[];
+    topics.forEach(topic=>{
+      const words=topic.words||[];
+      const pairs=topic.pairs||[];
+      // Word questions
+      words.forEach(w=>{
+        const others=words.filter(x=>x!==w).slice(0,3);
+        if(others.length>=1){
+          const opts=[w,...others.slice(0,3)].sort(()=>Math.random()-.5);
+          questions.push({q:(UI.question||'Translate:')+' "'+w+'"',correct:w,opts,type:'word'});
+        }
+      });
+      // Pair questions
+      pairs.forEach(p=>{
+        const others=pairs.filter(x=>x.s!==p.s).slice(0,3);
+        if(others.length>=1){
+          const opts=[p.e,...others.map(x=>x.e)].sort(()=>Math.random()-.5);
+          questions.push({q:(UI.question||'Translate:')+' "'+p.s+'"',correct:p.e,opts,type:'pair'});
+        }
+      });
+    });
+    questions.sort(()=>Math.random()-.5);
+    return questions.slice(0,totalQ);
+  }
+
+  function showPhrase(ph){
+    const el=document.getElementById('g-phrase');
+    if(el){el.textContent=ph;el.style.animation='none';void el.offsetWidth;el.style.animation='';}
+  }
+
+  function showScreen(id){
+    ['screen-welcome','screen-game','screen-result'].forEach(sid=>{
+      const el=document.getElementById(sid);
+      if(el){el.style.display=sid===id?'flex':'none';el.classList.toggle('game-screen',sid!=='screen-welcome');}
+    });
+    if(id==='screen-welcome'){
+      document.getElementById('screen-welcome').style.display='block';
+    }
+  }
+
+  function startQuestion(){
+    if(currentQ>=questions.length){showResult();return;}
+    const q=questions[currentQ];
+    document.getElementById('g-question').textContent=q.q;
+    document.getElementById('g-progress').style.width=((currentQ/questions.length)*100)+'%';
+    // Timer
+    clearInterval(timerInterval);
+    let t=timer;
+    const tEl=document.getElementById('g-timer');
+    if(tEl)tEl.textContent=t;
+    timerInterval=setInterval(()=>{
+      t--;if(tEl)tEl.textContent=t;
+      if(t<=0){clearInterval(timerInterval);handleAnswer(null,q);}
+    },1000);
+    // Options
+    const optsEl=document.getElementById('g-options');
+    optsEl.innerHTML='';
+    q.opts.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt';
+      btn.textContent=String.fromCharCode(65+i)+'. '+opt;
+      btn.onclick=()=>handleAnswer(opt,q,btn);
+      optsEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(chosen,q,btn){
+    clearInterval(timerInterval);
+    const isCorrect=chosen===q.correct;
+    const optsEl=document.getElementById('g-options');
+    [...optsEl.querySelectorAll('.opt')].forEach(b=>{
+      if(b.textContent.slice(3)===q.correct)b.classList.add('correct');
+      else if(b===btn&&!isCorrect)b.classList.add('wrong');
+      b.disabled=true;
+    });
+    if(isCorrect){
+      coins++;correct++;
+      document.getElementById('g-coins').textContent=coins;
+      showPhrase((CFG.phrases?.ok?.[currentLevel]||CFG.phrases?.ok?.[1]||['✓'])[Math.floor(Math.random()*4)]);
+    } else {
+      lives--;
+      document.getElementById('g-lives').textContent=lives;
+      showPhrase((CFG.phrases?.err?.[currentLevel]||CFG.phrases?.err?.[1]||['✗'])[Math.floor(Math.random()*4)]);
+      if(lives<=0){setTimeout(showResult,900);return;}
+    }
+    currentQ++;
+    setTimeout(startQuestion,900);
+  }
+
+  function showResult(){
+    clearInterval(timerInterval);
+    const pct=Math.round((correct/Math.max(questions.length,1))*100);
+    const stars=pct>=90?5:pct>=75?4:pct>=60?3:pct>=40?2:1;
+    document.getElementById('r-stars').textContent='⭐'.repeat(stars);
+    document.getElementById('r-hero').textContent=CFG.tamas?.active?.[0]!==undefined?HERO:'${hero}';
+    const phrases=stars>=4?(CFG.phrases?.ok?.[3]||CFG.phrases?.ok?.[1]||['🏆']):(CFG.phrases?.err?.[1]||['💪']);
+    document.getElementById('r-phrase').textContent=phrases[Math.floor(Math.random()*phrases.length)];
+    document.getElementById('r-title').textContent=petName||'${hero}';
+    document.getElementById('r-stats').innerHTML=
+      correct+'/'+questions.length+' '+((UI.correct||'✓').replace('✓',''))+'<br>🪙 '+coins+'<br>'+pct+'%';
+    showScreen('screen-result');
+  }
+
+  window.doStart=()=>{
+    petName=inp.value.trim()||inp.placeholder;
+    disp.textContent=petName;
+    questions=buildQuestions();
+    if(questions.length===0){
+      alert((lang==='de'?'Keine Wörter! Bitte füge Inhalte im Editor hinzu.':lang==='fr'?'Pas de mots! Ajoutez du contenu dans l\'éditeur.':lang==='es'?'¡Sin palabras! Añade contenido en el editor.':lang==='ru'?'Нет слов! Добавьте контент в редакторе.':'No words! Please add content in the editor.'));
+      return;
+    }
+    totalQ=Math.min(questions.length,CFG.levels?.[1]?.q||10);
+    lives=CFG.levels?.[1]?.lives||3;
+    timer=CFG.levels?.[1]?.timer||30;
+    coins=0;correct=0;currentQ=0;
+    document.getElementById('g-lives').textContent=lives;
+    document.getElementById('g-coins').textContent=coins;
+    document.getElementById('g-timer').textContent=timer;
+    showScreen('screen-game');
+    startQuestion();
+  };
+  window.endGame=()=>{ clearInterval(timerInterval); showResult(); };
+  window.restartGame=()=>{ showScreen('screen-welcome'); };
+  window.goHome=()=>{ showScreen('screen-welcome'); };
+  const HERO='${hero}';
+})();
+<\/script>
+</body>
+</html>`;
+}
+"""
+
+c = c[:idx_bg] + new_bg + c[idx_bg_end:]
+print("FIX 10: buildGameHTML complete multilingual game with alphabet keyboard")
+print("Size:", len(c))
+open('/home/claude/ed.html','w',encoding='utf-8').write(c)
+PYEOF
+Output
+
+FIX 10: buildGameHTML complete multilingual game with alphabet keyboard
+Size: 269697
+
 
 <div id="stars-bg"></div>
 <div id="toast">✓</div>
