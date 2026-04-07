@@ -27,49 +27,95 @@
                 <option value="fa">🇮🇷 فارسی</option>
                 <option value="prs">🇦🇫 دری (Dari)</option>
             </select>
-            <button id="btn-save" class="btn btn-primary">💾 Сохранить</button>
+            <button id="btn-save" class="btn btn-primary" data-i18n="btn_save">💾 Сохранить</button>
         </div>
     </header>
 
-    <div class="app-container">
+    <div class="app-layout">
+        <aside class="sidebar">
+            <button class="tab-btn active" data-target="panel-settings" data-i18n="tab_settings">⚙️ Настройки</button>
+            <button class="tab-btn" data-target="panel-lexicon" data-i18n="tab_lexicon">📚 Лексика</button>
+            <button class="tab-btn" data-target="panel-grammar" data-i18n="tab_grammar">✍️ Грамматика</button>
+            <button class="tab-btn" data-target="panel-pets" data-i18n="tab_pets">🐾 Питомцы</button>
+            <button class="tab-btn" data-target="panel-export" data-i18n="tab_export">🔲 Экспорт Iframe</button>
+        </aside>
+
         <main class="main-content">
-            <section class="card">
-                <h2 class="card-title" data-i18n="settings_title">⚙️ Настройки игры</h2>
-                <div class="form-group">
-                    <label class="lbl" data-i18n="game_name">Название игры</label>
-                    <input type="text" id="game-title" class="clean-input" placeholder="Например: Немецкий · Глаголы A1">
+            
+            <section id="panel-settings" class="panel active">
+                <h2 class="card-title" data-i18n="settings_title">⚙️ Основные настройки</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="lbl" data-i18n="game_name">Название игры</label>
+                        <input type="text" id="game-title" class="clean-input" placeholder="Например: Немецкие глаголы А1">
+                    </div>
                 </div>
             </section>
 
-            <section class="card export-section">
+            <section id="panel-lexicon" class="panel">
+                <h2 class="card-title" data-i18n="lexicon_title">📚 Учебный материал (Словарь)</h2>
+                <div class="card">
+                    <p class="subtitle" data-i18n="lexicon_sub">Добавьте слова и их переводы для тренировки.</p>
+                    <div id="lexicon-container">
+                        </div>
+                    <button id="btn-add-word" class="btn btn-outline" data-i18n="btn_add_word">+ Добавить слово</button>
+                </div>
+            </section>
+
+            <section id="panel-grammar" class="panel">
+                <h2 class="card-title" data-i18n="grammar_title">✍️ Грамматика и Пословицы</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="lbl">Введите пословицы или фразы (каждая с новой строки)</label>
+                        <textarea id="grammar-text" class="clean-textarea" placeholder="Ученье - свет..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-pets" class="panel">
+                <h2 class="card-title" data-i18n="pets_title">🐾 Выбор питомца</h2>
+                <div class="card">
+                    <div class="settings-grid">
+                        <div class="pet-card">
+                            <input type="radio" name="pet-select" value="cat" checked>
+                            <label>🐱 Кот Анфиса</label>
+                        </div>
+                        <div class="pet-card">
+                            <input type="radio" name="pet-select" value="dog">
+                            <label>🐶 Пес Шарик</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-export" class="panel">
                 <h2 class="card-title" data-i18n="iframe_title">🔲 Генератор Iframe для Genially</h2>
-                <p class="subtitle" data-i18n="iframe_sub">Настройте параметры, и код сгенерируется автоматически.</p>
-                
-                <div class="settings-grid">
-                    <div class="form-group">
-                        <label class="lbl">Ширина</label>
-                        <select id="iframe-w" class="clean-select">
-                            <option value="100%">100% (Адаптивно)</option>
-                            <option value="800px">800px</option>
-                            <option value="600px">600px</option>
-                        </select>
+                <div class="card">
+                    <p class="subtitle" data-i18n="iframe_sub">Настройте размеры для идеальной интеграции.</p>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label class="lbl">Ширина</label>
+                            <select id="iframe-w" class="clean-select">
+                                <option value="100%">100% (Рекомендуется)</option>
+                                <option value="800px">800px</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="lbl">Высота</label>
+                            <select id="iframe-h" class="clean-select">
+                                <option value="700px">700px</option>
+                                <option value="100vh">100vh</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="lbl">Высота</label>
-                        <select id="iframe-h" class="clean-select">
-                            <option value="700px">700px</option>
-                            <option value="500px">500px</option>
-                            <option value="100vh">100vh</option>
-                        </select>
+                    <div class="code-box-container">
+                        <label class="lbl">Готовый код для вставки:</label>
+                        <textarea id="iframe-output" class="code-area" readonly></textarea>
+                        <button id="btn-copy-code" class="btn btn-primary" style="margin-top:10px;">📋 Копировать код</button>
                     </div>
-                </div>
-
-                <div class="code-box-container">
-                    <label class="lbl">Готовый код для вставки:</label>
-                    <textarea id="iframe-output" class="code-area" readonly></textarea>
-                    <button id="btn-copy-code" class="btn btn-outline">📋 Копировать код</button>
                 </div>
             </section>
+
         </main>
     </div>
 
