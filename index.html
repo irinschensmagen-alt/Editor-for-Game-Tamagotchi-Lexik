@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Tamagotchi Editor v3</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <title>Tamagotchi Academic Editor v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header class="topbar">
-        <div class="logo">🐱 TAMAGOTCHI <span>PRO EDITOR</span></div>
-        <div class="controls">
+        <div class="logo">🐱 TAMAGOTCHI <span>PRO</span></div>
+        <div class="header-actions">
             <select id="ui-lang-select" class="clean-select">
                 <option value="ru">🇷🇺 Русский</option>
                 <option value="de">🇩🇪 Deutsch</option>
@@ -19,104 +19,123 @@
                 <option value="fr">🇫🇷 Français</option>
                 <option value="es">🇪🇸 Español</option>
                 <option value="it">🇮🇹 Italiano</option>
-                <option value="pt">🇵🇹 Português</option>
-                <option value="zh">🇨🇳 中文</option>
                 <option value="ja">🇯🇵 日本語</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="fa">🇮🇷 فارسی</option>
+                <option value="prs">🇦🇫 دری (Dari)</option>
             </select>
-            <button id="btn-save-all" class="btn btn-primary">💾 Сохранить проект</button>
+            <button id="btn-save" class="btn btn-primary">💾 Сохранить проект</button>
         </div>
     </header>
 
     <div class="app-layout">
         <aside class="sidebar">
-            <button class="tab-btn active" data-target="p-main">⚙️ Главное</button>
+            <button class="tab-btn active" data-target="p-settings">⚙️ Настройки</button>
             <button class="tab-btn" data-target="p-design">🎨 Дизайн и Фоны</button>
-            <button class="tab-btn" data-target="p-tasks">📝 Задания (A1-C2)</button>
-            <button class="tab-btn" data-target="p-reactions">🎭 Реакции питомца</button>
+            <button class="tab-btn" data-target="p-lexicon">📚 Лексика (A1-C2)</button>
+            <button class="tab-btn" data-target="p-grammar">✍️ Грамматика</button>
+            <button class="tab-btn" data-target="p-reactions">🎭 Реакции Анфисы</button>
             <button class="tab-btn" data-target="p-shop">💰 Магазин и Баллы</button>
             <button class="tab-btn" data-target="p-timer">⏲️ Таймер и Оценки</button>
-            <button class="tab-btn" data-target="p-export">🔲 Экспорт Iframe</button>
+            <button class="tab-btn" data-target="p-export">🔲 Генератор Iframe</button>
         </aside>
 
         <main class="main-content">
-            <section id="p-main" class="panel active">
-                <h2 class="card-title">Основные настройки</h2>
+            <section id="p-settings" class="panel active">
+                <h2 class="card-title">Общая информация</h2>
                 <div class="card">
                     <div class="form-group">
-                        <label class="lbl">Название курса/игры</label>
-                        <input type="text" id="game-name" class="clean-input" placeholder="Введите название...">
+                        <label class="lbl">Заголовок игры</label>
+                        <input type="text" id="game-title" class="clean-input" placeholder="Например: Сильные глаголы">
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">ID проекта (GitHub)</label>
+                        <input type="text" id="project-id" class="clean-input" value="irinschensmagen-alt">
                     </div>
                 </div>
             </section>
 
             <section id="p-design" class="panel">
-                <h2 class="card-title">Оформление и Фоны</h2>
+                <h2 class="card-title">Визуальное оформление</h2>
                 <div class="card">
-                    <label class="lbl">Ссылка на фоновое изображение (URL)</label>
-                    <input type="text" id="bg-url" class="clean-input" placeholder="https://...">
-                    <div class="settings-grid" style="margin-top:15px;">
+                    <div class="form-group">
+                        <label class="lbl">URL фонового изображения</label>
+                        <input type="text" id="bg-url" class="clean-input" placeholder="https://example.com/bg.jpg">
+                    </div>
+                    <div class="settings-grid">
                         <div class="form-group">
-                            <label class="lbl">Основной цвет интерфейса</label>
-                            <input type="color" id="color-primary" value="#0ea5e9">
+                            <label class="lbl">Цвет интерфейса</label>
+                            <input type="color" id="theme-color" class="color-picker" value="#16a34a">
+                        </div>
+                        <div class="form-group">
+                            <label class="lbl">Прозрачность панелей</label>
+                            <input type="range" id="ui-opacity" min="0" max="100" value="90">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section id="p-tasks" class="panel">
-                <h2 class="card-title">Учебный материал</h2>
+            <section id="p-lexicon" class="panel">
+                <h2 class="card-title">Словарь и Уровни</h2>
                 <div class="card">
-                    <div id="tasks-container">
+                    <div class="level-selector">
+                        <button class="lvl-btn active">A1</button>
+                        <button class="lvl-btn">A2</button>
+                        <button class="lvl-btn">B1</button>
+                        <button class="lvl-btn">B2</button>
+                        <button class="lvl-btn">C1</button>
+                    </div>
+                    <div id="words-list" class="dynamic-list">
                         </div>
-                    <button id="add-task" class="btn btn-outline">+ Добавить новое задание</button>
+                    <button id="add-word" class="btn btn-outline">+ Добавить слово</button>
                 </div>
             </section>
 
             <section id="p-reactions" class="panel">
-                <h2 class="card-title">Реплики и реакции</h2>
+                <h2 class="card-title">Поведение питомца</h2>
                 <div class="card">
                     <div class="form-group">
-                        <label class="lbl">Радость (при верном ответе)</label>
-                        <input type="text" id="msg-happy" class="clean-input" placeholder="Супер! Ты молодец!">
+                        <label class="lbl">При верном ответе (Радость)</label>
+                        <textarea id="msg-correct" class="clean-textarea">Великолепно! Ты настоящий гений!</textarea>
                     </div>
                     <div class="form-group">
-                        <label class="lbl">Грусть (при ошибке)</label>
-                        <input type="text" id="msg-sad" class="clean-input" placeholder="Ой, попробуй еще раз...">
+                        <label class="lbl">При ошибке (Грусть)</label>
+                        <textarea id="msg-wrong" class="clean-textarea">Ой! Попробуй еще раз, я верю в тебя!</textarea>
                     </div>
                 </div>
             </section>
 
             <section id="p-shop" class="panel">
-                <h2 class="card-title">Экономика игры</h2>
+                <h2 class="card-title">Экономика и Бонусы</h2>
                 <div class="card">
                     <div class="settings-grid">
                         <div class="form-group">
-                            <label class="lbl">Баллов за верный ответ</label>
-                            <input type="number" id="pts-plus" class="clean-input" value="10">
+                            <label class="lbl">Награда за ответ</label>
+                            <input type="number" id="coin-reward" class="clean-input" value="10">
                         </div>
                         <div class="form-group">
-                            <label class="lbl">Штраф за ошибку</label>
-                            <input type="number" id="pts-minus" class="clean-input" value="5">
+                            <label class="lbl">Цена в магазине</label>
+                            <input type="number" id="item-price" class="clean-input" value="50">
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="p-timer" class="panel">
-                <h2 class="card-title">Время и Оценка</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label class="lbl">Время на игру (сек)</label>
-                        <input type="number" id="timer-val" class="clean-input" value="300">
                     </div>
                 </div>
             </section>
 
             <section id="p-export" class="panel">
-                <h2 class="card-title">Получение Iframe кода</h2>
+                <h2 class="card-title">Код для Genially</h2>
                 <div class="card">
-                    <textarea id="iframe-res" class="code-area" readonly></textarea>
-                    <button id="copy-iframe" class="btn btn-primary" style="margin-top:10px;">📋 Копировать код</button>
+                    <div class="settings-grid" style="margin-bottom:15px;">
+                        <div class="form-group">
+                            <label class="lbl">Ширина</label>
+                            <input type="text" id="if-w" class="clean-input" value="100%">
+                        </div>
+                        <div class="form-group">
+                            <label class="lbl">Высота</label>
+                            <input type="text" id="if-h" class="clean-input" value="750px">
+                        </div>
+                    </div>
+                    <textarea id="iframe-output" class="code-box" readonly></textarea>
+                    <button id="copy-code" class="btn btn-primary" style="margin-top:10px; width:100%;">📋 Копировать код</button>
                 </div>
             </section>
         </main>
