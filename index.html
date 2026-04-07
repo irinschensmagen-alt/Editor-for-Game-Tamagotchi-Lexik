@@ -1,8 +1,78 @@
-function filterDictionary(query) {
-  const cards = document.querySelectorAll('.prov-card');
-  query = query.toLowerCase();
-  cards.forEach(card => {
-    const text = card.innerText.toLowerCase();
-    card.style.display = text.includes(query) ? 'block' : 'none';
-  });
-}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тамагочи · Многоязычный Редактор</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="logo">🐱 ТАМАГОЧИ <span>EDITOR</span></div>
+        <div class="controls">
+            <select id="ui-lang-select" class="clean-select">
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="pt">🇵🇹 Português</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="hi">🇮🇳 हिन्दी</option>
+                <option value="ar">🇸🇦 العربية</option>
+                <option value="fa">🇮🇷 فارسی</option>
+                <option value="prs">🇦🇫 دری (Dari)</option>
+            </select>
+            <button id="btn-save" class="btn btn-primary">💾 Сохранить</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <main class="main-content">
+            <section class="card">
+                <h2 class="card-title" data-i18n="settings_title">⚙️ Настройки игры</h2>
+                <div class="form-group">
+                    <label class="lbl" data-i18n="game_name">Название игры</label>
+                    <input type="text" id="game-title" class="clean-input" placeholder="Например: Немецкий · Глаголы A1">
+                </div>
+            </section>
+
+            <section class="card export-section">
+                <h2 class="card-title" data-i18n="iframe_title">🔲 Генератор Iframe для Genially</h2>
+                <p class="subtitle" data-i18n="iframe_sub">Настройте параметры, и код сгенерируется автоматически.</p>
+                
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label class="lbl">Ширина</label>
+                        <select id="iframe-w" class="clean-select">
+                            <option value="100%">100% (Адаптивно)</option>
+                            <option value="800px">800px</option>
+                            <option value="600px">600px</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl">Высота</label>
+                        <select id="iframe-h" class="clean-select">
+                            <option value="700px">700px</option>
+                            <option value="500px">500px</option>
+                            <option value="100vh">100vh</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="code-box-container">
+                    <label class="lbl">Готовый код для вставки:</label>
+                    <textarea id="iframe-output" class="code-area" readonly></textarea>
+                    <button id="btn-copy-code" class="btn btn-outline">📋 Копировать код</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
