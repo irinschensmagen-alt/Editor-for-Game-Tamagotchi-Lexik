@@ -1,11 +1,5 @@
-/* Сброс базовых отступов */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Цветовая палитра и шрифты (Светлая тема) */
 :root {
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
@@ -27,7 +21,7 @@ body {
     min-height: 100vh;
 }
 
-/* Шапка редактора */
+/* Шапка */
 .topbar {
     background-color: var(--bg-card);
     border-bottom: 1px solid var(--border);
@@ -36,34 +30,60 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    z-index: 10;
 }
+.logo { font-family: var(--font-heading); font-size: 20px; font-weight: 900; letter-spacing: 1px; }
+.logo span { color: var(--primary); }
+.controls { display: flex; gap: 12px; }
 
-.logo {
-    font-family: var(--font-heading);
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--text-main);
-    letter-spacing: 2px;
-}
-
-.logo span {
-    color: var(--primary);
-}
-
-.controls {
+/* Сетка интерфейса (Меню слева, контент справа) */
+.app-layout {
     display: flex;
-    gap: 12px;
+    flex: 1;
+    overflow: hidden;
 }
 
-/* Основной контейнер */
-.app-container {
+/* Боковое меню */
+.sidebar {
+    width: 250px;
+    background-color: var(--bg-card);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tab-btn {
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover { background-color: var(--bg-main); color: var(--primary); }
+.tab-btn.active { background-color: var(--primary); color: #fff; }
+
+/* Основной контент */
+.main-content {
+    flex: 1;
     padding: 32px;
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
+    overflow-y: auto;
 }
 
-/* Карточки контента */
+/* Панели вкладок */
+.panel { display: none; max-width: 900px; margin: 0 auto; }
+.panel.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Карточки и элементы форм */
 .card {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
@@ -73,100 +93,45 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
 
-.card-title {
-    font-family: var(--font-heading);
-    font-size: 18px;
-    margin-bottom: 16px;
-    color: var(--text-main);
-}
+.card-title { font-family: var(--font-heading); font-size: 22px; margin-bottom: 20px; color: var(--text-main); }
+.subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.lbl { font-size: 13px; font-weight: 700; color: var(--text-muted); }
 
-.subtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 16px;
+.clean-input, .clean-select, .clean-textarea {
+    width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px;
+    font-family: var(--font-body); font-size: 14px; background-color: var(--bg-main); color: var(--text-main);
+    outline: none; transition: border-color 0.2s;
 }
+.clean-textarea { min-height: 120px; resize: vertical; }
+.clean-input:focus, .clean-select:focus, .clean-textarea:focus { border-color: var(--primary); }
 
-/* Формы и поля ввода */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
+/* Лексика (строки слов) */
+.lexicon-row {
+    display: flex; gap: 12px; margin-bottom: 12px; align-items: center;
 }
-
-.settings-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.lbl {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-muted);
-}
-
-.clean-input, .clean-select {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 14px;
-    background-color: var(--bg-main);
-    color: var(--text-main);
-    transition: border-color 0.2s;
-    outline: none;
-}
-
-.clean-input:focus, .clean-select:focus {
-    border-color: var(--primary);
+.btn-delete {
+    background: #ef4444; color: white; border: none; border-radius: 8px;
+    width: 40px; height: 40px; cursor: pointer; font-weight: bold;
 }
 
 /* Кнопки */
-.btn {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.btn-primary {
-    background-color: var(--primary);
-    color: #ffffff;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-}
-
-.btn-outline {
-    background-color: transparent;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    margin-top: 12px;
-}
-
-.btn-outline:hover {
-    background-color: var(--primary);
-    color: #ffffff;
-}
+.btn { padding: 10px 20px; border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 700; cursor: pointer; border: none; }
+.btn-primary { background-color: var(--primary); color: #ffffff; }
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); width: 100%; padding: 14px;}
+.btn-outline:hover { background-color: var(--primary); color: #ffffff; }
 
 /* Зона кода */
 .code-area {
-    width: 100%;
-    height: 120px;
-    background-color: #1e293b;
-    color: #38bdf8;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    padding: 16px;
-    border-radius: 10px;
-    border: none;
-    resize: vertical;
-    outline: none;
+    width: 100%; height: 140px; background-color: #1e293b; color: #38bdf8;
+    font-family: 'Courier New', monospace; font-size: 13px; padding: 16px;
+    border-radius: 10px; border: none; resize: none; outline: none;
+}
+
+/* Питомцы */
+.pet-card {
+    border: 1px solid var(--border); padding: 16px; border-radius: 12px;
+    display: flex; gap: 12px; align-items: center; font-weight: bold; cursor: pointer;
 }
