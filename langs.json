@@ -1,20 +1,44 @@
 {
   "ru": {
-    "settings_title": "⚙️ Настройки игры",
+    "btn_save": "💾 Сохранить",
+    "tab_settings": "⚙️ Настройки",
+    "tab_lexicon": "📚 Лексика",
+    "tab_grammar": "✍️ Грамматика",
+    "tab_pets": "🐾 Питомцы",
+    "tab_export": "🔲 Экспорт Iframe",
+    "settings_title": "⚙️ Основные настройки",
     "game_name": "Название игры",
-    "iframe_title": "🔲 Генератор Iframe",
-    "iframe_sub": "Настройте параметры, и код сгенерируется автоматически."
+    "lexicon_title": "📚 Учебный материал (Словарь)",
+    "lexicon_sub": "Добавьте слова и их переводы для тренировки.",
+    "btn_add_word": "+ Добавить слово",
+    "grammar_title": "✍️ Грамматика и Пословицы",
+    "pets_title": "🐾 Выбор питомца",
+    "iframe_title": "🔲 Генератор Iframe для Genially",
+    "iframe_sub": "Настройте размеры для идеальной интеграции."
   },
   "en": {
-    "settings_title": "⚙️ Game Settings",
+    "btn_save": "💾 Save",
+    "tab_settings": "⚙️ Settings",
+    "tab_lexicon": "📚 Lexicon",
+    "tab_grammar": "✍️ Grammar",
+    "tab_pets": "🐾 Pets",
+    "tab_export": "🔲 Export Iframe",
+    "settings_title": "⚙️ Main Settings",
     "game_name": "Game Title",
+    "lexicon_title": "📚 Learning Material",
+    "lexicon_sub": "Add words and translations for practice.",
+    "btn_add_word": "+ Add Word",
+    "grammar_title": "✍️ Grammar & Proverbs",
+    "pets_title": "🐾 Choose Pet",
     "iframe_title": "🔲 Iframe Generator",
-    "iframe_sub": "Adjust parameters and the code will generate automatically."
+    "iframe_sub": "Adjust sizes for perfect integration."
   },
-  "fr": {
-    "settings_title": "⚙️ Paramètres du jeu",
-    "game_name": "Titre du jeu",
-    "iframe_title": "🔲 Générateur Iframe",
-    "iframe_sub": "Ajustez les paramètres et le code sera généré."
+  "de": {
+    "btn_save": "💾 Speichern",
+    "tab_settings": "⚙️ Einstellungen",
+    "tab_lexicon": "📚 Wortschatz",
+    "tab_grammar": "✍️ Grammatik",
+    "tab_pets": "🐾 Haustiere",
+    "tab_export": "🔲 Iframe-Export"
   }
 }
