@@ -1,0 +1,20 @@
+{
+  "ru": {
+    "settings_title": "⚙️ Настройки игры",
+    "game_name": "Название игры",
+    "iframe_title": "🔲 Генератор Iframe",
+    "iframe_sub": "Настройте параметры, и код сгенерируется автоматически."
+  },
+  "en": {
+    "settings_title": "⚙️ Game Settings",
+    "game_name": "Game Title",
+    "iframe_title": "🔲 Iframe Generator",
+    "iframe_sub": "Adjust parameters and the code will generate automatically."
+  },
+  "fr": {
+    "settings_title": "⚙️ Paramètres du jeu",
+    "game_name": "Titre du jeu",
+    "iframe_title": "🔲 Générateur Iframe",
+    "iframe_sub": "Ajustez les paramètres et le code sera généré."
+  }
+}
