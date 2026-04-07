@@ -1,14 +1,8 @@
-window.onload = () => {
-  // ... ваш существующий код инициализации (темы, загрузка данных) ...
-
-  // АКТИВАЦИЯ ВКЛАДОК
-  document.querySelectorAll('.sb-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const id = this.getAttribute('data-panel');
-      if(id) showPanel(id);
-    });
+function filterDictionary(query) {
+  const cards = document.querySelectorAll('.prov-card');
+  query = query.toLowerCase();
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(query) ? 'block' : 'none';
   });
-
-  // Установка начальной панели
-  showPanel('settings'); 
-};
+}
