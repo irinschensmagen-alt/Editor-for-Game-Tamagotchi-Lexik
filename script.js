@@ -1,12 +1,10 @@
-const REPO_URL = "https://irinschensmagen-alt.github.io/Tamagotchi-Game/";
-
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
-    initTasks();
-    initIframeGen();
+    initDynamicLists();
+    initIframeSync();
 });
 
-// 1. Управление вкладками
+// 1. Навигация по вкладкам
 function initTabs() {
     const btns = document.querySelectorAll('.tab-btn');
     const panels = document.querySelectorAll('.panel');
@@ -21,57 +19,73 @@ function initTabs() {
     });
 }
 
-// 2. Управление заданиями (Лексика/Грамматика)
-function initTasks() {
-    const container = document.getElementById('tasks-container');
-    const addBtn = document.getElementById('add-task');
+// 2. Управление словами (Лексика)
+function initDynamicLists() {
+    const container = document.getElementById('words-list');
+    const addBtn = document.getElementById('add-word');
 
-    const createRow = () => {
-        const div = document.createElement('div');
-        div.className = 'task-row';
-        div.innerHTML = `
-            <input type="text" class="clean-input q-input" placeholder="Вопрос / Слово">
-            <input type="text" class="clean-input a-input" placeholder="Правильный ответ">
-            <button class="btn-del">×</button>
+    const addRow = (q = "", a = "") => {
+        const row = document.createElement('div');
+        row.className = 'word-row';
+        row.innerHTML = `
+            <input type="text" class="clean-input q-val" value="${q}" placeholder="Слово">
+            <input type="text" class="clean-input a-val" value="${a}" placeholder="Перевод">
+            <button class="btn-del">✕</button>
         `;
-        div.querySelector('.btn-del').onclick = () => { div.remove(); updateIframe(); };
-        div.querySelectorAll('input').forEach(i => i.oninput = updateIframe);
-        container.appendChild(div);
+        row.querySelector('.btn-del').onclick = () => { row.remove(); updateIframe(); };
+        row.querySelectorAll('input').forEach(i => i.oninput = updateIframe);
+        container.appendChild(row);
     };
 
-    addBtn.onclick = createRow;
-    createRow(); // Создаем первую строку сразу
+    addBtn.onclick = () => addRow();
+    addRow("Gehen", "Идти"); // Начальный пример
 }
 
-// 3. Генератор Iframe со всеми параметрами
+// 3. Генератор Iframe (Собирает ВСЕ данные)
 function updateIframe() {
+    const baseUrl = `https://${document.getElementById('project-id').value}.github.io/Tamagotchi-for-Lexik/`;
+    
+    // Собираем объект настроек (как в вашем оригинале)
     const config = {
-        name: document.getElementById('game-name').value,
+        t: document.getElementById('game-title').value,
         bg: document.getElementById('bg-url').value,
-        color: document.getElementById('color-primary').value,
-        happy: document.getElementById('msg-happy').value,
-        sad: document.getElementById('msg-sad').value,
-        timer: document.getElementById('timer-val').value,
-        pts: document.getElementById('pts-plus').value
+        c: document.getElementById('theme-color').value,
+        op: document.getElementById('ui-opacity').value,
+        msgOk: document.getElementById('msg-correct').value,
+        msgErr: document.getElementById('msg-wrong').value,
+        rew: document.getElementById('coin-reward').value,
+        pr: document.getElementById('item-price').value,
+        words: Array.from(document.querySelectorAll('.word-row')).map(row => ({
+            q: row.querySelector('.q-val').value,
+            a: row.querySelector('.a-val').value
+        }))
     };
 
-    // Кодируем конфиг в URL (Base64 или параметры)
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(config))));
-    const finalUrl = `${REPO_URL}?data=${encoded}`;
+    // Кодируем данные в безопасный формат для URL
+    const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(config))));
+    const finalUrl = `${baseUrl}?data=${encodedData}`;
 
-    const code = `<iframe src="${finalUrl}" width="100%" height="700px" frameborder="0" allowfullscreen></iframe>`;
-    document.getElementById('iframe-res').value = code;
+    const width = document.getElementById('if-w').value;
+    const height = document.getElementById('if-h').value;
+
+    const iframeCode = `<iframe src="${finalUrl}" width="${width}" height="${height}" frameborder="0" allowfullscreen style="border-radius:20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);"></iframe>`;
+    
+    document.getElementById('iframe-output').value = iframeCode;
 }
 
-// Слушатели для всех полей ввода
-function initIframeGen() {
-    const inputs = document.querySelectorAll('.clean-input, input[type="color"]');
+// Слушатели обновлений
+function initIframeSync() {
+    const inputs = document.querySelectorAll('.clean-input, .clean-textarea, input[type="color"], input[type="range"]');
     inputs.forEach(input => input.addEventListener('input', updateIframe));
-    
-    document.getElementById('copy-iframe').onclick = () => {
-        const area = document.getElementById('iframe-res');
+
+    document.getElementById('copy-code').onclick = () => {
+        const area = document.getElementById('iframe-output');
         area.select();
-        document.execCommand('copy');
-        alert('Код скопирован!');
+        navigator.clipboard.writeText(area.value);
+        const btn = document.getElementById('copy-code');
+        btn.textContent = "✅ Скопировано!";
+        setTimeout(() => btn.textContent = "📋 Копировать код", 2000);
     };
+    
+    updateIframe(); // Первый запуск
 }
