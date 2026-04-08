@@ -1,91 +1,3319 @@
-document.addEventListener('DOMContentLoaded', () => {
-    initTabs();
-    initDynamicLists();
-    initIframeSync();
-});
+'use strict';
 
-// 1. Навигация по вкладкам
-function initTabs() {
-    const btns = document.querySelectorAll('.tab-btn');
-    const panels = document.querySelectorAll('.panel');
+// ════════════════════════════════════════════════════════
+//  UI LANGUAGE TRANSLATIONS
+// ════════════════════════════════════════════════════════
+const UI_T = {
+  ru: {
+    nav_main:'Основное', nav_settings:'Настройки игры', nav_content:'Контент · 12 тем',
+    nav_phrases:'Реплики Тамагочи', nav_dict:'Словари · Пословицы', nav_media:'Медиа',
+    nav_audio:'Аудио · Музыка', nav_visuals:'Визуал · Фон', nav_tamas:'12 Тамагочи',
+    nav_media2:'Стикеры · Гифы', nav_game:'Игра', nav_effects:'Спецэффекты',
+    nav_anim:'Анимации · 3D', nav_mech:'Механики игры', nav_output:'Вывод', nav_design_section:'Дизайн', nav_design:'Дизайн редактора', nav_preview:'Предпросмотр',
+    nav_export:'Экспорт игры',
+    h_settings:'⚙️ Настройки игры', sub_settings:'Выберите уровень, язык, формат заданий и параметры таймера.',
+    h_content:'📚 Контент · 12 тем', sub_content:'Введите слова, словосочетания или любой учебный контент через запятую.',
+    h_phrases:'💬 Реплики Тамагочи', sub_phrases:'Настройте реплики питомца для разных тем и уровней.',
+    h_dict:'📖 Двуязычные словари · Пословицы', sub_dict:'Встроенные словари. Нажмите «+ В тему», чтобы вставить слова.',
+    h_audio:'🎵 Аудио · Музыкальный плеер', sub_audio:'Загружайте музыку с компьютера или по ссылке.',
+    h_visuals:'🎨 Визуал · Фоны', h_tamas:'🐱 12 Тамагочи', sub_tamas:'Выберите активных питомцев.',
+    h_media:'🖼️ Стикеры · Гифки', h_effects:'✨ Спецэффекты', h_anim:'🎭 Анимации',
+    h_mech:'🏆 Механики игры', h_design:'🖌️ Дизайн редактора',
+    h_preview:'👁️ Предпросмотр игры',
+    h_export:'📤 Экспорт · Встраивание · iFrame',
+    ct_identity:'🏷️ Название и автор', ct_lang:'🌍 Язык игры', ct_levels:'📊 Уровни сложности',
+    ct_formats:'📝 Форматы заданий', ct_score:'🏆 Система оценивания',
+    ct_discipline:'🎓 Учебная дисциплина', ct_ok_phrases:'✅ Реплики при ПРАВИЛЬНОМ ответе',
+    ct_err_phrases:'❌ Реплики при ОШИБКЕ', ct_themed:'💬 Тематические реплики',
+    ct_playlist:'📋 Плейлист', ct_theme:'🌌 Цветовая схема',
+    ct_tamas_base:'🐾 Базовые питомцы', ct_tamas_custom:'✨ Свои питомцы',
+    ct_media:'📁 Медиагалерея', ct_fx_correct:'🎊 При правильном ответе',
+    ct_fx_win:'🏆 При победе', ct_fx_fail:'😢 При проигрыше',
+    ct_anim:'🎬 Включить анимации', ct_mech:'⚙️ Включить / выключить',
+    lbl_title:'Название игры', lbl_author:'Автор / Предмет', lbl_audience:'Класс / Аудитория',
+    lbl_year:'Учебный год / Семестр', lbl_uilang:'Язык интерфейса редактора',
+    lbl_targetlang:'Язык изучаемой лексики', lbl_lvname:'Название', lbl_q:'Вопросов',
+    lbl_timer:'Таймер (сек)', lbl_lives:'Жизни', lbl_emoji:'Эмодзи уровня',
+    lbl_coins:'Монеток за правильный ответ', lbl_ctype:'Тип контента',
+    lbl_custom_type:'Свой тип (если выбрали «Свой»)', lbl_ai_context:'Тема / Контекст',
+    lbl_ai_count:'Количество реплик', lbl_to_topic:'Добавить в тему №',
+    lbl_game_url:'🌐 URL вашей опубликованной игры',
+    lbl_iw:'Ширина', lbl_ih:'Высота', lbl_radius:'Скругление углов',
+    lbl_shadow:'Тень / Рамка', lbl_scroll:'Прокрутка внутри', lbl_allow:'Разрешения',
+    ig_title:'🔲 ГЕНЕРАТОР IFRAME — встраивание на любую платформу',
+    export_ready:'Готов к экспорту!', export_sub:'Скачайте HTML-файл или сгенерируйте iframe-код.',
+    btn_dl_game:'🎮 Скачать игру (HTML)', btn_dl_cfg:'📋 Конфиг (JSON)',
+    alpha_title:'Алфавит выбранного языка', alpha_hint:'нажми → вставить',
+    ct_vocab:'Лексика / Слова', ct_phrases:'Фразы', ct_formulas:'Формулы',
+    ct_dates:'Даты и события', ct_terms:'Термины', ct_code:'Программирование', ct_geo:'Географические названия',
+    btn_copy_link:'🔗 Скопировать ссылку', btn_save:'💾 Сохранить', btn_export:'📤 Экспорт',
+    btn_add:'+ Добавить',
+    words_label:'слов',pairs_label:'пар',preview_updated:'Предпросмотр обновлён!',topics_count:'тем',
+    lv1_head:'УРОВЕНЬ 1 · БАЗОВЫЙ', lv2_head:'УРОВЕНЬ 2 · ПОВЫШЕННЫЙ', lv3_head:'УРОВЕНЬ 3 · ВЫСОКИЙ',
+    m_timer:'Таймер', m_coins:'Монеты', m_lives:'Жизни', m_progress:'Прогресс-бар',
+    m_shop:'Магазин', m_growth:'Рост Тамагочи', m_hint:'Подсказка после ошибки',
+    lv_prefix:'Ур.',theme_word:'ТЕМА',q_translate:'Как переводится:',
+    no_content:'Добавьте слова в темы для предпросмотра',
+    lbl_theme_name:'Название темы',lbl_theme_subject:'Тема / Предмет',
+    lbl_theme_words:'Слова (через запятую)',lbl_theme_pairs:'Пары (слово:перевод)',
+    lbl_theme_proverbs:'Пословицы (_____ = пробел | ответ)',lbl_theme_note:'Заметка',
+    btn_clear:'🗑 Очистить',btn_copy_topic:'📋 Копировать',
+    ph_theme_name:'Например: Семья и дом',ph_theme_subject:'Например: Существительные · Семья',
+    ph_words:'Слово1, Слово2...',ph_pairs:'Слово:Перевод, ...',
+    ph_proverbs:'Повторение — мать _____. | учения',
+    confirm_clear:'Очистить тему',toast_cleared:'Тема очищена',
+    lv1_btn:'Уровень 1 · Базовый',lv2_btn:'Уровень 2 · Средний',lv3_btn:'Уровень 3 · Продвинутый',
+    m_results:'Итоговая таблица', m_restart:'Кнопка «Играть снова»',
+  },
+  de: {
+    nav_main:'Grundlegendes', nav_settings:'Spieleinstellungen', nav_content:'Inhalt · 12 Themen',
+    nav_phrases:'Tamagotchi-Dialoge', nav_dict:'Wörterbücher · Sprichwörter', nav_media:'Medien',
+    nav_audio:'Audio · Musik', nav_visuals:'Visuals · Hintergrund', nav_tamas:'12 Tamagotchis',
+    nav_media2:'Sticker · GIFs', nav_game:'Spiel', nav_effects:'Spezialeffekte',
+    nav_anim:'Animationen · 3D', nav_mech:'Spielmechanik', nav_output:'Ausgabe', nav_design_section:'Design', nav_design:'Editor-Design', nav_preview:'Vorschau',
+    nav_export:'Spiel exportieren',
+    h_settings:'⚙️ Spieleinstellungen', sub_settings:'Wählen Sie Stufe, Sprache, Aufgabenformat und Timer.',
+    h_content:'📚 Inhalt · 12 Themen', sub_content:'Geben Sie Wörter, Phrasen oder Lerninhalt durch Komma getrennt ein.',
+    h_phrases:'💬 Tamagotchi-Dialoge', sub_phrases:'Konfigurieren Sie die Dialoge des Haustiers.',
+    h_dict:'📖 Zweisprachige Wörterbücher · Sprichwörter', sub_dict:'Eingebaute Wörterbücher. Klicken Sie «+ Zum Thema».',
+    h_audio:'🎵 Audio · Musikplayer', sub_audio:'Laden Sie Musik vom Computer oder per Link.',
+    h_visuals:'🎨 Visuals · Hintergründe', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Wählen Sie aktive Haustiere.',
+    h_media:'🖼️ Sticker · GIFs', h_effects:'✨ Spezialeffekte', h_anim:'🎭 Animationen',
+    h_mech:'🏆 Spielmechanik', h_design:'🖌️ Editor-Design',
+    h_preview:'👁️ Spielvorschau',
+    h_export:'📤 Export · Einbettung · iFrame',
+    ct_identity:'🏷️ Name und Autor', ct_lang:'🌍 Spielsprache', ct_levels:'📊 Schwierigkeitsstufen',
+    ct_formats:'📝 Aufgabenformate', ct_score:'🏆 Bewertungssystem',
+    ct_discipline:'🎓 Fach / Disziplin', ct_ok_phrases:'✅ Dialoge bei RICHTIGER Antwort',
+    ct_err_phrases:'❌ Dialoge bei FALSCHER Antwort', ct_themed:'💬 Thematische Dialoge',
+    ct_playlist:'📋 Wiedergabeliste', ct_theme:'🌌 Farbschema',
+    ct_tamas_base:'🐾 Standard-Haustiere', ct_tamas_custom:'✨ Eigene Haustiere',
+    ct_media:'📁 Mediengalerie', ct_fx_correct:'🎊 Bei richtiger Antwort',
+    ct_fx_win:'🏆 Bei Sieg', ct_fx_fail:'😢 Bei Niederlage',
+    ct_anim:'🎬 Animationen aktivieren', ct_mech:'⚙️ Ein- / Ausschalten',
+    lbl_title:'Spieltitel', lbl_author:'Autor / Fach', lbl_audience:'Klasse / Zielgruppe',
+    lbl_year:'Schuljahr / Semester', lbl_uilang:'Sprache des Editor-Interfaces',
+    lbl_targetlang:'Lernsprache', lbl_lvname:'Name', lbl_q:'Fragen',
+    lbl_timer:'Timer (Sek)', lbl_lives:'Leben', lbl_emoji:'Stufen-Emoji',
+    lbl_coins:'Münzen pro richtiger Antwort', lbl_ctype:'Inhaltstyp',
+    lbl_custom_type:'Eigener Typ', lbl_ai_context:'Thema / Kontext',
+    lbl_ai_count:'Anzahl Dialoge', lbl_to_topic:'Hinzufügen zu Thema Nr.',
+    lbl_game_url:'🌐 URL Ihres veröffentlichten Spiels',
+    lbl_iw:'Breite', lbl_ih:'Höhe', lbl_radius:'Eckenrundung',
+    lbl_shadow:'Schatten / Rahmen', lbl_scroll:'Scrollen', lbl_allow:'Berechtigungen',
+    ig_title:'🔲 IFRAME-GENERATOR — Einbettung auf beliebige Plattformen',
+    export_ready:'Export bereit!', export_sub:'HTML herunterladen oder iFrame-Code generieren.',
+    btn_dl_game:'🎮 Spiel herunterladen (HTML)', btn_dl_cfg:'📋 Konfig (JSON)',
+    alpha_title:'Alphabet der gewählten Sprache', alpha_hint:'klicken → einfügen',
+    ct_vocab:'Wortschatz / Wörter', ct_phrases:'Phrasen', ct_formulas:'Formeln',
+    ct_dates:'Daten und Ereignisse', ct_terms:'Fachbegriffe', ct_code:'Programmierung', ct_geo:'Geografische Namen',
+    btn_copy_link:'🔗 Link kopieren', btn_save:'💾 Speichern', btn_export:'📤 Export',
+    btn_add:'+ Hinzufügen',
+    lv1_head:'STUFE 1 · BASIC', lv2_head:'STUFE 2 · MITTEL', lv3_head:'STUFE 3 · FORTGESCHRITTEN',
+    m_timer:'Timer', m_coins:'Münzen', m_lives:'Leben', m_progress:'Fortschrittsbalken',
+    m_shop:'Laden', m_growth:'Tamagotchi-Wachstum', m_hint:'Hinweis nach Fehler',
+    m_results:'Ergebnistabelle', m_restart:'Nochmal spielen',
+    lv_prefix:'ST.',theme_word:'THEMA',q_translate:'Wie übersetzt man:',
+    words_label:'Wörter',pairs_label:'Paare',preview_updated:'Vorschau aktualisiert!',topics_count:'Themen',
+    no_content:'Wörter zu Themen hinzufügen für Vorschau',
+    lbl_theme_name:'Themenname',lbl_theme_subject:'Thema / Fach',
+    lbl_theme_words:'Wörter (kommagetrennt)',lbl_theme_pairs:'Paare (Wort:Übersetzung)',
+    lbl_theme_proverbs:'Sprichwörter (_____ = Lücke | Antwort)',lbl_theme_note:'Notiz',
+    btn_clear:'🗑 Löschen',btn_copy_topic:'📋 Kopieren',
+    ph_theme_name:'z.B. Familie und Haus',ph_theme_subject:'z.B. Nomen · Familie',
+    ph_words:'Wort1, Wort2...',ph_pairs:'Wort:Übersetzung, ...',
+    ph_proverbs:'Übung macht den _____. | Meister',
+    confirm_clear:'Thema löschen',toast_cleared:'Thema geleert',
+    lbl_editor_link:'🖊️ EDITOR-LINK',sub_editor_link:'Im Browser oder Genially öffnen',
+    lbl_game_link:'🎮 SPIEL-LINK',sub_game_link:'Veröffentlichtes Spiel',
+    lv1_btn:'Stufe 1 · Basic',lv2_btn:'Stufe 2 · Mittel',lv3_btn:'Stufe 3 · Fortgeschritten',
+  },
+  en: {
+    nav_main:'Main', nav_settings:'Game Settings', nav_content:'Content · 12 Topics',
+    nav_phrases:'Tamagotchi Phrases', nav_dict:'Dictionaries · Proverbs', nav_media:'Media',
+    nav_audio:'Audio · Music', nav_visuals:'Visuals · Background', nav_tamas:'12 Tamagotchis',
+    nav_media2:'Stickers · GIFs', nav_game:'Game', nav_effects:'Special Effects',
+    nav_anim:'Animations · 3D', nav_mech:'Game Mechanics', nav_output:'Output', nav_design_section:'Design', nav_design:'Editor Design', nav_preview:'Preview',
+    nav_export:'Export Game',
+    h_settings:'⚙️ Game Settings', sub_settings:'Choose level, language, task format and timer.',
+    h_content:'📚 Content · 12 Topics', sub_content:'Enter words, phrases or any learning content, comma-separated.',
+    h_phrases:'💬 Tamagotchi Phrases', sub_phrases:'Configure pet phrases for different topics and levels.',
+    h_dict:'📖 Bilingual Dictionaries · Proverbs', sub_dict:'Built-in dictionaries. Click «+ To topic» to insert words.',
+    h_audio:'🎵 Audio · Music Player', sub_audio:'Upload music from your computer or via URL.',
+    h_visuals:'🎨 Visuals · Backgrounds', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Select active pets.',
+    h_media:'🖼️ Stickers · GIFs', h_effects:'✨ Special Effects', h_anim:'🎭 Animations',
+    h_mech:'🏆 Game Mechanics', h_design:'🖌️ Editor Design',
+    h_preview:'👁️ Game Preview',
+    h_export:'📤 Export · Embed · iFrame',
+    ct_identity:'🏷️ Title and Author', ct_lang:'🌍 Game Language', ct_levels:'📊 Difficulty Levels',
+    ct_formats:'📝 Task Formats', ct_score:'🏆 Scoring System',
+    ct_discipline:'🎓 Subject / Discipline', ct_ok_phrases:'✅ Phrases for CORRECT answers',
+    ct_err_phrases:'❌ Phrases for WRONG answers', ct_themed:'💬 Themed phrases',
+    ct_playlist:'📋 Playlist', ct_theme:'🌌 Color Scheme',
+    ct_tamas_base:'🐾 Base Pets', ct_tamas_custom:'✨ Custom Pets',
+    ct_media:'📁 Media Gallery', ct_fx_correct:'🎊 On correct answer',
+    ct_fx_win:'🏆 On win', ct_fx_fail:'😢 On loss',
+    ct_anim:'🎬 Enable Animations', ct_mech:'⚙️ On / Off',
+    lbl_title:'Game Title', lbl_author:'Author / Subject', lbl_audience:'Class / Audience',
+    lbl_year:'School Year / Semester', lbl_uilang:'Editor Interface Language',
+    lbl_targetlang:'Target Language', lbl_lvname:'Name', lbl_q:'Questions',
+    lbl_timer:'Timer (sec)', lbl_lives:'Lives', lbl_emoji:'Level Emoji',
+    lbl_coins:'Coins per correct answer', lbl_ctype:'Content Type',
+    lbl_custom_type:'Custom Type', lbl_ai_context:'Topic / Context',
+    lbl_ai_count:'Number of phrases', lbl_to_topic:'Add to topic #',
+    lbl_game_url:'🌐 URL of your published game',
+    lbl_iw:'Width', lbl_ih:'Height', lbl_radius:'Corner radius',
+    lbl_shadow:'Shadow / Border', lbl_scroll:'Scroll inside', lbl_allow:'Permissions',
+    ig_title:'🔲 IFRAME GENERATOR — embed on any platform',
+    export_ready:'Ready to Export!', export_sub:'Download the HTML game file or generate iframe code.',
+    btn_dl_game:'🎮 Download Game (HTML)', btn_dl_cfg:'📋 Config (JSON)',
+    alpha_title:'Alphabet of selected language', alpha_hint:'click → insert',
+    ct_vocab:'Vocabulary / Words', ct_phrases:'Phrases', ct_formulas:'Formulas',
+    ct_dates:'Dates & Events', ct_terms:'Terms', ct_code:'Programming', ct_geo:'Geographic Names',
+    btn_copy_link:'🔗 Copy Link', btn_save:'💾 Save', btn_export:'📤 Export',
+    btn_add:'+ Add',
+    lv1_head:'LEVEL 1 · BASIC', lv2_head:'LEVEL 2 · INTERMEDIATE', lv3_head:'LEVEL 3 · ADVANCED',
+    m_timer:'Timer', m_coins:'Coins', m_lives:'Lives', m_progress:'Progress bar',
+    m_shop:'Shop', m_growth:'Tamagotchi Growth', m_hint:'Hint after error',
+    m_results:'Results table', m_restart:'Play Again button',
+    lv_prefix:'LV.',theme_word:'THEME',q_translate:'How to translate:',
+    words_label:'words',pairs_label:'pairs',preview_updated:'Preview updated!',topics_count:'topics',
+    no_content:'Add words to themes for preview',
+    lbl_theme_name:'Theme Name',lbl_theme_subject:'Topic / Subject',
+    lbl_theme_words:'Words (comma-separated)',lbl_theme_pairs:'Pairs (word:translation)',
+    lbl_theme_proverbs:'Proverbs (_____ = gap | answer)',lbl_theme_note:'Note',
+    btn_clear:'🗑 Clear',btn_copy_topic:'📋 Copy',
+    ph_theme_name:'e.g. Family and Home',ph_theme_subject:'e.g. Nouns · family',
+    ph_words:'word1, word2...',ph_pairs:'word:translation, ...',
+    ph_proverbs:'Practice makes _____. | perfect',
+    confirm_clear:'Clear theme',toast_cleared:'Theme cleared',
+    lbl_editor_link:'🖊️ EDITOR LINK',sub_editor_link:'Open in browser or Genially',
+    lbl_game_link:'🎮 GAME LINK',sub_game_link:'Published game',
+    lv1_btn:'Level 1 · Basic',lv2_btn:'Level 2 · Intermediate',lv3_btn:'Level 3 · Advanced',
+  },
+  fr: {
+    nav_main:'Principal', nav_settings:'Paramètres du jeu', nav_content:'Contenu · 12 thèmes',
+    nav_phrases:'Répliques Tamagotchi', nav_dict:'Dictionnaires · Proverbes', nav_media:'Médias',
+    nav_audio:'Audio · Musique', nav_visuals:'Visuels · Fond', nav_tamas:'12 Tamagotchis',
+    nav_media2:'Stickers · GIFs', nav_game:'Jeu', nav_effects:'Effets spéciaux',
+    nav_anim:'Animations · 3D', nav_mech:'Mécaniques du jeu', nav_output:'Exportation', nav_design_section:'Design', nav_design:'Design éditeur', nav_preview:'Aperçu',
+    nav_export:'Exporter le jeu',
+    h_settings:'⚙️ Paramètres du jeu', sub_settings:'Choisissez le niveau, la langue et le format des tâches.',
+    h_content:'📚 Contenu · 12 thèmes', sub_content:'Entrez des mots, phrases ou contenu pédagogique séparé par des virgules.',
+    h_phrases:'💬 Répliques Tamagotchi', sub_phrases:'Configurez les répliques de l\'animal.',
+    h_dict:'📖 Dictionnaires bilingues · Proverbes', sub_dict:'Dictionnaires intégrés. Cliquez «+ Au thème».',
+    h_audio:'🎵 Audio · Lecteur musical', sub_audio:'Chargez de la musique depuis votre ordinateur.',
+    h_visuals:'🎨 Visuels · Fonds', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Sélectionnez les animaux actifs.',
+    h_media:'🖼️ Stickers · GIFs', h_effects:'✨ Effets spéciaux', h_anim:'🎭 Animations',
+    h_mech:'🏆 Mécaniques du jeu', h_design:'🖌️ Design éditeur',
+    h_preview:'👁️ Aperçu du jeu',
+    h_export:'📤 Export · Intégration · iFrame',
+    ct_identity:'🏷️ Titre et auteur', ct_lang:'🌍 Langue du jeu', ct_levels:'📊 Niveaux de difficulté',
+    ct_formats:'📝 Formats des tâches', ct_score:'🏆 Système de notation',
+    ct_discipline:'🎓 Matière / Discipline', ct_ok_phrases:'✅ Répliques pour BONNE réponse',
+    ct_err_phrases:'❌ Répliques pour MAUVAISE réponse', ct_themed:'💬 Répliques thématiques',
+    ct_playlist:'📋 Playlist', ct_theme:'🌌 Schéma de couleurs',
+    ct_tamas_base:'🐾 Animaux de base', ct_tamas_custom:'✨ Animaux personnalisés',
+    ct_media:'📁 Galerie média', ct_fx_correct:'🎊 À la bonne réponse',
+    ct_fx_win:'🏆 À la victoire', ct_fx_fail:'😢 À la défaite',
+    ct_anim:'🎬 Activer les animations', ct_mech:'⚙️ Activer / Désactiver',
+    lbl_title:'Titre du jeu', lbl_author:'Auteur / Matière', lbl_audience:'Classe / Public',
+    lbl_year:'Année scolaire / Semestre', lbl_uilang:'Langue de l\'interface',
+    lbl_targetlang:'Langue cible', lbl_lvname:'Nom', lbl_q:'Questions',
+    lbl_timer:'Minuteur (sec)', lbl_lives:'Vies', lbl_emoji:'Emoji du niveau',
+    lbl_coins:'Pièces par bonne réponse', lbl_ctype:'Type de contenu',
+    lbl_custom_type:'Type personnalisé', lbl_ai_context:'Thème / Contexte',
+    lbl_ai_count:'Nombre de répliques', lbl_to_topic:'Ajouter au thème n°',
+    lbl_game_url:'🌐 URL de votre jeu publié',
+    lbl_iw:'Largeur', lbl_ih:'Hauteur', lbl_radius:'Arrondi des coins',
+    lbl_shadow:'Ombre / Bordure', lbl_scroll:'Défilement', lbl_allow:'Autorisations',
+    ig_title:'🔲 GÉNÉRATEUR IFRAME — intégration sur toute plateforme',
+    export_ready:'Prêt à exporter !', export_sub:'Téléchargez le fichier HTML ou générez le code iframe.',
+    btn_dl_game:'🎮 Télécharger le jeu (HTML)',
+    alpha_title:'Alphabet de la langue choisie', alpha_hint:'cliquer → insérer',
+    ct_vocab:'Vocabulaire / Mots', ct_phrases:'Phrases', ct_formulas:'Formules',
+    ct_dates:'Dates et événements', ct_terms:'Termes', ct_code:'Programmation', ct_geo:'Noms géographiques', btn_dl_cfg:'📋 Config (JSON)',
+    btn_copy_link:'🔗 Copier le lien', btn_save:'💾 Enregistrer', btn_export:'📤 Exporter',
+    btn_add:'+ Ajouter',
+    lv1_head:'NIVEAU 1 · DE BASE', lv2_head:'NIVEAU 2 · INTERMÉDIAIRE', lv3_head:'NIVEAU 3 · AVANCÉ',
+    m_timer:'Minuteur', m_coins:'Pièces', m_lives:'Vies', m_progress:'Barre de progression',
+    m_shop:'Boutique', m_growth:'Croissance du Tamagotchi', m_hint:'Indice après erreur',
+    m_results:'Tableau des résultats', m_restart:'Bouton Rejouer',
+    lv_prefix:'NV.',theme_word:'THÈME',q_translate:'Comment se traduit :',
+    words_label:'mots',pairs_label:'paires',preview_updated:'Aperçu mis à jour!',topics_count:'thèmes',
+    no_content:'Ajoutez des mots aux thèmes pour la prévisualisation',
+    lbl_theme_name:'Nom du thème',lbl_theme_subject:'Thème / Matière',
+    lbl_theme_words:'Mots (séparés par virgules)',lbl_theme_pairs:'Paires (mot:traduction)',
+    lbl_theme_proverbs:'Proverbes (_____ = lacune | réponse)',lbl_theme_note:'Note',
+    btn_clear:'🗑 Effacer',btn_copy_topic:'📋 Copier',
+    ph_theme_name:'ex. Famille et maison',ph_theme_subject:'ex. Noms · famille',
+    ph_words:'mot1, mot2...',ph_pairs:'mot:traduction, ...',
+    ph_proverbs:"L'union fait la _____. | force",
+    confirm_clear:'Effacer le thème',toast_cleared:'Thème effacé',
+    lbl_editor_link:"🖊️ LIEN ÉDITEUR",sub_editor_link:'Ouvrir dans le navigateur ou Genially',
+    lbl_game_link:'🎮 LIEN JEU',sub_game_link:'Jeu publié',
+    lv1_btn:'Niveau 1 · Débutant',lv2_btn:'Niveau 2 · Intermédiaire',lv3_btn:'Niveau 3 · Avancé',
+  },
+  es: {
+    nav_main:'Principal', nav_settings:'Configuración', nav_content:'Contenido · 12 temas',
+    nav_phrases:'Frases Tamagotchi', nav_dict:'Diccionarios · Refranes', nav_media:'Medios',
+    nav_audio:'Audio · Música', nav_visuals:'Visuales · Fondo', nav_tamas:'12 Tamagotchis',
+    nav_media2:'Pegatinas · GIFs', nav_game:'Juego', nav_effects:'Efectos especiales',
+    nav_anim:'Animaciones · 3D', nav_mech:'Mecánicas', nav_output:'Exportar', nav_design_section:'Diseño', nav_design:'Diseño del editor', nav_preview:'Vista previa',
+    nav_export:'Exportar juego',
+    h_settings:'⚙️ Configuración del juego', sub_settings:'Elige nivel, idioma, formato y temporizador.',
+    h_content:'📚 Contenido · 12 temas', sub_content:'Introduce palabras o frases separadas por comas.',
+    h_phrases:'💬 Frases Tamagotchi', sub_phrases:'Configura frases para distintos temas y niveles.',
+    h_dict:'📖 Diccionarios bilingües · Refranes', sub_dict:'Diccionarios integrados. Haz clic en «+ Al tema».',
+    h_audio:'🎵 Audio · Reproductor', sub_audio:'Sube música desde tu ordenador o por enlace.',
+    h_visuals:'🎨 Visuales · Fondos', h_tamas:'🐱 12 Tamagotchis', sub_tamas:'Selecciona mascotas activas.',
+    h_media:'🖼️ Pegatinas · GIFs', h_effects:'✨ Efectos especiales', h_anim:'🎭 Animaciones',
+    h_mech:'🏆 Mecánicas', h_design:'🖌️ Diseño del editor',
+    h_preview:'👁️ Vista previa del juego',
+    h_export:'📤 Exportar · Incrustar · iFrame',
+    ct_identity:'🏷️ Título y autor', ct_lang:'🌍 Idioma del juego', ct_levels:'📊 Niveles de dificultad',
+    ct_formats:'📝 Formatos', ct_score:'🏆 Sistema de puntuación',
+    ct_discipline:'🎓 Materia / Disciplina', ct_ok_phrases:'✅ Frases para respuesta CORRECTA',
+    ct_err_phrases:'❌ Frases para respuesta INCORRECTA', ct_themed:'💬 Frases temáticas',
+    ct_playlist:'📋 Lista de reproducción', ct_theme:'🌌 Esquema de colores',
+    ct_tamas_base:'🐾 Mascotas base', ct_tamas_custom:'✨ Mascotas personalizadas',
+    ct_media:'📁 Galería multimedia', ct_fx_correct:'🎊 En respuesta correcta',
+    ct_fx_win:'🏆 En victoria', ct_fx_fail:'😢 En derrota',
+    ct_anim:'🎬 Activar animaciones', ct_mech:'⚙️ Activar / Desactivar',
+    lbl_title:'Título del juego', lbl_author:'Autor / Materia', lbl_audience:'Clase / Audiencia',
+    lbl_year:'Año escolar', lbl_uilang:'Idioma de la interfaz',
+    lbl_targetlang:'Idioma objetivo', lbl_lvname:'Nombre', lbl_q:'Preguntas',
+    lbl_timer:'Temporizador (seg)', lbl_lives:'Vidas', lbl_emoji:'Emoji del nivel',
+    lbl_coins:'Monedas por respuesta correcta', lbl_ctype:'Tipo de contenido',
+    lbl_custom_type:'Tipo personalizado', lbl_ai_context:'Tema / Contexto',
+    lbl_ai_count:'Número de frases', lbl_to_topic:'Agregar al tema n.°',
+    lbl_game_url:'🌐 URL de tu juego publicado',
+    lbl_iw:'Ancho', lbl_ih:'Alto', lbl_radius:'Radio de esquinas',
+    lbl_shadow:'Sombra / Borde', lbl_scroll:'Desplazamiento', lbl_allow:'Permisos',
+    ig_title:'🔲 GENERADOR IFRAME — incrustar en cualquier plataforma',
+    export_ready:'¡Listo para exportar!', export_sub:'Descarga el HTML o genera el código iframe.',
+    btn_dl_game:'🎮 Descargar juego (HTML)',
+    alpha_title:'Alfabeto del idioma elegido', alpha_hint:'haz clic → insertar',
+    ct_vocab:'Vocabulario / Palabras', ct_phrases:'Frases', ct_formulas:'Fórmulas',
+    ct_dates:'Fechas y eventos', ct_terms:'Términos', ct_code:'Programación', ct_geo:'Nombres geográficos', btn_dl_cfg:'📋 Config (JSON)',
+    btn_copy_link:'🔗 Copiar enlace', btn_save:'💾 Guardar', btn_export:'📤 Exportar',
+    btn_add:'+ Agregar',
+    lv1_head:'NIVEL 1 · BÁSICO', lv2_head:'NIVEL 2 · INTERMEDIO', lv3_head:'NIVEL 3 · AVANZADO',
+    m_timer:'Temporizador', m_coins:'Monedas', m_lives:'Vidas', m_progress:'Barra de progreso',
+    m_shop:'Tienda', m_growth:'Crecimiento del Tamagotchi', m_hint:'Pista tras error',
+    m_results:'Tabla de resultados', m_restart:'Botón Jugar de nuevo',
+    lv_prefix:'NV.',theme_word:'TEMA',q_translate:'¿Cómo se traduce:',
+    no_content:'Agrega palabras a los temas para la vista previa',
+    lbl_theme_name:'Nombre del tema',lbl_theme_subject:'Tema / Materia',
+    lbl_theme_words:'Palabras (separadas por comas)',lbl_theme_pairs:'Pares (palabra:traducción)',
+    lbl_theme_proverbs:'Refranes (_____ = hueco | respuesta)',lbl_theme_note:'Nota',
+    btn_clear:'🗑 Borrar',btn_copy_topic:'📋 Copiar',
+    ph_theme_name:'ej. Familia y hogar',ph_theme_subject:'ej. Sustantivos · familia',
+    ph_words:'palabra1, palabra2...',ph_pairs:'palabra:traducción, ...',
+    ph_proverbs:'El que mucho abarca poco _____. | aprieta',
+    confirm_clear:'¿Borrar el tema?',toast_cleared:'Tema borrado',
+    lbl_editor_link:'🖊️ ENLACE EDITOR',sub_editor_link:'Abrir en navegador o Genially',
+    lbl_game_link:'🎮 ENLACE JUEGO',sub_game_link:'Juego publicado',
+    lv1_btn:'Nivel 1 · Básico',lv2_btn:'Nivel 2 · Intermedio',lv3_btn:'Nivel 3 · Avanzado',
+  },
+  ja: {
+    nav_main:'メイン', nav_settings:'ゲーム設定', nav_content:'コンテンツ · 12テーマ',
+    nav_phrases:'たまごっちのセリフ', nav_dict:'辞書 · ことわざ', nav_media:'メディア',
+    nav_audio:'音楽 · オーディオ', nav_visuals:'ビジュアル · 背景', nav_tamas:'12たまごっち',
+    nav_media2:'スタンプ · GIF', nav_game:'ゲーム', nav_effects:'特殊効果',
+    nav_anim:'アニメーション', nav_mech:'ゲームメカニクス', nav_output:'出力', nav_design_section:'デザイン', nav_design:'エディタデザイン', nav_preview:'プレビュー',
+    nav_export:'ゲームエクスポート',
+    h_settings:'⚙️ ゲーム設定', sub_settings:'レベル、言語、タスク形式、タイマーを選択してください。',
+    h_content:'📚 コンテンツ · 12テーマ', sub_content:'単語やフレーズをカンマ区切りで入力してください。',
+    h_phrases:'💬 たまごっちのセリフ', sub_phrases:'テーマとレベルに応じてペットのセリフを設定します。',
+    h_dict:'📖 二言語辞書 · ことわざ', sub_dict:'内蔵辞書。「＋テーマへ」をクリックして追加。',
+    h_audio:'🎵 音楽プレーヤー', sub_audio:'コンピューターまたはURLから音楽をアップロード。',
+    h_visuals:'🎨 ビジュアル · 背景', h_tamas:'🐱 12たまごっち', sub_tamas:'アクティブなペットを選択。',
+    h_media:'🖼️ スタンプ · GIF', h_effects:'✨ 特殊効果', h_anim:'🎭 アニメーション',
+    h_mech:'🏆 ゲームメカニクス', h_design:'🖌️ エディタデザイン',
+    h_preview:'👁️ ゲームプレビュー',
+    h_export:'📤 エクスポート · 埋め込み · iFrame',
+    ct_identity:'🏷️ タイトルと著者', ct_lang:'🌍 ゲーム言語', ct_levels:'📊 難易度',
+    ct_formats:'📝 タスク形式', ct_score:'🏆 採点システム',
+    ct_discipline:'🎓 科目', ct_ok_phrases:'✅ 正解時のセリフ',
+    ct_err_phrases:'❌ 不正解時のセリフ', ct_themed:'💬 テーマ別セリフ',
+    ct_playlist:'📋 プレイリスト', ct_theme:'🌌 カラースキーム',
+    ct_tamas_base:'🐾 ベースペット', ct_tamas_custom:'✨ カスタムペット',
+    ct_media:'📁 メディアギャラリー', ct_fx_correct:'🎊 正解時',
+    ct_fx_win:'🏆 勝利時', ct_fx_fail:'😢 敗北時',
+    ct_anim:'🎬 アニメーションを有効化', ct_mech:'⚙️ オン / オフ',
+    lbl_title:'ゲームタイトル', lbl_author:'著者 / 科目', lbl_audience:'クラス / 対象',
+    lbl_year:'学年 / 学期', lbl_uilang:'インターフェース言語',
+    lbl_targetlang:'学習言語', lbl_lvname:'名前', lbl_q:'問題数',
+    lbl_timer:'タイマー（秒）', lbl_lives:'ライフ', lbl_emoji:'レベル絵文字',
+    lbl_coins:'正解ごとのコイン', lbl_ctype:'コンテンツタイプ',
+    lbl_custom_type:'カスタムタイプ', lbl_ai_context:'テーマ / コンテキスト',
+    lbl_ai_count:'セリフ数', lbl_to_topic:'テーマ番号に追加',
+    lbl_game_url:'🌐 公開ゲームのURL',
+    lbl_iw:'幅', lbl_ih:'高さ', lbl_radius:'角の丸み',
+    lbl_shadow:'影 / ボーダー', lbl_scroll:'スクロール', lbl_allow:'権限',
+    ig_title:'🔲 iFrame ジェネレーター',
+    export_ready:'エクスポート準備完了！', export_sub:'HTMLをダウンロードするかiFrameコードを生成。',
+    btn_dl_game:'🎮 ゲームをダウンロード', btn_dl_cfg:'📋 設定 (JSON)',
+    btn_copy_link:'🔗 リンクをコピー', btn_save:'💾 保存', btn_export:'📤 エクスポート',
+    btn_add:'＋ 追加',
+    lv1_head:'レベル1 · 基礎', lv2_head:'レベル2 · 中級', lv3_head:'レベル3 · 上級',
+    m_timer:'タイマー', m_coins:'コイン', m_lives:'ライフ', m_progress:'プログレスバー',
+    m_shop:'ショップ', m_growth:'たまごっちの成長', m_hint:'エラー後のヒント',
+    m_results:'結果テーブル', m_restart:'もう一度プレイ',
+    lv_prefix:'LV.',
+    theme_word:'テーマ',
+    no_content:'テーマに単語を追加してください',
+    lbl_theme_name:'テーマ名',
+    lbl_theme_subject:'科目/トピック',
+    lbl_theme_words:'単語（カンマ区切り）',
+    lbl_theme_pairs:'ペア（単語:訳）',
+    lbl_theme_proverbs:'諺（_____=穴|答え）',
+    lbl_theme_note:'メモ',
+    btn_clear:'🗑 削除',
+    btn_copy_topic:'📋 コピー',
+    ph_theme_name:'例: 家族と家',
+    ph_theme_subject:'例: 名詞・家族',
+    ph_words:'単語1, 単語2...',
+    ph_pairs:'単語:翻訳, ...',
+    ph_proverbs:'七転び八_____。| 起き',
+    confirm_clear:'テーマを削除',
+    toast_cleared:'テーマを削除しました',
+    lv1_btn:'レベル1・基礎',
+    lv2_btn:'レベル2・中級',
+    lv3_btn:'レベル3・上級'
+  },
+  zh: {
+    nav_main:'主要', nav_settings:'游戏设置', nav_content:'内容 · 12主题',
+    nav_phrases:'宠物台词', nav_dict:'词典 · 谚语', nav_media:'媒体',
+    nav_audio:'音乐 · 音频', nav_visuals:'视觉 · 背景', nav_tamas:'12宠物',
+    nav_media2:'贴纸 · GIF', nav_game:'游戏', nav_effects:'特效',
+    nav_anim:'动画 · 3D', nav_mech:'游戏机制', nav_output:'输出', nav_design_section:'设计', nav_design:'编辑器设计', nav_preview:'预览',
+    nav_export:'导出游戏',
+    h_settings:'⚙️ 游戏设置', sub_settings:'选择级别、语言、任务格式和计时器。',
+    h_content:'📚 内容 · 12主题', sub_content:'用逗号分隔输入单词、短语或学习内容。',
+    h_phrases:'💬 宠物台词', sub_phrases:'为不同主题和级别配置宠物台词。',
+    h_dict:'📖 双语词典 · 谚语', sub_dict:'内置词典。点击「+到主题」插入单词。',
+    h_audio:'🎵 音乐播放器', sub_audio:'从电脑或URL上传音乐。',
+    h_visuals:'🎨 视觉 · 背景', h_tamas:'🐱 12宠物', sub_tamas:'选择活跃宠物。',
+    h_media:'🖼️ 贴纸 · GIF', h_effects:'✨ 特效', h_anim:'🎭 动画',
+    h_mech:'🏆 游戏机制', h_design:'🖌️ 编辑器设计',
+    h_preview:'👁️ 游戏预览',
+    h_export:'📤 导出 · 嵌入 · iFrame',
+    ct_identity:'🏷️ 标题和作者', ct_lang:'🌍 游戏语言', ct_levels:'📊 难度等级',
+    ct_formats:'📝 任务格式', ct_score:'🏆 评分系统',
+    ct_discipline:'🎓 学科', ct_ok_phrases:'✅ 正确答案台词',
+    ct_err_phrases:'❌ 错误答案台词', ct_themed:'💬 主题台词',
+    ct_playlist:'📋 播放列表', ct_theme:'🌌 颜色主题',
+    ct_tamas_base:'🐾 基础宠物', ct_tamas_custom:'✨ 自定义宠物',
+    ct_media:'📁 媒体库', ct_fx_correct:'🎊 正确时', ct_fx_win:'🏆 胜利时', ct_fx_fail:'😢 失败时',
+    ct_anim:'🎬 启用动画', ct_mech:'⚙️ 开 / 关',
+    lbl_title:'游戏标题', lbl_author:'作者 / 科目', lbl_audience:'班级 / 受众',
+    lbl_year:'学年 / 学期', lbl_uilang:'界面语言',
+    lbl_targetlang:'目标语言', lbl_lvname:'名称', lbl_q:'题目数',
+    lbl_timer:'计时器（秒）', lbl_lives:'生命', lbl_emoji:'等级表情',
+    lbl_coins:'每题奖励金币', lbl_ctype:'内容类型',
+    lbl_custom_type:'自定义类型', lbl_ai_context:'主题 / 背景',
+    lbl_ai_count:'台词数量', lbl_to_topic:'添加到主题号',
+    lbl_game_url:'🌐 已发布游戏的URL',
+    lbl_iw:'宽度', lbl_ih:'高度', lbl_radius:'圆角',
+    lbl_shadow:'阴影 / 边框', lbl_scroll:'滚动', lbl_allow:'权限',
+    ig_title:'🔲 iFrame 生成器',
+    export_ready:'准备导出！', export_sub:'下载HTML文件或生成iFrame代码。',
+    btn_dl_game:'🎮 下载游戏 (HTML)', btn_dl_cfg:'📋 配置 (JSON)',
+    btn_copy_link:'🔗 复制链接', btn_save:'💾 保存', btn_export:'📤 导出',
+    btn_add:'＋ 添加',
+    lv1_head:'第1级 · 基础', lv2_head:'第2级 · 中级', lv3_head:'第3级 · 高级',
+    m_timer:'计时器', m_coins:'金币', m_lives:'生命', m_progress:'进度条',
+    m_shop:'商店', m_growth:'宠物成长', m_hint:'错误后提示',
+    m_results:'结果表', m_restart:'再玩一次',
+    lv_prefix:'级.',
+    theme_word:'主题',
+    no_content:'请向主题添加单词',
+    lbl_theme_name:'主题名称',
+    lbl_theme_subject:'主题/学科',
+    lbl_theme_words:'词汇（逗号分隔）',
+    lbl_theme_pairs:'配对（词:译）',
+    lbl_theme_proverbs:'谚语（_____=空格|答案）',
+    lbl_theme_note:'备注',
+    btn_clear:'🗑 清除',
+    btn_copy_topic:'📋 复制',
+    ph_theme_name:'例: 家庭',
+    ph_theme_subject:'例: 名词·家庭',
+    ph_words:'词1, 词2...',
+    ph_pairs:'词:翻译, ...',
+    ph_proverbs:'熟能_____。| 生巧',
+    confirm_clear:'清除主题',
+    toast_cleared:'主题已清除',
+    lv1_btn:'第1级·基础',
+    lv2_btn:'第2级·中级',
+    lv3_btn:'第3级·高级'
+  },
+  ar: {
+    nav_main:'الرئيسية', nav_settings:'إعدادات اللعبة', nav_content:'المحتوى · 12 موضوع',
+    nav_phrases:'عبارات الحيوان', nav_dict:'قواميس · أمثال', nav_media:'وسائط',
+    nav_audio:'موسيقى · صوت', nav_visuals:'مرئيات · خلفية', nav_tamas:'12 حيوان',
+    nav_media2:'ملصقات · GIF', nav_game:'لعبة', nav_effects:'مؤثرات خاصة',
+    nav_anim:'رسوم متحركة', nav_mech:'آليات اللعبة', nav_output:'تصدير', nav_design_section:'تصميم', nav_design:'تصميم المحرر', nav_preview:'معاينة',
+    nav_export:'تصدير اللعبة',
+    h_settings:'⚙️ إعدادات اللعبة', sub_settings:'اختر المستوى واللغة وتنسيق المهام والمؤقت.',
+    h_content:'📚 المحتوى · 12 موضوع', sub_content:'أدخل الكلمات أو العبارات مفصولة بفواصل.',
+    h_phrases:'💬 عبارات الحيوان', sub_phrases:'اضبط عبارات الحيوان لمواضيع ومستويات مختلفة.',
+    h_dict:'📖 قواميس ثنائية اللغة · أمثال', sub_dict:'قواميس مدمجة. انقر «+ إلى الموضوع».',
+    h_audio:'🎵 مشغل الموسيقى', sub_audio:'ارفع الموسيقى من جهازك أو عبر رابط.',
+    h_visuals:'🎨 مرئيات · خلفيات', h_tamas:'🐱 12 حيوان', sub_tamas:'اختر الحيوانات النشطة.',
+    h_media:'🖼️ ملصقات · GIF', h_effects:'✨ مؤثرات خاصة', h_anim:'🎭 رسوم متحركة',
+    h_mech:'🏆 آليات اللعبة', h_design:'🖌️ تصميم المحرر',
+    h_preview:'👁️ معاينة اللعبة',
+    h_export:'📤 تصدير · تضمين · iFrame',
+    ct_identity:'🏷️ العنوان والمؤلف', ct_lang:'🌍 لغة اللعبة', ct_levels:'📊 مستويات الصعوبة',
+    ct_formats:'📝 تنسيقات المهام', ct_score:'🏆 نظام التقييم',
+    ct_discipline:'🎓 المادة', ct_ok_phrases:'✅ عبارات الإجابة الصحيحة',
+    ct_err_phrases:'❌ عبارات الإجابة الخاطئة', ct_themed:'💬 عبارات موضوعية',
+    ct_playlist:'📋 قائمة التشغيل', ct_theme:'🌌 نظام الألوان',
+    ct_tamas_base:'🐾 الحيوانات الأساسية', ct_tamas_custom:'✨ حيوانات مخصصة',
+    ct_media:'📁 معرض الوسائط', ct_fx_correct:'🎊 عند الإجابة الصحيحة',
+    ct_fx_win:'🏆 عند الفوز', ct_fx_fail:'😢 عند الخسارة',
+    ct_anim:'🎬 تفعيل الرسوم', ct_mech:'⚙️ تشغيل / إيقاف',
+    lbl_title:'عنوان اللعبة', lbl_author:'المؤلف / المادة', lbl_audience:'الصف / الجمهور',
+    lbl_year:'السنة الدراسية', lbl_uilang:'لغة الواجهة',
+    lbl_targetlang:'اللغة المستهدفة', lbl_lvname:'الاسم', lbl_q:'عدد الأسئلة',
+    lbl_timer:'المؤقت (ثانية)', lbl_lives:'أرواح', lbl_emoji:'رمز المستوى',
+    lbl_coins:'عملات لكل إجابة صحيحة', lbl_ctype:'نوع المحتوى',
+    lbl_custom_type:'نوع مخصص', lbl_ai_context:'الموضوع / السياق',
+    lbl_ai_count:'عدد العبارات', lbl_to_topic:'أضف إلى الموضوع رقم',
+    lbl_game_url:'🌐 رابط لعبتك المنشورة',
+    lbl_iw:'العرض', lbl_ih:'الارتفاع', lbl_radius:'تقريب الزوايا',
+    lbl_shadow:'ظل / إطار', lbl_scroll:'تمرير', lbl_allow:'أذونات',
+    ig_title:'🔲 مولّد iFrame',
+    export_ready:'جاهز للتصدير!', export_sub:'نزّل ملف HTML أو أنشئ كود iFrame.',
+    btn_dl_game:'🎮 تنزيل اللعبة (HTML)', btn_dl_cfg:'📋 الإعدادات (JSON)',
+    btn_copy_link:'🔗 نسخ الرابط', btn_save:'💾 حفظ', btn_export:'📤 تصدير',
+    btn_add:'＋ إضافة',
+    lv1_head:'المستوى 1 · أساسي', lv2_head:'المستوى 2 · متوسط', lv3_head:'المستوى 3 · متقدم',
+    m_timer:'مؤقت', m_coins:'عملات', m_lives:'أرواح', m_progress:'شريط التقدم',
+    m_shop:'متجر', m_growth:'نمو الحيوان', m_hint:'تلميح بعد الخطأ',
+    m_results:'جدول النتائج', m_restart:'العب مرة أخرى',
+    lv_prefix:'مس.',
+    theme_word:'موضوع',
+    no_content:'أضف كلمات إلى المواضيع',
+    lbl_theme_name:'اسم الموضوع',
+    lbl_theme_subject:'الموضوع / المادة',
+    lbl_theme_words:'الكلمات (مفصولة بفاصلة)',
+    lbl_theme_pairs:'الأزواج (كلمة:ترجمة)',
+    lbl_theme_proverbs:'الأمثال (_____ = فراغ | إجابة)',
+    lbl_theme_note:'ملاحظة',
+    btn_clear:'🗑 مسح',
+    btn_copy_topic:'📋 نسخ',
+    ph_theme_name:'مثال: الأسرة',
+    ph_theme_subject:'مثال: اسم · أسرة',
+    ph_words:'كلمة1, كلمة2...',
+    ph_pairs:'كلمة:ترجمة, ...',
+    ph_proverbs:'الصبر _____. | مفتاح الفرج',
+    confirm_clear:'مسح الموضوع',
+    toast_cleared:'تم مسح الموضوع',
+    lv1_btn:'المستوى 1 · أساسي',
+    lv2_btn:'المستوى 2 · متوسط',
+    lv3_btn:'المستوى 3 · متقدم'
+  },
+  hi: {
+    nav_main:'मुख्य', nav_settings:'गेम सेटिंग्स', nav_content:'सामग्री · 12 विषय',
+    nav_phrases:'पालतू के संवाद', nav_dict:'शब्दकोश · कहावतें', nav_media:'मीडिया',
+    nav_audio:'संगीत · ऑडियो', nav_visuals:'विजुअल · पृष्ठभूमि', nav_tamas:'12 पालतू',
+    nav_media2:'स्टिकर · GIF', nav_game:'गेम', nav_effects:'विशेष प्रभाव',
+    nav_anim:'एनिमेशन', nav_mech:'गेम मैकेनिक्स', nav_output:'निर्यात', nav_design_section:'डिज़ाइन', nav_design:'एडिटर डिज़ाइन', nav_preview:'पूर्वावलोकन',
+    nav_export:'गेम निर्यात',
+    h_settings:'⚙️ गेम सेटिंग्स', sub_settings:'स्तर, भाषा, कार्य प्रारूप और टाइमर चुनें।',
+    h_content:'📚 सामग्री · 12 विषय', sub_content:'शब्द या वाक्यांश अल्पविराम से अलग करके दर्ज करें।',
+    h_phrases:'💬 पालतू के संवाद', sub_phrases:'विभिन्न विषयों और स्तरों के लिए संवाद सेट करें।',
+    h_dict:'📖 द्विभाषी शब्दकोश', sub_dict:'अंतर्निहित शब्दकोश। «+ विषय में» पर क्लिक करें।',
+    h_audio:'🎵 संगीत प्लेयर', sub_audio:'अपने कंप्यूटर या URL से संगीत अपलोड करें।',
+    h_visuals:'🎨 विजुअल · पृष्ठभूमि', h_tamas:'🐱 12 पालतू', sub_tamas:'सक्रिय पालतू चुनें।',
+    h_media:'🖼️ स्टिकर · GIF', h_effects:'✨ विशेष प्रभाव', h_anim:'🎭 एनिमेशन',
+    h_mech:'🏆 गेम मैकेनिक्स', h_design:'🖌️ एडिटर डिज़ाइन',
+    h_preview:'👁️ गेम प्रीव्यू',
+    h_export:'📤 निर्यात · एम्बेड · iFrame',
+    ct_identity:'🏷️ शीर्षक और लेखक', ct_lang:'🌍 गेम भाषा', ct_levels:'📊 कठिनाई स्तर',
+    ct_formats:'📝 कार्य प्रारूप', ct_score:'🏆 स्कोरिंग सिस्टम',
+    ct_discipline:'🎓 विषय', ct_ok_phrases:'✅ सही उत्तर के संवाद',
+    ct_err_phrases:'❌ गलत उत्तर के संवाद', ct_themed:'💬 थीम संवाद',
+    ct_playlist:'📋 प्लेलिस्ट', ct_theme:'🌌 रंग योजना',
+    ct_tamas_base:'🐾 बेस पालतू', ct_tamas_custom:'✨ कस्टम पालतू',
+    ct_media:'📁 मीडिया गैलरी', ct_fx_correct:'🎊 सही उत्तर पर',
+    ct_fx_win:'🏆 जीत पर', ct_fx_fail:'😢 हार पर',
+    ct_anim:'🎬 एनिमेशन सक्षम करें', ct_mech:'⚙️ चालू / बंद',
+    lbl_title:'गेम शीर्षक', lbl_author:'लेखक / विषय', lbl_audience:'कक्षा / दर्शक',
+    lbl_year:'शैक्षणिक वर्ष', lbl_uilang:'इंटरफ़ेस भाषा',
+    lbl_targetlang:'लक्षित भाषा', lbl_lvname:'नाम', lbl_q:'प्रश्नों की संख्या',
+    lbl_timer:'टाइमर (सेकंड)', lbl_lives:'जीवन', lbl_emoji:'स्तर इमोजी',
+    lbl_coins:'प्रति सही उत्तर सिक्के', lbl_ctype:'सामग्री का प्रकार',
+    lbl_custom_type:'कस्टम प्रकार', lbl_ai_context:'विषय / संदर्भ',
+    lbl_ai_count:'संवाद संख्या', lbl_to_topic:'विषय संख्या में जोड़ें',
+    lbl_game_url:'🌐 प्रकाशित गेम का URL',
+    lbl_iw:'चौड़ाई', lbl_ih:'ऊंचाई', lbl_radius:'कोने की गोलाई',
+    lbl_shadow:'छाया / सीमा', lbl_scroll:'स्क्रॉल', lbl_allow:'अनुमतियाँ',
+    ig_title:'🔲 iFrame जेनरेटर',
+    export_ready:'निर्यात के लिए तैयार!', export_sub:'HTML डाउनलोड करें या iFrame कोड जेनरेट करें।',
+    btn_dl_game:'🎮 गेम डाउनलोड करें', btn_dl_cfg:'📋 कॉन्फिग (JSON)',
+    btn_copy_link:'🔗 लिंक कॉपी करें', btn_save:'💾 सहेजें', btn_export:'📤 निर्यात',
+    btn_add:'＋ जोड़ें',
+    lv1_head:'स्तर 1 · बुनियादी', lv2_head:'स्तर 2 · मध्यम', lv3_head:'स्तर 3 · उन्नत',
+    m_timer:'टाइमर', m_coins:'सिक्के', m_lives:'जीवन', m_progress:'प्रगति बार',
+    m_shop:'दुकान', m_growth:'पालतू विकास', m_hint:'त्रुटि के बाद संकेत',
+    m_results:'परिणाम तालिका', m_restart:'फिर से खेलें',
+    lv_prefix:'स्.',
+    theme_word:'विषय',
+    no_content:'विषयों में शब्द जोड़ें',
+    lbl_theme_name:'विषय का नाम',
+    lbl_theme_subject:'विषय / अनुशासन',
+    lbl_theme_words:'शब्द (अल्पविराम से अलग)',
+    lbl_theme_pairs:'जोड़े (शब्द:अनुवाद)',
+    lbl_theme_proverbs:'कहावतें (_____ = रिक्त | उत्तर)',
+    lbl_theme_note:'टिप्पणी',
+    btn_clear:'🗑 साफ करें',
+    btn_copy_topic:'📋 कॉपी',
+    ph_theme_name:'उदा. परिवार',
+    ph_theme_subject:'उदा. संज्ञा · परिवार',
+    ph_words:'शब्द1, शब्द2...',
+    ph_pairs:'शब्द:अनुवाद, ...',
+    ph_proverbs:'करत करत अभ्यास के _____। | जड़मति होत सुजान',
+    confirm_clear:'विषय साफ करें',
+    toast_cleared:'विषय साफ किया',
+    lv1_btn:'स्तर 1 · बुनियादी',
+    lv2_btn:'स्तर 2 · मध्यम',
+    lv3_btn:'स्तर 3 · उन्नत'
+  },
+  fa: {
+    nav_main:'اصلی', nav_settings:'تنظیمات بازی', nav_content:'محتوا · ۱۲ موضوع',
+    nav_phrases:'دیالوگ‌های حیوان', nav_dict:'فرهنگ‌لغت · ضرب‌المثل', nav_media:'رسانه',
+    nav_audio:'موسیقی · صدا', nav_visuals:'تصویری · پس‌زمینه', nav_tamas:'۱۲ حیوان',
+    nav_media2:'استیکر · GIF', nav_game:'بازی', nav_effects:'جلوه‌های ویژه',
+    nav_anim:'انیمیشن', nav_mech:'مکانیک بازی', nav_output:'خروجی', nav_design_section:'طراحی', nav_design:'طراحی ویرایشگر', nav_preview:'پیش‌نمایش',
+    nav_export:'صادرکردن',
+    h_settings:'⚙️ تنظیمات بازی', sub_settings:'سطح، زبان، قالب تکلیف و تایمر را انتخاب کنید.',
+    h_content:'📚 محتوا · ۱۲ موضوع', sub_content:'کلمات یا عبارات را با ویرگول جدا کنید.',
+    h_phrases:'💬 دیالوگ‌های حیوان', sub_phrases:'دیالوگ‌ها را برای موضوعات و سطوح مختلف تنظیم کنید.',
+    h_dict:'📖 فرهنگ‌لغت دوزبانه', sub_dict:'فرهنگ‌لغت داخلی. روی «+ به موضوع» کلیک کنید.',
+    h_audio:'🎵 پخش‌کننده موسیقی', sub_audio:'موسیقی را از رایانه یا URL آپلود کنید.',
+    h_visuals:'🎨 تصویری · پس‌زمینه', h_tamas:'🐱 ۱۲ حیوان', sub_tamas:'حیوانات فعال را انتخاب کنید.',
+    h_media:'🖼️ استیکر · GIF', h_effects:'✨ جلوه‌های ویژه', h_anim:'🎭 انیمیشن',
+    h_mech:'🏆 مکانیک بازی', h_design:'🖌️ طراحی ویرایشگر',
+    h_preview:'👁️ پیش‌نمایش بازی',
+    h_export:'📤 صادرکردن · جاسازی · iFrame',
+    ct_identity:'🏷️ عنوان و نویسنده', ct_lang:'🌍 زبان بازی', ct_levels:'📊 سطوح دشواری',
+    ct_formats:'📝 قالب‌های تکلیف', ct_score:'🏆 سیستم نمره‌دهی',
+    ct_discipline:'🎓 رشته / درس', ct_ok_phrases:'✅ دیالوگ پاسخ صحیح',
+    ct_err_phrases:'❌ دیالوگ پاسخ اشتباه', ct_themed:'💬 دیالوگ‌های موضوعی',
+    ct_playlist:'📋 لیست پخش', ct_theme:'🌌 طرح رنگی',
+    ct_tamas_base:'🐾 حیوانات پایه', ct_tamas_custom:'✨ حیوانات سفارشی',
+    ct_media:'📁 گالری رسانه', ct_fx_correct:'🎊 پاسخ صحیح', ct_fx_win:'🏆 پیروزی', ct_fx_fail:'😢 شکست',
+    ct_anim:'🎬 فعال‌کردن انیمیشن', ct_mech:'⚙️ روشن / خاموش',
+    lbl_title:'عنوان بازی', lbl_author:'نویسنده / درس', lbl_audience:'کلاس / مخاطب',
+    lbl_year:'سال تحصیلی', lbl_uilang:'زبان رابط کاربری',
+    lbl_targetlang:'زبان هدف', lbl_lvname:'نام', lbl_q:'تعداد سؤالات',
+    lbl_timer:'تایمر (ثانیه)', lbl_lives:'جان', lbl_emoji:'ایموجی سطح',
+    lbl_coins:'سکه به ازای پاسخ صحیح', lbl_ctype:'نوع محتوا',
+    lbl_custom_type:'نوع سفارشی', lbl_ai_context:'موضوع / زمینه',
+    lbl_ai_count:'تعداد دیالوگ', lbl_to_topic:'افزودن به موضوع شماره',
+    lbl_game_url:'🌐 URL بازی منتشرشده',
+    lbl_iw:'عرض', lbl_ih:'ارتفاع', lbl_radius:'گوشه‌های گرد',
+    lbl_shadow:'سایه / کادر', lbl_scroll:'اسکرول', lbl_allow:'مجوزها',
+    ig_title:'🔲 مولد iFrame',
+    export_ready:'آماده صادرکردن!', export_sub:'HTML را دانلود کنید یا کد iFrame تولید کنید.',
+    btn_dl_game:'🎮 دانلود بازی (HTML)', btn_dl_cfg:'📋 تنظیمات (JSON)',
+    btn_copy_link:'🔗 کپی لینک', btn_save:'💾 ذخیره', btn_export:'📤 صادرکردن',
+    btn_add:'＋ افزودن',
+    lv1_head:'سطح ۱ · پایه', lv2_head:'سطح ۲ · متوسط', lv3_head:'سطح ۳ · پیشرفته',
+    m_timer:'تایمر', m_coins:'سکه', m_lives:'جان', m_progress:'نوار پیشرفت',
+    m_shop:'فروشگاه', m_growth:'رشد حیوان', m_hint:'راهنما بعد از خطا',
+    m_results:'جدول نتایج', m_restart:'دوباره بازی کن',
+  }
+};
 
-    btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btns.forEach(b => b.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(btn.dataset.target).classList.add('active');
-        });
+// ─── getT: get current translation object ───────────────────────────────────
+function getT(){
+  const lang=CFG.uiLang||document.getElementById('tb-lang-quick')?.value||'ru';
+  return UI_T[lang]||UI_T.ru;
+}
+
+// ─── syncLangSelectors ───────────────────────────────────────────────────────
+function syncLangSelectors(lang){
+  ['ui-lang','tb-lang-quick'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value=lang;
+  });
+  CFG.uiLang=lang;
+  saveConfig();
+}
+
+// ─── BASE PHRASES PER LANGUAGE ───────────────────────────────────────────────
+const LANG_PHRASES = {
+  ru:{
+    ok:{1:['Ням-ням! 😋','Ура! ⚽','Правильно! 🎉','Молодец! ⭐'],
+        2:['Умнею! 🧠','Знания — сила! 📚','Супер! 🌟','Продолжаем!'],
+        3:['Повторение — мать учения!','Шедеврально! 🏆','Непобедим! 👑','Блестяще! 💎']},
+    err:{1:['Расстроился! 😭','Не знаю... 😢','Хочу гулять! 😭','Голодный! 😢'],
+         2:['Хочу есть! 😢','Скучно... 😢','Попробуй ещё раз! 😔','Не сдавайся! 💪'],
+         3:['Мне грустно 😢','Ой, не то... 😔','Надо повторить! 📚','Не беда! 🌟']},
+  },
+  de:{
+    ok:{1:['Lecker! 😋','Super! ⭐','Richtig! 🎉','Toll! 🐾'],
+        2:['Ich werde klüger! 🧠','Wissen ist Macht! 📚','Fantastisch! 🌟','Weiter so!'],
+        3:['Übung macht den Meister!','Meisterhaft! 🏆','Unschlagbar! 👑','Brillant! 💎']},
+    err:{1:['Ich bin traurig! 😭','Ich weiß es nicht 😢','Ich will spielen! 😭','Ich habe Hunger! 😢'],
+         2:['Ich habe Hunger! 😢','Langweilig... 😢','Versuch es nochmal! 😔','Gib nicht auf! 💪'],
+         3:['Ich bin traurig 😢','Oje, falsch... 😔','Muss wiederholen! 📚','Nicht schlimm! 🌟']}
+  },
+  en:{
+    ok:{1:['Yummy! 😋','Yay! ⚽','Correct! 🎉','Great job! ⭐'],
+        2:['Getting smarter! 🧠','Knowledge is power! 📚','Awesome! 🌟','Keep going!'],
+        3:['Practice makes perfect!','Masterful! 🏆','Unbeatable! 👑','Brilliant! 💎']},
+    err:{1:["I'm sad! 😭","I don't know 😢","I want to play! 😭","I'm hungry! 😢"],
+         2:["I'm hungry! 😢",'So boring... 😢','Try again! 😔',"Don't give up! 💪"],
+         3:["I'm sad 😢",'Oops, wrong... 😔','Need to revise! 📚','No worries! 🌟']}
+  },
+  fr:{
+    ok:{1:['Délicieux! 😋','Super! ⚽','Correct! 🎉','Bravo! ⭐'],
+        2:['Je deviens plus intelligent! 🧠',"Le savoir c'est le pouvoir! 📚",'Fantastique! 🌟','Continue!'],
+        3:["L'entraînement fait le maître!",'Magistral! 🏆','Imbattable! 👑','Brillant! 💎']},
+    err:{1:['Je suis triste! 😭','Je ne sais pas 😢','Je veux jouer! 😭',"J'ai faim! 😢"],
+         2:["J'ai faim! 😢",'Tellement ennuyeux 😢','Essaie encore! 😔',"N'abandonne pas! 💪"],
+         3:['Je suis triste 😢','Oups, faux... 😔','Besoin de réviser! 📚','Pas grave! 🌟']}
+  },
+  es:{
+    ok:{1:['¡Delicioso! 😋','¡Viva! ⚽','¡Correcto! 🎉','¡Genial! ⭐'],
+        2:['¡Me vuelvo más inteligente! 🧠','¡El conocimiento es poder! 📚','¡Fantástico! 🌟','¡Sigue así!'],
+        3:['¡La práctica hace al maestro!','¡Magistral! 🏆','¡Invencible! 👑','¡Brillante! 💎']},
+    err:{1:['¡Estoy triste! 😭','No sé 😢','¡Quiero jugar! 😭','¡Tengo hambre! 😢'],
+         2:['¡Tengo hambre! 😢','Qué aburrido 😢','¡Inténtalo de nuevo! 😔','¡No te rindas! 💪'],
+         3:['Estoy triste 😢','Vaya, error... 😔','¡Necesito repasar! 📚','¡No pasa nada! 🌟']}
+  },
+  ja:{
+    ok:{1:['おいしい！😋','やった！⚽','正解！🎉','すごい！⭐'],
+        2:['賢くなった！🧠','知識は力！📚','最高！🌟','続けよう！'],
+        3:['練習すれば完璧になる！','見事！🏆','無敵！👑','素晴らしい！💎']},
+    err:{1:['悲しい！😭','わからない😢','遊びたい！😭','お腹すいた！😢'],
+         2:['お腹すいた！😢','退屈だ😢','もう一度試して！😔','諦めないで！💪'],
+         3:['悲しいな😢','あれ、違う...😔','復習が必要！📚','大丈夫！🌟']}
+  },
+  zh:{
+    ok:{1:['好吃！😋','万岁！⚽','正确！🎉','太棒了！⭐'],
+        2:['越来越聪明！🧠','知识就是力量！📚','太好了！🌟','继续吧！'],
+        3:['熟能生巧！','出色！🏆','无敌！👑','精彩！💎']},
+    err:{1:['我伤心了！😭','我不知道😢','我要玩！😭','我饿了！😢'],
+         2:['我饿了！😢','好无聊😢','再试一次！😔','不要放弃！💪'],
+         3:['我伤心了😢','哎，错了...😔','需要复习！📚','没关系！🌟']}
+  },
+  ar:{
+    ok:{1:['لذيذ! 😋','هورا! ⚽','صحيح! 🎉','رائع! ⭐'],
+        2:['أصبحت أذكى! 🧠','المعرفة قوة! 📚','رائع! 🌟','استمر!'],
+        3:['الممارسة تصنع الكمال!','بارع! 🏆','لا يقهر! 👑','ممتاز! 💎']},
+    err:{1:['أنا حزين! 😭','لا أعرف 😢','أريد اللعب! 😭','أنا جائع! 😢'],
+         2:['أنا جائع! 😢','ممل جداً 😢','حاول مرة أخرى! 😔','لا تستسلم! 💪'],
+         3:['أنا حزين 😢','آسف، خطأ... 😔','أحتاج إلى مراجعة! 📚','لا بأس! 🌟']}
+  },
+  hi:{
+    ok:{1:['स्वादिष्ट! 😋','वाह! ⚽','सही! 🎉','शाबाश! ⭐'],
+        2:['मैं होशियार हो रहा हूँ! 🧠','ज्ञान शक्ति है! 📚','बेहतरीन! 🌟','जारी रखो!'],
+        3:['अभ्यास से परिपूर्णता आती है!','शानदार! 🏆','अजेय! 👑','उत्कृष्ट! 💎']},
+    err:{1:['मैं दुखी हूँ! 😭','नहीं जानता 😢','खेलना है! 😭','भूख लगी है! 😢'],
+         2:['भूख लगी है! 😢','बोरियत 😢','फिर कोशिश करो! 😔','हार मत मानो! 💪'],
+         3:['मैं दुखी हूँ 😢','ओह, गलत... 😔','दोहराना होगा! 📚','कोई बात नहीं! 🌟']}
+  },
+  fa:{
+    ok:{1:['خوشمزه! 😋','هورا! ⚽','درست! 🎉','آفرین! ⭐'],
+        2:['دانا تر شدم! 🧠','دانش قدرت است! 📚','عالی! 🌟','ادامه بده!'],
+        3:['تمرین کمال می آورد!','استادانه! 🏆','شکست ناپذیر! 👑','درخشان! 💎']},
+    err:{1:['ناراحتم! 😭','نمی دانم 😢','بازی می خواهم! 😭','گرسنه ام! 😢'],
+         2:['گرسنه ام! 😢','خسته کننده 😢','دوباره تلاش کن! 😔','تسلیم نشو! 💪'],
+         3:['ناراحتم 😢','اوه، اشتباه... 😔','باید مرور کنم! 📚','اشکالی ندارد! 🌟']}
+  },
+};
+
+function getLangPhrases(type,lv){
+  const lang=CFG.uiLang||'ru';
+  const base=LANG_PHRASES[lang]||LANG_PHRASES.ru;
+  return [...(base[type]?.[lv]||LANG_PHRASES.ru[type][lv]||[]),...(CFG.phrases[type][lv]||[])];
+}
+
+function applyUiLang(lang) {
+  CFG.uiLang = lang;
+  CFG.gameLocale = lang;
+  CFG.exportLang = lang;
+  const t = UI_T[lang] || UI_T.ru;
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.dataset.i18nPh;
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+  // Update buttons
+  const btnSave=document.getElementById('btn-save');
+  const btnExp=document.getElementById('btn-export');
+  if(btnSave)btnSave.textContent=(t.btn_save||'💾');
+  if(btnExp)btnExp.textContent=(t.btn_export||'📤');
+  // Update back button text
+  const btnBack=document.getElementById('btn-back');
+  if(btnBack){const sp=btnBack.querySelector('span');if(sp)sp.textContent=(t.btn_back||'Назад');}
+  // RTL
+  const rtlLangs=['ar','fa','he'];
+  const isRTL=rtlLangs.includes(lang);
+  document.documentElement.dir=isRTL?'rtl':'ltr';
+  document.documentElement.lang=lang;
+  // Sync all lang selectors
+  ['ui-lang','tb-lang-quick'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=lang;
+  });
+  // Update sidebar section labels
+  const sectionLabels = {
+    nav_main: t.nav_main, nav_media: t.nav_media, nav_game: t.nav_game,
+    nav_design_section: t.nav_design_section, nav_output: t.nav_output
+  };
+  document.querySelectorAll('.sb-section-lbl[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if(sectionLabels[k]) el.textContent = sectionLabels[k];
+  });
+  // Rebuild dynamic content with new language labels
+  buildTopics();
+  renderPhrases();
+  updatePreview();
+  // If preview panel is open, refresh it
+  if(window._currentPanel==='preview') setTimeout(refreshPreview,50);
+  // Update panel title (breadcrumb)
+  const curPanel = window._currentPanel || 'settings';
+  const pname = document.getElementById('tb-panel-name');
+  if(pname){
+    const curBtn = document.querySelector(`[data-panel="${curPanel}"] .sb-label`);
+    if(curBtn) pname.textContent = curBtn.textContent;
+  }
+  // Update back button text
+  const bbackSpan = document.querySelector('#btn-back span');
+  if(bbackSpan) bbackSpan.textContent = t.btn_back || 'Назад';
+  // Update document title
+  document.title = '🌿 Tamagotchi Editor · ' + lang.toUpperCase();
+  // Update lang-status indicator
+  const ls=document.getElementById('lang-status');
+  if(ls)ls.textContent='🌐 '+lang.toUpperCase();
+  // Persist language immediately
+  try{localStorage.setItem('tama-editor-cfg',JSON.stringify(CFG));}catch(e){}
+  const ss=document.getElementById('save-status');
+  if(ss)ss.textContent='🌐 '+lang.toUpperCase();
+  // Update alpha helper title
+  const alphaTitle=document.querySelector('#alpha-helper .alpha-title span[data-i18n="alpha_title"]');
+  if(alphaTitle&&t.alpha_title) alphaTitle.textContent=t.alpha_title;
+  const alphaHint=document.querySelector('#alpha-helper .alpha-title span[data-i18n="alpha_hint"]');
+  if(alphaHint&&t.alpha_hint) alphaHint.textContent=t.alpha_hint;
+  // Update content-type select options
+  const ctSel=document.getElementById('content-type');
+  if(ctSel&&t.ct_vocab){
+    const opts={vocab:t.ct_vocab,phrases:t.ct_phrases,formulas:t.ct_formulas,dates:t.ct_dates,terms:t.ct_terms,code:t.ct_code,geography:t.ct_geo};
+    [...ctSel.options].forEach(o=>{if(opts[o.value])o.text=opts[o.value];});
+  }
+  // Re-render alphabet for new UI lang context
+  setTimeout(renderAlphabetEditor,80);
+  showToast('🌐 '+lang.toUpperCase());
+}
+
+function toggleLangPicker(){
+  const p=document.getElementById('lang-picker-panel');
+  const a=document.getElementById('lang-picker-arrow');
+  const open=p.style.display==='none';
+  p.style.display=open?'block':'none';
+  a.textContent=open?'▲':'▼';
+}
+
+function updateLangDisplay(){
+  const el=document.querySelector('#lang-chips .chip.on');
+  const d=document.getElementById('lang-selected-display');
+  if(d&&el)d.textContent=el.textContent.trim();
+  // ★ CRITICAL: save the GAME language (what the user is learning)
+  if(el){
+    const gLang=el.dataset.v||'ru';
+    CFG.gameLang  = gLang==='custom'?'custom':gLang;
+    CFG.gameLocale= gLang==='custom'?'ru':gLang;
+    CFG.exportLang= CFG.gameLocale;
+    CFG.lang      = CFG.gameLocale;
+    CFG.gameLangName=el.textContent.trim();
+  }
+  updatePreview();
+  setTimeout(renderAlphabetEditor,50);
+}
+
+// ════════════════════════════════════════════════════════
+//  BILINGUAL DICTIONARIES
+// ════════════════════════════════════════════════════════
+// Structure: each pair has categories with arrays of [source, target, example?]
+const DICT_DATA = {
+  'de-ru': {
+    srcLang:'🇩🇪 Deutsch', trgLang:'🇷🇺 Русский',
+    cats: {
+      '🍎 Питание / Essen': [
+        ['das Brot','хлеб','Das Brot ist frisch.'],
+        ['die Milch','молоко','Die Milch ist kalt.'],
+        ['das Wasser','вода','Ich trinke Wasser.'],
+        ['der Apfel','яблоко','Der Apfel ist rot.'],
+        ['die Suppe','суп','Die Suppe schmeckt gut.'],
+        ['das Fleisch','мясо','Das Fleisch ist lecker.'],
+        ['der Käse','сыр','Ich mag Käse.'],
+        ['das Ei','яйцо','Das Ei ist frisch.'],
+        ['die Butter','масло','Die Butter ist weich.'],
+        ['der Kuchen','торт / пирог','Der Kuchen ist süß.'],
+        ['der Saft','сок','Der Saft ist kalt.'],
+        ['der Tee','чай','Ich trinke Tee.'],
+        ['der Kaffee','кофе','Der Kaffee ist heiß.'],
+        ['das Gemüse','овощи','Das Gemüse ist gesund.'],
+        ['das Obst','фрукты','Das Obst ist frisch.'],
+        ['der Zucker','сахар','Kein Zucker, bitte.'],
+        ['das Salz','соль','Das Salz fehlt.'],
+        ['die Schokolade','шоколад','Ich liebe Schokolade.'],
+      ],
+      '🏫 Школа / Schule': [
+        ['die Schule','школа','Ich gehe zur Schule.'],
+        ['der Lehrer / die Lehrerin','учитель / учительница','Der Lehrer erklärt.'],
+        ['der Schüler / die Schülerin','ученик / ученица','Der Schüler lernt.'],
+        ['das Heft','тетрадь','Das Heft ist voll.'],
+        ['das Buch','книга','Das Buch ist spannend.'],
+        ['der Bleistift','карандаш','Der Bleistift ist scharf.'],
+        ['der Stift','ручка','Ich brauche einen Stift.'],
+        ['die Tafel','доска','Die Tafel ist schwarz.'],
+        ['die Hausaufgabe','домашнее задание','Ich mache Hausaufgaben.'],
+        ['die Pause','перемена','In der Pause spielen wir.'],
+        ['das Klassenzimmer','класс (комната)','Das Klassenzimmer ist groß.'],
+        ['die Note','оценка','Ich habe eine gute Note.'],
+        ['die Prüfung','экзамен','Die Prüfung ist morgen.'],
+        ['lernen','учиться','Ich lerne Deutsch.'],
+        ['lesen','читать','Ich lese ein Buch.'],
+        ['schreiben','писать','Ich schreibe einen Brief.'],
+      ],
+      '👨‍👩‍👧 Семья / Familie': [
+        ['die Familie','семья','Meine Familie ist groß.'],
+        ['die Mutter','мама','Meine Mutter kocht.'],
+        ['der Vater','папа','Mein Vater arbeitet.'],
+        ['der Bruder','брат','Mein Bruder spielt.'],
+        ['die Schwester','сестра','Meine Schwester singt.'],
+        ['die Oma','бабушка','Meine Oma backt.'],
+        ['der Opa','дедушка','Mein Opa liest.'],
+        ['der Sohn','сын','Der Sohn ist klein.'],
+        ['die Tochter','дочь','Die Tochter tanzt.'],
+        ['der Onkel','дядя','Mein Onkel ist Arzt.'],
+        ['die Tante','тётя','Meine Tante ist nett.'],
+        ['die Eltern','родители','Meine Eltern arbeiten.'],
+        ['das Kind / die Kinder','ребёнок / дети','Die Kinder spielen.'],
+      ],
+      '🌿 Природа / Natur': [
+        ['der Baum','дерево','Der Baum ist groß.'],
+        ['die Blume','цветок','Die Blume ist schön.'],
+        ['der Hund','собака','Der Hund bellt.'],
+        ['die Katze','Katze','Die Katze schläft.'],
+        ['der Vogel','птица','Der Vogel singt.'],
+        ['der Fisch','рыба','Der Fisch schwimmt.'],
+        ['das Wetter','погода','Das Wetter ist schön.'],
+        ['die Sonne','солнце','Die Sonne scheint.'],
+        ['der Regen','дождь','Es regnet.'],
+        ['der Schnee','снег','Es schneit.'],
+        ['der Wind','ветер','Der Wind weht.'],
+        ['der Berg','гора','Der Berg ist hoch.'],
+        ['der Fluss','река','Der Fluss ist lang.'],
+        ['das Meer','море','Das Meer ist blau.'],
+      ],
+      '🏠 Дом / Haus': [
+        ['das Haus','дом','Das Haus ist groß.'],
+        ['das Zimmer','комната','Das Zimmer ist schön.'],
+        ['die Küche','кухня','In der Küche koche ich.'],
+        ['das Schlafzimmer','спальня','Das Schlafzimmer ist ruhig.'],
+        ['das Bad','ванная','Das Bad ist sauber.'],
+        ['der Tisch','стол','Am Tisch essen wir.'],
+        ['der Stuhl','стул','Der Stuhl ist bequem.'],
+        ['das Bett','кровать','Das Bett ist weich.'],
+        ['das Fenster','окно','Das Fenster ist offen.'],
+        ['die Tür','дверь','Die Tür ist zu.'],
+        ['der Schrank','шкаф','Der Schrank ist voll.'],
+        ['die Lampe','лампа','Die Lampe leuchtet.'],
+      ],
+      '🚗 Транспорт / Verkehr': [
+        ['das Auto','машина','Das Auto fährt schnell.'],
+        ['der Bus','автобус','Der Bus kommt.'],
+        ['die Bahn / der Zug','поезд','Die Bahn ist pünktlich.'],
+        ['das Flugzeug','самолёт','Das Flugzeug fliegt.'],
+        ['das Fahrrad','велосипед','Ich fahre Fahrrad.'],
+        ['die U-Bahn','метро','Ich fahre U-Bahn.'],
+        ['das Schiff','корабль','Das Schiff ist groß.'],
+        ['die Straße','улица','Die Straße ist lang.'],
+      ],
+      '🧍 Тело / Körper': [
+        ['der Kopf','голова','Mein Kopf tut weh.'],
+        ['das Auge / die Augen','глаз / глаза','Ich habe blaue Augen.'],
+        ['das Ohr / die Ohren','ухо / уши','Das Ohr hört.'],
+        ['die Nase','нос','Meine Nase ist kalt.'],
+        ['der Mund','рот','Ich öffne den Mund.'],
+        ['die Hand / die Hände','рука / руки','Ich wasche die Hände.'],
+        ['der Fuß / die Füße','нога / ноги','Meine Füße sind müde.'],
+        ['der Bauch','живот','Mein Bauch ist voll.'],
+        ['der Rücken','спина','Mein Rücken schmerzt.'],
+        ['das Herz','сердце','Das Herz schlägt.'],
+      ],
+      '💬 Идиомы и фразеологизмы / Idiome': [
+        ['Das ist nicht mein Bier.','Это не моё дело.','Kümmere dich nicht darum!'],
+        ['Ich drücke dir die Daumen.','Я держу за тебя кулачки. / Желаю удачи!','Viel Erfolg!'],
+        ['Jetzt ist Hopfen und Malz verloren.','Всё потеряно. / Дело швах.','Es gibt keine Hoffnung mehr.'],
+        ['Das geht mir auf die Nerven.','Это действует мне на нервы.','Du nervst mich!'],
+        ['Das ist nicht der Rede wert.','Не стоит об этом говорить.','Es ist unwichtig.'],
+        ['Ich bin mit dem falschen Fuß aufgestanden.','Я встал не с той ноги.','Ich bin schlecht gelaunt.'],
+        ['Das ist mir Wurst.','Мне всё равно.','Es ist mir egal.'],
+        ['Schwein gehabt!','Повезло! Счастливчик!','Das war Glück!'],
+        ['Einen Kater haben','Быть с похмелья','Er hat einen Kater.'],
+        ['Unter vier Augen','Тет-а-тет. Наедине.','Wir reden unter vier Augen.'],
+        ['Die Katze im Sack kaufen','Купить кота в мешке','Kauf nie die Katze im Sack!'],
+        ['Ins Fettnäpfchen treten','Попасть впросак. Сделать бестактность.','Er trat wieder ins Fettnäpfchen.'],
+      ],
+      '📣 Устойчивые выражения / Feste Ausdrücke': [
+        ['Guten Morgen!','Доброе утро!','Guten Morgen, wie geht es dir?'],
+        ['Wie geht es Ihnen?','Как вы поживаете?','Danke, gut!'],
+        ['Tut mir leid.','Извините. / Мне жаль.','Das tut mir sehr leid.'],
+        ['Keine Ahnung!','Понятия не имею!','Ich habe keine Ahnung.'],
+        ['Auf keinen Fall!','Ни в коем случае!','Das mache ich auf keinen Fall.'],
+        ['Na und?','Ну и что?','Na und? Das ist doch egal.'],
+        ['Das stimmt!','Это верно! Правильно!','Das stimmt genau.'],
+        ['Mach dir keine Sorgen!','Не беспокойся!','Alles wird gut!'],
+        ['Bis bald!','До скорого!','Tschüss, bis bald!'],
+        ['Herzlichen Glückwunsch!','Поздравляю!','Herzlichen Glückwunsch zum Geburtstag!'],
+      ],
+    },
+    proverbs: {
+      '💡 Мудрость / Weisheit': [
+        {src:'Übung macht den Meister.', trg:'Повторение — мать учения. / Практика делает мастера.', theme:'учёба'},
+        {src:'Morgenstund hat Gold im Mund.', trg:'Кто рано встаёт, тому Бог подаёт.', theme:'время'},
+        {src:'Aller Anfang ist schwer.', trg:'Любое начало трудно.', theme:'труд'},
+        {src:'Viele Köche verderben den Brei.', trg:'У семи нянек дитя без глазу.', theme:'совет'},
+        {src:'Ende gut, alles gut.', trg:'Всё хорошо, что хорошо кончается.', theme:'итог'},
+        {src:'Lügen haben kurze Beine.', trg:'Ложь недолго живёт. / На лжи далеко не уедешь.', theme:'честность'},
+        {src:'Wie man in den Wald ruft, so schallt es heraus.', trg:'Как аукнется, так и откликнется.', theme:'поступки'},
+        {src:'Ein Unglück kommt selten allein.', trg:'Беда не приходит одна.', theme:'судьба'},
+        {src:'Der Apfel fällt nicht weit vom Stamm.', trg:'Яблоко от яблони недалеко падает.', theme:'семья'},
+        {src:'Geld allein macht nicht glücklich.', trg:'Не в деньгах счастье.', theme:'счастье'},
+      ],
+      '📚 Учёба / Lernen': [
+        {src:'Wissen ist Macht.', trg:'Знание — сила.', theme:'учёба'},
+        {src:'Lernen ist wie Rudern gegen den Strom.', trg:'Учиться — это плыть против течения.', theme:'учёба'},
+        {src:'Was du heute kannst besorgen, das verschiebe nicht auf morgen.', trg:'Не откладывай на завтра то, что можно сделать сегодня.', theme:'время'},
+        {src:'Wer rastet, der rostet.', trg:'Кто не работает, тот ржавеет. / Под лежачий камень вода не течёт.', theme:'труд'},
+        {src:'Man lernt nie aus.', trg:'Век живи — век учись.', theme:'учёба'},
+      ],
+      '🤝 Дружба / Freundschaft': [
+        {src:'Freunde in der Not gehen tausend auf ein Lot.', trg:'Друзья в беде — редкость.', theme:'дружба'},
+        {src:'Einigkeit macht stark.', trg:'В единстве — сила.', theme:'единство'},
+        {src:'Gleich und gleich gesellt sich gern.', trg:'Рыбак рыбака видит издалека.', theme:'дружба'},
+        {src:'Mit Freunden ist alles leichter.', trg:'С друзьями всё легче.', theme:'дружба'},
+      ],
+      '🌿 Природа / Natur': [
+        {src:'April, April, der macht, was er will.', trg:'Апрель-апрель, делает что хочет. (о непогоде)', theme:'природа'},
+        {src:'Nach dem Regen kommt Sonnenschein.', trg:'После дождя выглядывает солнце. / После грозы бывает ведро.', theme:'природа'},
+        {src:'Im Winter hat der Bauer Ruh, im Sommer keine Stunde.', trg:'Зимой отдыхает крестьянин, летом — ни минуты.', theme:'природа'},
+      ],
+    }
+  },
+  'ru-de': {
+    srcLang:'🇷🇺 Русский', trgLang:'🇩🇪 Deutsch',
+    get cats() {
+      // Reverse the de-ru dictionary
+      const orig = DICT_DATA['de-ru'].cats;
+      const rev = {};
+      for (const [cat, entries] of Object.entries(orig)) {
+        rev[cat] = entries.map(([s,t,e]) => [t, s, '']);
+      }
+      return rev;
+    },
+    get proverbs() { return DICT_DATA['de-ru'].proverbs; }
+  },
+  'en-ru': {
+    srcLang:'🇬🇧 English', trgLang:'🇷🇺 Русский',
+    cats: {
+      '🍎 Food / Питание': [
+        ['bread','хлеб','I eat bread every day.'],
+        ['milk','молоко','Milk is healthy.'],
+        ['water','вода','Drink more water.'],
+        ['apple','яблоко','An apple a day...'],
+        ['soup','суп','Hot soup is good.'],
+        ['meat','мясо','I like grilled meat.'],
+        ['cheese','сыр','Swiss cheese is nice.'],
+        ['egg','яйцо','Scrambled eggs please.'],
+        ['butter','масло','Toast with butter.'],
+        ['cake','торт','Birthday cake!'],
+        ['juice','сок','Orange juice.'],
+        ['tea','чай','A cup of tea.'],
+        ['coffee','кофе','Black coffee please.'],
+        ['vegetables','овощи','Eat your vegetables!'],
+        ['fruit','фрукты','Fresh fruit salad.'],
+        ['sugar','сахар','No sugar please.'],
+        ['salt','соль','Pass the salt.'],
+        ['chocolate','шоколад','Dark chocolate.'],
+      ],
+      '🏫 School / Школа': [
+        ['school','школа','I go to school.'],
+        ['teacher','учитель/учительница','The teacher explains.'],
+        ['student','ученик/ученица','The student reads.'],
+        ['notebook','тетрадь','Fill your notebook.'],
+        ['book','книга','Read your book.'],
+        ['pencil','карандаш','Sharp pencil needed.'],
+        ['pen','ручка','Sign with a pen.'],
+        ['board','доска','Write on the board.'],
+        ['homework','домашнее задание','Do your homework!'],
+        ['break','перемена','Recess is fun.'],
+        ['classroom','класс','Clean classroom.'],
+        ['grade / mark','оценка','Good grade!'],
+        ['exam / test','экзамен','Exam tomorrow.'],
+        ['to learn','учиться','Learn English.'],
+        ['to read','читать','Read aloud.'],
+        ['to write','писать','Write neatly.'],
+      ],
+      '👨‍👩‍👧 Family / Семья': [
+        ['family','семья','My family is big.'],
+        ['mother / mom','мама','Mom cooks.'],
+        ['father / dad','папа','Dad works.'],
+        ['brother','брат','My brother plays.'],
+        ['sister','сестра','My sister sings.'],
+        ['grandmother / grandma','бабушка','Grandma bakes.'],
+        ['grandfather / grandpa','дедушка','Grandpa reads.'],
+        ['son','сын','Their little son.'],
+        ['daughter','дочь','Their daughter dances.'],
+        ['uncle','дядя','Uncle is a doctor.'],
+        ['aunt','тётя','Aunt is kind.'],
+        ['parents','родители','Parents work.'],
+        ['children','дети','Children play.'],
+      ],
+      '🌿 Nature / Природа': [
+        ['tree','дерево','A tall tree.'],
+        ['flower','цветок','Beautiful flowers.'],
+        ['dog','собака','The dog barks.'],
+        ['cat','кошка','The cat sleeps.'],
+        ['bird','птица','Birds sing.'],
+        ['fish','рыба','Fish swim.'],
+        ['weather','погода','Nice weather.'],
+        ['sun','солнце','The sun shines.'],
+        ['rain','дождь','It rains.'],
+        ['snow','снег','It snows.'],
+        ['wind','ветер','Strong wind.'],
+        ['mountain','гора','High mountains.'],
+        ['river','река','Long river.'],
+        ['sea / ocean','море / океан','Blue sea.'],
+      ],
+      '💬 Idioms / Идиомы': [
+        ['Break a leg!','Ни пуха ни пера! Удачи!','Break a leg at your performance!'],
+        ['It\'s raining cats and dogs.','Льёт как из ведра.','Don\'t go out, it\'s raining cats and dogs.'],
+        ['Hit the books','Засесть за книги / учиться','I need to hit the books tonight.'],
+        ['Under the weather','Неважно себя чувствовать','I\'m feeling under the weather.'],
+        ['Bite the bullet','Стиснуть зубы / перетерпеть','Just bite the bullet and do it.'],
+        ['It takes two to tango.','Для ссоры двое нужны.','It takes two to tango, you know.'],
+        ['Kill two birds with one stone.','Убить двух зайцев.','Let\'s kill two birds with one stone.'],
+        ['The ball is in your court.','Мяч на твоей стороне. / Теперь твоя очередь.','The ball is in your court now.'],
+        ['Spill the beans.','Проболтаться. Раскрыть секрет.','Don\'t spill the beans!'],
+        ['Hit the nail on the head.','Попасть в точку.','You hit the nail on the head!'],
+        ['Bite off more than you can chew.','Взять на себя больше, чем можешь.','Don\'t bite off more than you can chew.'],
+        ['Once in a blue moon.','Очень редко. Раз в сто лет.','She visits once in a blue moon.'],
+      ],
+      '📣 Set Expressions / Устойчивые выражения': [
+        ['Good morning!','Доброе утро!','Good morning! How are you?'],
+        ['How are you?','Как дела?','Fine, thanks! How are you?'],
+        ['I\'m sorry.','Извините / Мне жаль.','I\'m sorry for the mistake.'],
+        ['No idea!','Понятия не имею!','No idea what happened.'],
+        ['No way!','Ни за что!','No way I\'m doing that.'],
+        ['So what?','Ну и что?','So what? It doesn\'t matter.'],
+        ['That\'s right!','Правильно!','Yes, that\'s right!'],
+        ['Don\'t worry!','Не беспокойся!','Don\'t worry, everything will be fine!'],
+        ['See you soon!','До скорого!','Bye! See you soon!'],
+        ['Congratulations!','Поздравляю!','Congratulations on your success!'],
+      ],
+    },
+    proverbs: {
+      '💡 Wisdom / Мудрость': [
+        {src:'Practice makes perfect.', trg:'Практика ведёт к совершенству. / Повторение — мать учения.', theme:'учёба'},
+        {src:'The early bird catches the worm.', trg:'Кто рано встаёт, тому Бог подаёт.', theme:'время'},
+        {src:'Every beginning is difficult.', trg:'Любое начало трудно.', theme:'труд'},
+        {src:'Too many cooks spoil the broth.', trg:'У семи нянек дитя без глазу.', theme:'совет'},
+        {src:'All\'s well that ends well.', trg:'Всё хорошо, что хорошо кончается.', theme:'итог'},
+        {src:'Honesty is the best policy.', trg:'Честность — лучшая политика.', theme:'честность'},
+        {src:'As you sow, so shall you reap.', trg:'Как посеешь, так и пожнёшь.', theme:'поступки'},
+        {src:'Misfortunes never come alone.', trg:'Беда не приходит одна.', theme:'судьба'},
+        {src:'Like father, like son.', trg:'Яблоко от яблони недалеко падает.', theme:'семья'},
+        {src:'Money can\'t buy happiness.', trg:'Не в деньгах счастье.', theme:'счастье'},
+        {src:'Knowledge is power.', trg:'Знание — сила.', theme:'учёба'},
+        {src:'Never put off till tomorrow what you can do today.', trg:'Не откладывай на завтра то, что можно сделать сегодня.', theme:'время'},
+        {src:'Live and learn.', trg:'Век живи — век учись.', theme:'учёба'},
+        {src:'A friend in need is a friend indeed.', trg:'Друг познаётся в беде.', theme:'дружба'},
+        {src:'United we stand, divided we fall.', trg:'В единстве — сила. / Один в поле не воин.', theme:'единство'},
+        {src:'Birds of a feather flock together.', trg:'Рыбак рыбака видит издалека.', theme:'дружба'},
+        {src:'After rain comes sunshine.', trg:'После грозы бывает ведро.', theme:'природа'},
+        {src:'An apple a day keeps the doctor away.', trg:'Одно яблоко в день — и врач не нужен.', theme:'здоровье'},
+      ],
+    }
+  },
+  'fr-ru': {
+    srcLang:'🇫🇷 Français', trgLang:'🇷🇺 Русский',
+    cats: {
+      '🍎 Nourriture / Питание': [
+        ['le pain','хлеб','Le pain est frais.'],
+        ['le lait','молоко','Le lait est froid.'],
+        ['l\'eau','вода','Je bois de l\'eau.'],
+        ['la pomme','яблоко','La pomme est rouge.'],
+        ['la soupe','суп','La soupe est chaude.'],
+        ['la viande','мясо','La viande est bonne.'],
+        ['le fromage','сыр','J\'aime le fromage.'],
+        ['l\'œuf','яйцо','Un œuf frais.'],
+        ['le beurre','масло','Le beurre est doux.'],
+        ['le gâteau','торт','Le gâteau est sucré.'],
+        ['le jus','сок','Le jus d\'orange.'],
+        ['le thé','чай','Un thé chaud.'],
+        ['le café','кофе','Un café s\'il vous plaît.'],
+        ['les légumes','овощи','Les légumes sont sains.'],
+        ['les fruits','фрукты','Des fruits frais.'],
+        ['le sucre','сахар','Sans sucre.'],
+        ['le sel','соль','Passez le sel.'],
+        ['le chocolat','шоколад','Du chocolat noir.'],
+      ],
+      '🏫 École / Школа': [
+        ['l\'école','школа','Je vais à l\'école.'],
+        ['le professeur','учитель','Le professeur explique.'],
+        ['l\'élève','ученик','L\'élève apprend.'],
+        ['le cahier','тетрадь','Le cahier est plein.'],
+        ['le livre','книга','Ce livre est passionnant.'],
+        ['le crayon','карандаш','Un crayon aiguisé.'],
+        ['le stylo','ручка','J\'ai besoin d\'un stylo.'],
+        ['le tableau','доска','Le tableau est noir.'],
+        ['les devoirs','домашнее задание','Je fais mes devoirs.'],
+        ['la récréation','перемена','On joue en récréation.'],
+        ['la classe','класс','La classe est grande.'],
+        ['la note','оценка','Bonne note!'],
+        ['l\'examen','экзамен','L\'examen est demain.'],
+        ['apprendre','учиться','J\'apprends le français.'],
+        ['lire','читать','Je lis un livre.'],
+        ['écrire','писать','J\'écris une lettre.'],
+      ],
+      '👨‍👩‍👧 Famille / Семья': [
+        ['la famille','семья','Ma famille est grande.'],
+        ['la mère / maman','мама','Ma mère cuisine.'],
+        ['le père / papa','папа','Mon père travaille.'],
+        ['le frère','брат','Mon frère joue.'],
+        ['la sœur','сестра','Ma sœur chante.'],
+        ['la grand-mère','бабушка','Ma grand-mère fait des gâteaux.'],
+        ['le grand-père','дедушка','Mon grand-père lit.'],
+        ['le fils','сын','Le fils est petit.'],
+        ['la fille','дочь','La fille danse.'],
+        ['l\'oncle','дядя','Mon oncle est médecin.'],
+        ['la tante','тётя','Ma tante est gentille.'],
+        ['les parents','родители','Mes parents travaillent.'],
+        ['les enfants','дети','Les enfants jouent.'],
+      ],
+    },
+    proverbs: {
+      '💡 Sagesse / Мудрость': [
+        {src:'C\'est en forgeant qu\'on devient forgeron.', trg:'Повторение — мать учения. / Практикой становятся мастером.', theme:'учёба'},
+        {src:'Le monde appartient à ceux qui se lèvent tôt.', trg:'Кто рано встаёт, тому Бог подаёт.', theme:'время'},
+        {src:'Tout vient à point à qui sait attendre.', trg:'Терпение и труд всё перетрут.', theme:'терпение'},
+        {src:'Il ne faut pas vendre la peau de l\'ours avant de l\'avoir tué.', trg:'Не говори «гоп», пока не перепрыгнешь.', theme:'поступки'},
+        {src:'Tout est bien qui finit bien.', trg:'Всё хорошо, что хорошо кончается.', theme:'итог'},
+        {src:'La nuit porte conseil.', trg:'Утро вечера мудренее.', theme:'мудрость'},
+        {src:'Les malheurs ne viennent jamais seuls.', trg:'Беда не приходит одна.', theme:'судьба'},
+        {src:'Tel père, tel fils.', trg:'Яблоко от яблони недалеко падает.', theme:'семья'},
+        {src:'L\'argent ne fait pas le bonheur.', trg:'Не в деньгах счастье.', theme:'счастье'},
+        {src:'Le savoir, c\'est le pouvoir.', trg:'Знание — сила.', theme:'учёба'},
+        {src:'Il ne faut pas remettre au lendemain ce qu\'on peut faire le jour même.', trg:'Не откладывай на завтра то, что можно сделать сегодня.', theme:'время'},
+        {src:'On n\'a jamais fini d\'apprendre.', trg:'Век живи — век учись.', theme:'учёба'},
+        {src:'Un ami dans le besoin est un ami véritable.', trg:'Друг познаётся в беде.', theme:'дружба'},
+        {src:'L\'union fait la force.', trg:'В единстве — сила.', theme:'единство'},
+      ],
+    }
+  },
+  'es-ru': {
+    srcLang:'🇪🇸 Español', trgLang:'🇷🇺 Русский',
+    cats: {
+      '🍎 Comida / Питание': [
+        ['el pan','хлеб','El pan está fresco.'],
+        ['la leche','молоко','La leche está fría.'],
+        ['el agua','вода','Bebo agua.'],
+        ['la manzana','яблоко','La manzana es roja.'],
+        ['la sopa','суп','La sopa está caliente.'],
+        ['la carne','мясо','La carne es deliciosa.'],
+        ['el queso','сыр','Me gusta el queso.'],
+        ['el huevo','яйцо','Un huevo fresco.'],
+        ['la mantequilla','масло','La mantequilla suave.'],
+        ['el pastel','торт','El pastel es dulce.'],
+        ['el jugo / zumo','сок','Jugo de naranja.'],
+        ['el té','чай','Una taza de té.'],
+        ['el café','кофе','Café solo, por favor.'],
+        ['las verduras','овощи','Come verduras.'],
+        ['la fruta','фрукты','Fruta fresca.'],
+        ['el azúcar','сахар','Sin azúcar.'],
+        ['la sal','соль','Pasa la sal.'],
+        ['el chocolate','шоколад','Chocolate negro.'],
+      ],
+      '🏫 Escuela / Школа': [
+        ['la escuela','школа','Voy a la escuela.'],
+        ['el maestro / la maestra','учитель/учительница','El maestro explica.'],
+        ['el alumno / la alumna','ученик/ученица','El alumno aprende.'],
+        ['el cuaderno','тетрадь','Mi cuaderno.'],
+        ['el libro','книга','Qué libro interesante.'],
+        ['el lápiz','карандаш','Un lápiz afilado.'],
+        ['el bolígrafo','ручка','Necesito un bolígrafo.'],
+        ['la pizarra','доска','Escribe en la pizarra.'],
+        ['los deberes / la tarea','домашнее задание','Haz los deberes.'],
+        ['el recreo','перемена','El recreo es divertido.'],
+        ['el aula','класс','El aula es grande.'],
+        ['la nota','оценка','¡Buena nota!'],
+        ['el examen','экзамен','Examen mañana.'],
+        ['aprender','учиться','Aprendo español.'],
+        ['leer','читать','Leo un libro.'],
+        ['escribir','писать','Escribo una carta.'],
+      ],
+      '👨‍👩‍👧 Familia / Семья': [
+        ['la familia','семья','Mi familia es grande.'],
+        ['la madre / mamá','мама','Mi mamá cocina.'],
+        ['el padre / papá','папа','Mi papá trabaja.'],
+        ['el hermano','брат','Mi hermano juega.'],
+        ['la hermana','сестра','Mi hermana canta.'],
+        ['la abuela','бабушка','La abuela hornea.'],
+        ['el abuelo','дедушка','El abuelo lee.'],
+        ['el hijo','сын','El hijo es pequeño.'],
+        ['la hija','дочь','La hija baila.'],
+        ['el tío','дядя','Mi tío es médico.'],
+        ['la tía','тётя','Mi tía es amable.'],
+        ['los padres','родители','Mis padres trabajan.'],
+        ['los niños','дети','Los niños juegan.'],
+      ],
+    },
+    proverbs: {
+      '💡 Sabiduría / Мудрость': [
+        {src:'La práctica hace al maestro.', trg:'Практика делает мастера. / Повторение — мать учения.', theme:'учёба'},
+        {src:'Al que madruga, Dios le ayuda.', trg:'Кто рано встаёт, тому Бог подаёт.', theme:'время'},
+        {src:'No dejes para mañana lo que puedas hacer hoy.', trg:'Не откладывай на завтра то, что можно сделать сегодня.', theme:'время'},
+        {src:'Todo bien que termina bien.', trg:'Всё хорошо, что хорошо кончается.', theme:'итог'},
+        {src:'El dinero no da la felicidad.', trg:'Не в деньгах счастье.', theme:'счастье'},
+        {src:'El saber es poder.', trg:'Знание — сила.', theme:'учёба'},
+        {src:'Más vale tarde que nunca.', trg:'Лучше поздно, чем никогда.', theme:'мудрость'},
+        {src:'En la unión está la fuerza.', trg:'В единстве — сила.', theme:'единство'},
+        {src:'Dios los cría y ellos se juntan.', trg:'Рыбак рыбака видит издалека.', theme:'дружба'},
+        {src:'El amigo en la necesidad es un amigo de verdad.', trg:'Друг познаётся в беде.', theme:'дружба'},
+        {src:'Vivir y aprender.', trg:'Век живи — век учись.', theme:'учёба'},
+        {src:'Después de la lluvia sale el sol.', trg:'После дождя выглянет солнце.', theme:'природа'},
+        {src:'De tal palo, tal astilla.', trg:'Яблоко от яблони недалеко падает.', theme:'семья'},
+        {src:'Las desgracias nunca vienen solas.', trg:'Беда не приходит одна.', theme:'судьба'},
+      ],
+    }
+  },
+  'it-ru': {
+    srcLang:'🇮🇹 Italiano', trgLang:'🇷🇺 Русский',
+    cats: {
+      '🍎 Cibo / Питание': [
+        ['il pane','хлеб','Il pane è fresco.'],
+        ['il latte','молоко','Il latte è freddo.'],
+        ['l\'acqua','вода','Bevo acqua.'],
+        ['la mela','яблоко','La mela è rossa.'],
+        ['la minestra / la zuppa','суп','La zuppa è calda.'],
+        ['la carne','мясо','La carne è buona.'],
+        ['il formaggio','сыр','Mi piace il formaggio.'],
+        ['l\'uovo','яйцо','Un uovo fresco.'],
+        ['il burro','масло','Il burro è morbido.'],
+        ['la torta','торт','La torta è dolce.'],
+        ['il succo','сок','Succo d\'arancia.'],
+        ['il tè','чай','Una tazza di tè.'],
+        ['il caffè','кофе','Un caffè per favore.'],
+        ['le verdure','овощи','Mangia verdure.'],
+        ['la frutta','фрукты','Frutta fresca.'],
+        ['lo zucchero','сахар','Senza zucchero.'],
+        ['il sale','соль','Passa il sale.'],
+        ['il cioccolato','шоколад','Cioccolato fondente.'],
+      ],
+      '🏫 Scuola / Школа': [
+        ['la scuola','школа','Vado a scuola.'],
+        ['il professore / la professoressa','учитель','Il professore spiega.'],
+        ['lo studente / la studentessa','ученик','Lo studente studia.'],
+        ['il quaderno','тетрадь','Il quaderno è pieno.'],
+        ['il libro','книга','Che bel libro!'],
+        ['la matita','карандаш','Una matita appuntita.'],
+        ['la penna','ручка','Ho bisogno di una penna.'],
+        ['la lavagna','доска','Scrivi sulla lavagna.'],
+        ['i compiti','домашнее задание','Fai i compiti.'],
+        ['la ricreazione','перемена','La ricreazione è bella.'],
+        ['l\'aula','класс','L\'aula è grande.'],
+        ['il voto','оценка','Un bel voto!'],
+        ['l\'esame','экзамен','L\'esame è domani.'],
+        ['imparare / studiare','учиться','Imparo l\'italiano.'],
+        ['leggere','читать','Leggo un libro.'],
+        ['scrivere','писать','Scrivo una lettera.'],
+      ],
+    },
+    proverbs: {
+      '💡 Saggezza / Мудрость': [
+        {src:'Sbagliando s\'impara.', trg:'На ошибках учатся.', theme:'учёба'},
+        {src:'Chi dorme non piglia pesci.', trg:'Кто рано встаёт, тому Бог подаёт. / Под лежачий камень вода не течёт.', theme:'труд'},
+        {src:'Non rimandare a domani quello che puoi fare oggi.', trg:'Не откладывай на завтра то, что можно сделать сегодня.', theme:'время'},
+        {src:'Tutto è bene quel che finisce bene.', trg:'Всё хорошо, что хорошо кончается.', theme:'итог'},
+        {src:'Il sapere è potere.', trg:'Знание — сила.', theme:'учёба'},
+        {src:'Meglio tardi che mai.', trg:'Лучше поздно, чем никогда.', theme:'мудрость'},
+        {src:'L\'unione fa la forza.', trg:'В единстве — сила.', theme:'единство'},
+        {src:'Dimmi chi frequenti e ti dirò chi sei.', trg:'Скажи мне, кто твой друг, и я скажу, кто ты.', theme:'дружба'},
+        {src:'Il denaro non fa la felicità.', trg:'Не в деньгах счастье.', theme:'счастье'},
+        {src:'Dopo la pioggia viene il sereno.', trg:'После дождя выглянет солнце.', theme:'природа'},
+        {src:'Tale padre, tale figlio.', trg:'Яблоко от яблони недалеко падает.', theme:'семья'},
+        {src:'Chi va piano va sano e va lontano.', trg:'Тише едешь — дальше будешь.', theme:'мудрость'},
+      ],
+    }
+  }
+};
+
+// ════════════════════════════════════════════════════════
+//  DICTIONARY STATE
+// ════════════════════════════════════════════════════════
+let currentPair = 'de-ru';
+let currentDictMode = 'vocab';
+let currentDictCat = null;
+let dictSelectedWords = [];
+
+function selDictPair(el, pair) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentPair = pair;
+  currentDictCat = null;
+  document.getElementById('dict-search-inp').value = '';
+  renderDict();
+  renderProverbs();
+}
+
+function selDictMode(el, mode) {
+  document.querySelectorAll('.dmode').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentDictMode = mode;
+  document.getElementById('dict-vocab-mode').style.display = mode === 'vocab' ? '' : 'none';
+  document.getElementById('dict-proverbs-mode').style.display = mode === 'proverbs' ? '' : 'none';
+  document.getElementById('dict-idioms-mode').style.display = mode === 'idioms' ? '' : 'none';
+  if (mode === 'proverbs') renderProverbs();
+  if (mode === 'idioms') renderIdioms();
+}
+
+function renderDictCats() {
+  const data = DICT_DATA[currentPair];
+  if (!data) return;
+  const cats = Object.keys(data.cats || {});
+  const el = document.getElementById('dict-cats');
+  el.innerHTML = '<div class="dcat active" data-cat="__all__" onclick="selDictCat(this,null)">🌐 Все темы</div>';
+  cats.forEach(cat => {
+    const d = document.createElement('div');
+    d.className = 'dcat' + (currentDictCat === cat ? ' active' : '');
+    d.dataset.cat = cat;
+    d.textContent = cat;
+    d.onclick = () => selDictCat(d, cat);
+    el.appendChild(d);
+  });
+}
+
+function selDictCat(el, cat) {
+  document.querySelectorAll('.dcat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentDictCat = cat;
+  renderDict();
+}
+
+function renderDict() {
+  const data = DICT_DATA[currentPair];
+  if (!data) return;
+  renderDictCats();
+
+  // Update column headers
+  document.getElementById('dict-th-src').textContent = data.srcLang || 'Источник';
+  document.getElementById('dict-th-trg').textContent = data.trgLang || 'Перевод';
+
+  const query = (document.getElementById('dict-search-inp').value || '').toLowerCase();
+  let all = [];
+  const catsToShow = currentDictCat
+    ? { [currentDictCat]: data.cats[currentDictCat] || [] }
+    : data.cats;
+
+  for (const [cat, entries] of Object.entries(catsToShow)) {
+    entries.forEach(([s, t, ex]) => {
+      if (!query || s.toLowerCase().includes(query) || t.toLowerCase().includes(query)) {
+        all.push({ s, t, ex: ex || '', cat });
+      }
     });
+  }
+
+  // Stats
+  const statsEl = document.getElementById('dict-stats');
+  statsEl.innerHTML = `<div class="dict-stat-pill">📖 Всего: <span>${all.length}</span> слов</div>
+    <div class="dict-stat-pill">📂 Тем: <span>${Object.keys(data.cats).length}</span></div>
+    <div class="dict-stat-pill">📜 Пословиц: <span>${Object.values(data.proverbs||{}).flat().length}</span></div>`;
+
+  const tbody = document.getElementById('dict-tbody');
+  tbody.innerHTML = '';
+  all.forEach(({ s, t, ex }) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="w-src">${s}</td><td class="w-trg">${t}</td>
+      <td class="w-ex">${ex}</td>
+      <td><button class="dict-add-btn" onclick="addDictWord('${s.replace(/'/g,"\\'")}','${t.replace(/'/g,"\\'")}')">+ В тему</button></td>`;
+    tbody.appendChild(tr);
+  });
 }
 
-// 2. Управление словами (Лексика)
-function initDynamicLists() {
-    const container = document.getElementById('words-list');
-    const addBtn = document.getElementById('add-word');
+function renderProverbs() {
+  const data = DICT_DATA[currentPair];
+  if (!data || !data.proverbs) return;
 
-    const addRow = (q = "", a = "") => {
-        const row = document.createElement('div');
-        row.className = 'word-row';
-        row.innerHTML = `
-            <input type="text" class="clean-input q-val" value="${q}" placeholder="Слово">
-            <input type="text" class="clean-input a-val" value="${a}" placeholder="Перевод">
-            <button class="btn-del">✕</button>
-        `;
-        row.querySelector('.btn-del').onclick = () => { row.remove(); updateIframe(); };
-        row.querySelectorAll('input').forEach(i => i.oninput = updateIframe);
-        container.appendChild(row);
+  const themes = Object.keys(data.proverbs);
+  const catsEl = document.getElementById('prov-cats');
+  catsEl.innerHTML = '<div class="dcat active" onclick="selProvCat(this,null)">🌐 Все темы</div>';
+  themes.forEach(th => {
+    const d = document.createElement('div');
+    d.className = 'dcat';
+    d.textContent = th;
+    d.onclick = () => selProvCat(d, th);
+    catsEl.appendChild(d);
+  });
+
+  renderProvList(null);
+}
+
+let currentProvCat = null;
+function selProvCat(el, cat) {
+  document.querySelectorAll('#prov-cats .dcat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentProvCat = cat;
+  renderProvList(cat);
+}
+
+function renderProvList(cat) {
+  const data = DICT_DATA[currentPair];
+  if (!data || !data.proverbs) return;
+  const list = document.getElementById('prov-list');
+  list.innerHTML = '';
+  const toShow = cat ? { [cat]: data.proverbs[cat] || [] } : data.proverbs;
+  for (const [section, provs] of Object.entries(toShow)) {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-family:var(--fp);font-size:8px;color:var(--pu2);letter-spacing:2px;text-transform:uppercase;margin:10px 0 6px;';
+    hdr.textContent = section;
+    list.appendChild(hdr);
+    provs.forEach(p => {
+      const d = document.createElement('div');
+      d.className = 'prov-card';
+      d.innerHTML = `<div class="prov-theme">🏷️ ${p.theme}</div>
+        <div class="prov-src">${p.src}</div>
+        <div class="prov-trg">🇷🇺 ${p.trg}</div>
+        <div style="margin-top:6px;display:flex;gap:6px;">
+          <button class="dict-add-btn" onclick="addProvWord(\`${p.src.replace(/`/g,'\\`')}\`,\`${p.trg.replace(/`/g,'\\`')}\`)">+ В пословицы темы</button>
+        </div>`;
+      list.appendChild(d);
+    });
+  }
+}
+
+function addDictWord(src, trg) {
+  if (!dictSelectedWords.find(w => w.src === src)) {
+    dictSelectedWords.push({ src, trg });
+    renderDictSelected();
+    showToast('✓ Слово добавлено к выбранным');
+  }
+}
+
+function addProvWord(src, trg) {
+  const topicIdx = parseInt(document.getElementById('dict-target-topic').value) - 1;
+  const pStr = `${src} | ${trg}`;
+  const curr = proverbsToStr(CFG.topics[topicIdx].proverbs);
+  CFG.topics[topicIdx].proverbs = parseProverbs(curr ? curr + '\n' + pStr : pStr);
+  buildTopics();
+  showToast('✓ Пословица добавлена в тему ' + (topicIdx + 1));
+}
+
+function renderIdioms() {
+  const data = DICT_DATA[currentPair];
+  if (!data) return;
+  // Idioms = categories that contain идиомы/выражения by name pattern OR a dedicated idioms key
+  const idiomKeys = Object.keys(data.cats || {}).filter(k =>
+    k.toLowerCase().includes('идиом') || k.toLowerCase().includes('idiom') ||
+    k.toLowerCase().includes('устойч') || k.toLowerCase().includes('ausdruck') ||
+    k.toLowerCase().includes('set exp') || k.toLowerCase().includes('expr')
+  );
+
+  const catsEl = document.getElementById('idiom-cats');
+  catsEl.innerHTML = '<div class="dcat active" onclick="selIdiomCat(this,null)">🌐 Все</div>';
+  idiomKeys.forEach(k => {
+    const d = document.createElement('div');
+    d.className = 'dcat';
+    d.textContent = k;
+    d.onclick = () => selIdiomCat(d, k);
+    catsEl.appendChild(d);
+  });
+  renderIdiomList(null);
+}
+
+let currentIdiomCat = null;
+function selIdiomCat(el, cat) {
+  document.querySelectorAll('#idiom-cats .dcat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentIdiomCat = cat;
+  renderIdiomList(cat);
+}
+
+function renderIdiomList(cat) {
+  const data = DICT_DATA[currentPair];
+  if (!data) return;
+  const list = document.getElementById('idiom-list');
+  list.innerHTML = '';
+  const idiomKeys = cat ? [cat] : Object.keys(data.cats || {}).filter(k =>
+    k.toLowerCase().includes('идиом') || k.toLowerCase().includes('idiom') ||
+    k.toLowerCase().includes('устойч') || k.toLowerCase().includes('ausdruck') ||
+    k.toLowerCase().includes('set exp') || k.toLowerCase().includes('expr')
+  );
+  if (idiomKeys.length === 0) {
+    list.innerHTML = `<div style="color:var(--tx2);font-size:12px;padding:12px;">Для этой языковой пары идиомы пока только в DE↔RU и EN↔RU.</div>`;
+    return;
+  }
+  idiomKeys.forEach(section => {
+    const entries = data.cats[section] || [];
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-family:var(--fp);font-size:8px;color:var(--pu2);letter-spacing:2px;text-transform:uppercase;margin:10px 0 6px;';
+    hdr.textContent = section;
+    list.appendChild(hdr);
+    entries.forEach(([s, t, ex]) => {
+      const d = document.createElement('div');
+      d.className = 'prov-card';
+      d.innerHTML = `<div class="prov-src">${s}</div>
+        <div class="prov-trg">🇷🇺 ${t}</div>
+        ${ex ? `<div class="prov-ru">${ex}</div>` : ''}
+        <div style="margin-top:6px;display:flex;gap:6px;">
+          <button class="dict-add-btn" onclick="addDictWord('${s.replace(/'/g,"\\'")}','${t.replace(/'/g,"\\'")}')">+ В словарь темы</button>
+          <button class="dict-add-btn" style="background:rgba(245,158,11,.15);border-color:var(--ye);color:var(--ye2);" onclick="addProvWord(\`${s.replace(/`/g,'\\`')}\`,\`${t.replace(/`/g,'\\`')}\`)">+ В пропуски темы</button>
+        </div>`;
+      list.appendChild(d);
+    });
+  });
+}
+
+function renderDictSelected() {
+  const el = document.getElementById('dict-selected-words');
+  if (dictSelectedWords.length === 0) {
+    el.textContent = 'Нет выбранных слов';
+    return;
+  }
+  el.innerHTML = dictSelectedWords.map((w, i) =>
+    `<span style="background:rgba(16,185,129,.15);border-radius:6px;padding:2px 8px;margin:2px;display:inline-block;">
+      ${w.src} = ${w.trg}
+      <span style="cursor:pointer;color:var(--re);margin-left:4px;" onclick="removeDictWord(${i})">✕</span>
+    </span>`
+  ).join('');
+}
+
+function removeDictWord(i) {
+  dictSelectedWords.splice(i, 1);
+  renderDictSelected();
+}
+
+function insertDictToTopic() {
+  if (dictSelectedWords.length === 0) { showToast('⚠ Нет выбранных слов'); return; }
+  const topicIdx = parseInt(document.getElementById('dict-target-topic').value) - 1;
+  const newWords = dictSelectedWords.map(w => w.src);
+  const newPairs = dictSelectedWords.map(w => ({ s: w.src, e: w.trg }));
+  CFG.topics[topicIdx].words.push(...newWords);
+  CFG.topics[topicIdx].pairs.push(...newPairs);
+  buildTopics();
+  showToast(`✓ ${dictSelectedWords.length} слов добавлено в Тему ${topicIdx + 1}`);
+  dictSelectedWords = [];
+  renderDictSelected();
+}
+
+// ════════════════════════════════════════════════════════
+//  CONFIG STATE
+// ════════════════════════════════════════════════════════
+const CFG = {
+  title:'Тамагочи — Лексика А1', author:'', audience:'', year:'',
+  lang:'ru', uiLang:'ru', gameLang:'ru', gameLangName:'🇷🇺 Русский', targetLang:'', gameLocale:'ru',
+  theme:'cosmic',
+  levels:{1:{name:'Базовый',q:10,timer:30,lives:3,emoji:'🐣'},
+          2:{name:'Повышенный',q:10,timer:25,lives:3,emoji:'🐥'},
+          3:{name:'Высокий',q:5,timer:20,lives:3,emoji:'🌟'}},
+  formats:['choice','match','fill'],
+  score:{5:90,4:75,3:60,coins:1},
+  topics: (()=>{
+    const icons=['📌','📖','🔢','⚗️','🌍','💻','🏛️','🌿','🎵','🎨','⚡','🔬'];
+    const colors=['#16a34a','#06b6d4','#f43f5e','#d97706','#7c3aed','#ec4899','#0891b2','#059669','#f97316','#6366f1','#10b981','#14b8a6'];
+    return Array.from({length:12},(_,i)=>{
+      const lv=Math.floor(i/4)+1,ti=(i%4)+1;
+      // Only topic 0 (ST.1 · TEMA 1) has a minimal example
+      const isExample=(i===0);
+      return {num:i+1,name:isExample?'Schlaf':'',level:lv,themeIndex:ti,
+        icon:icons[i],color:colors[i],
+        words:isExample?['schlafen','träumen','aufwachen','gähnen','müde']:[],
+        pairs:isExample?[{s:'schlafen',e:'спать'},{s:'träumen',e:'мечтать'},{s:'aufwachen',e:'просыпаться'}]:[],
+        proverbs:isExample?[{p:'Morgen, Morgen, nur nicht _____. | heute'},{p:'Der frühe Vogel fängt den _____. | Wurm'}]:[],
+        desc:'',subject:isExample?'Verben · Alltag':''};
+    });
+  })(),
+  phrases:{ok:{1:[],2:[],3:[]},err:{1:[],2:[],3:[]},themed:{}},
+  audio:{playlist:[],sfx:{ok:'synth',err:'synth',birth:'synth',win:'synth'}},
+  visuals:{backgrounds:{},colors:{main:'#7C3AED',accent:'#EC4899',bg:'#0a0a1a'}},
+  tamas:{active:[0,1,2,3,4,5,6,7,8,9,10,11],custom:[],stages:{egg:'🥚',baby:'🐣',teen:'🐥',young:'🐤',adult:'🐦',legend:'🦁'}},
+  effects:{correct:[],win:[],fail:[]},
+  animations:{enable3d:true,neon:true,catwalk:true,egg:'cosmic',eggGlow:'purple'},
+  mechanics:{timer:true,coins:true,lives:true,progress:true,shop:true,growth:true,hint:true,items:true,results:true,restart:true},
+  naming:'keyboard', fixedName:'',
+  media:{stickers:[],gifs:[]},
+  shopItems:{1:[],2:[],3:[]},
+  activeLv:1
+};
+
+// ════════════════════════════════════════════════════════
+//  BASE PHRASES
+// ════════════════════════════════════════════════════════
+const BASE_PHRASES_OK = {
+  1:['Ням-ням! Вкусно! 😋','Ура! Играем! ⚽','Гуляем! 🌿','Сладких снов! 😴','Правильно! Молодец! 🎉','Отлично! ⭐'],
+  2:['Спасибо! Очень вкусно!','Знания — сила! 📚','Умнею! 🧠','Вот это да! 🌟','Супер! Продолжаем!'],
+  3:['Красна птица перьем, а человек учением!','Повторение — мать учения!','Шедеврально! 🏆','Непобедим! 👑']
+};
+const BASE_PHRASES_ERR = {
+  1:['Голодный! 😭','Хочу гулять! 😭','Не знаю ответа... 😢','Расстроился! 😭'],
+  2:['Хочу есть! 😢','Скучно... 😢','Без друзей грустно... 😢'],
+  3:['Мне грустно... 😢','Ой, не то... 😢','Тамагочи плачет 😭']
+};
+
+const TAMAS_BASE = [
+  {e:'🐱',n:'Котёнок'},{e:'🐈',n:'Кот рыжий'},          // ← Новые котята!
+  {e:'🦊',n:'Лисёнок'},{e:'🐺',n:'Волчонок'},{e:'🦝',n:'Енот'},
+  {e:'🐸',n:'Лягушонок'},{e:'🦔',n:'Ёжик'},{e:'🦉',n:'Совёнок'},
+  {e:'🐰',n:'Зайка'},{e:'🦌',n:'Олень'},{e:'🐻',n:'Медвежонок'},
+  {e:'🦋',n:'Бабочка'},{e:'🐿️',n:'Бельчонок'},{e:'🐇',n:'Кролик'}
+];
+
+const FX_LIST = [
+  // Праздничные
+  {id:'confetti',ic:'🎊',n:'Конфетти'},{id:'fireworks',ic:'🎆',n:'Фейерверк'},
+  {id:'salute',ic:'🎇',n:'Салют'},{id:'sparkles',ic:'✨',n:'Искры'},
+  {id:'stars',ic:'🌟',n:'Звездопад'},{id:'gold_stars',ic:'⭐',n:'Золотые звёзды'},
+  {id:'balloons',ic:'🎈',n:'Шарики'},{id:'party_popper',ic:'🎉',n:'Хлопушка'},
+  {id:'rainbow',ic:'🌈',n:'Радуга'},{id:'crown',ic:'👑',n:'Корона'},
+  // Природа
+  {id:'petals',ic:'🌸',n:'Лепестки'},{id:'snow',ic:'❄️',n:'Снег'},
+  {id:'leaves',ic:'🍂',n:'Листопад'},{id:'rain',ic:'🌧️',n:'Дождь'},
+  {id:'lightning',ic:'⚡',n:'Молния'},{id:'sun_rays',ic:'☀️',n:'Солнечные лучи'},
+  // Эмоции
+  {id:'hearts',ic:'💕',n:'Сердечки'},{id:'hearts3d',ic:'❤️‍🔥',n:'Огонь любви'},
+  {id:'clapping',ic:'👏',n:'Аплодисменты'},{id:'trophy',ic:'🏆',n:'Трофей'},
+  // Фэнтези
+  {id:'cosmos',ic:'🌌',n:'Космос'},{id:'comets',ic:'☄️',n:'Кометы'},
+  {id:'magic',ic:'🪄',n:'Магия'},{id:'dragons',ic:'🐉',n:'Дракон'},
+  {id:'unicorn',ic:'🦄',n:'Единорог'},{id:'crystal',ic:'💎',n:'Кристаллы'},
+  // Спецэффекты 3D
+  {id:'matrix',ic:'🔢',n:'Матрица'},{id:'portal',ic:'🌀',n:'Портал'},
+  {id:'laser',ic:'🔴',n:'Лазер'},{id:'explosion',ic:'💥',n:'Взрыв'},
+  // Прочее
+  {id:'bubbles',ic:'🫧',n:'Пузыри'},{id:'coins',ic:'🪙',n:'Монеты'},
+  {id:'dice',ic:'🎲',n:'Кубики'},{id:'notes',ic:'🎵',n:'Ноты'},
+];
+
+const ANIM_LIST = [
+  // Повседневные
+  {id:'eat',ic:'🍽️',n:'Кушает'},{id:'drink',ic:'💧',n:'Пьёт'},
+  {id:'sleep',ic:'😴',n:'Спит'},{id:'wash',ic:'🚿',n:'Моется'},
+  {id:'dress',ic:'👗',n:'Одевается'},{id:'run',ic:'🏃',n:'Бежит'},
+  // Активности
+  {id:'play',ic:'⚽',n:'Играет'},{id:'dance',ic:'💃',n:'Танцует'},
+  {id:'walk',ic:'🌿',n:'Гуляет'},{id:'swim',ic:'🏊',n:'Плавает'},
+  {id:'gym',ic:'🏋️',n:'Качается'},{id:'yoga',ic:'🧘',n:'Йога'},
+  {id:'ski',ic:'⛷️',n:'Катается'},
+  // Учёба
+  {id:'study',ic:'📚',n:'Учится'},{id:'write',ic:'✍️',n:'Пишет'},
+  {id:'think',ic:'🤔',n:'Думает'},{id:'read',ic:'📖',n:'Читает'},
+  {id:'draw',ic:'🎨',n:'Рисует'},
+  // Эмоции / События
+  {id:'party',ic:'🎉',n:'Праздник'},{id:'cry',ic:'😭',n:'Плачет'},
+  {id:'sick',ic:'🤒',n:'Болеет'},{id:'laugh',ic:'😂',n:'Смеётся'},
+  {id:'surprise',ic:'😱',n:'Удивляется'},{id:'angry',ic:'😤',n:'Злится'},
+  // Хобби
+  {id:'hobby',ic:'🎵',n:'Музыка'},{id:'cook',ic:'👨‍🍳',n:'Готовит'},
+  {id:'game',ic:'🎮',n:'Играет в игры'},{id:'pet',ic:'🐾',n:'С питомцем'},
+  // 3D / Спецэффекты
+  {id:'fly3d',ic:'🚀',n:'Летит (3D)'},{id:'spin3d',ic:'🌀',n:'Вращение (3D)'},
+  {id:'bounce3d',ic:'⬆️',n:'Прыгает (3D)'},{id:'morph3d',ic:'🔮',n:'Трансформация (3D)'},
+  {id:'float3d',ic:'✨',n:'Парит (3D)'},{id:'portal3d',ic:'🌌',n:'Телепорт (3D)'},
+];
+
+// ════════════════════════════════════════════════════════
+//  STARS INIT
+// ════════════════════════════════════════════════════════
+(function initParticles(){
+  const c=document.getElementById('stars-bg');
+  if(!c)return;
+  const colors=['#4ade80','#67e8f9','#d9f99d','#fcd34d','#a3e635','#86efac'];
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div');
+    const sz=0.8+Math.random()*2.8;
+    s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${.1+Math.random()*.7};
+      animation:stTw ${2+Math.random()*4}s ease-in-out ${Math.random()*5}s infinite alternate;`;
+    c.appendChild(s);
+  }
+  // Larger glowing orbs
+  for(let i=0;i<15;i++){
+    const s=document.createElement('div');
+    const sz=3+Math.random()*8;
+    s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${.05+Math.random()*.15};
+      filter:blur(${sz/2}px);
+      animation:stTw ${3+Math.random()*5}s ease-in-out ${Math.random()*6}s infinite alternate;`;
+    c.appendChild(s);
+  }
+  const st=document.createElement('style');
+  st.textContent='@keyframes stTw{from{opacity:.05;transform:scale(.5) translateY(0);}to{opacity:.8;transform:scale(1.6) translateY(-8px);}}';
+  document.head.appendChild(st);
+})();
+
+// ════════════════════════════════════════════════════════
+//  PANEL NAVIGATION
+// ════════════════════════════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('panel-'+id);
+  if(p)p.classList.add('active');
+  const b=document.querySelector(`[data-panel="${id}"]`);
+  if(b)b.classList.add('active');
+  // scroll main to top on every tab switch
+  const main=document.getElementById('main');
+  if(main){main.scrollTop=0;}
+  if(id==='content')setTimeout(renderAlphabetEditor,60);
+  // update breadcrumb
+  const pname=document.getElementById('tb-panel-name');
+  if(pname&&b){pname.textContent=b.querySelector('.sb-label')?.textContent||id;}
+  // update back button
+  const bback=document.getElementById('btn-back');
+  if(bback)bback.style.display=id==='settings'?'none':'flex';
+  window._lastPanel=window._currentPanel||'settings';
+  window._currentPanel=id;
+}
+function navBack(){
+  showPanel(window._lastPanel||'settings');
+}
+
+// ════════════════════════════════════════════════════════
+//  CHIP SELECTORS
+// ════════════════════════════════════════════════════════
+function selChip(el,group){
+  document.querySelectorAll(`#${group}-chips .chip`).forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function togChip(el){el.classList.toggle('on');}
+function selLvTab(el){
+  document.querySelectorAll('.lvl-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  CFG.activeLv=parseInt(el.dataset.lv);
+  renderPhrases();
+}
+
+// ════════════════════════════════════════════════════════
+//  TOPICS GRID
+// ════════════════════════════════════════════════════════
+const TOPIC_ICONS=['📌','📖','🔢','⚗️','🌍','💻','🏛️','🌿','🎵','🎨','⚡','🔬'];
+const TOPIC_COLORS=['#7C3AED','#EC4899','#06B6D4','#10B981','#F59E0B','#EF4444',
+                    '#8B5CF6','#F97316','#14B8A6','#6366F1','#D946EF','#0EA5E9'];
+
+// ── Alphabet helper in editor ─────────────────────────────────
+const ALPHA_EDITOR={
+  ru:'А Б В Г Д Е Ё Ж З И Й К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Ъ Ы Ь Э Ю Я а б в г д е ё ж з и й к л м н о п р с т у ф х ц ч ш щ ъ ы ь э ю я',
+  de:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z Ä Ö Ü ä ö ü ß',
+  en:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+  fr:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z À Â Æ Ç È É Ê Ë Î Ï Ô Œ Ù Û Ü Ÿ à â æ ç è é ê ë î ï ô œ ù û ü ÿ',
+  es:'A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú á é í ó ú ü',
+  it:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z À È É Ì Î Ó Ò Ù Ú à è é ì î ó ò ù ú',
+  pt:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Á À Â Ã Ç É Ê Í Ó Ô Õ Ú á à â ã ç é ê í ó ô õ ú',
+  ja:'あ い う え お か き く け こ さ し す せ そ た ち つ て と な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ わ を ん ア イ ウ エ オ',
+  zh:'的 一 是 了 不 在 人 有 我 他 这 中 来 上 大 国 你 也 到 说',
+  ar:'ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي',
+  hi:'अ आ इ ई उ ऊ ए ऐ ओ औ क ख ग घ च छ ज झ ट ठ ड ढ त थ द ध न प फ ब भ म य र ल व श ष स ह',
+  fa:'ا ب پ ت ث ج چ ح خ د ر ز ژ س ش ص ض ط ظ ع غ ف ق ک گ ل م ن و ه ی',
+};
+function renderAlphabetEditor(){
+  const el=document.getElementById('alpha-chars');
+  if(!el)return;
+  const lang=CFG.gameLang||CFG.gameLocale||CFG.lang||'ru';
+  const safeLang=lang==='custom'?'ru':lang;
+  const letters=(ALPHA_EDITOR[safeLang]||ALPHA_EDITOR.ru).split(' ').filter(Boolean);
+  // Update lang badge
+  const badge=document.getElementById('alpha-lang-badge');
+  const langFlags={ru:'🇷🇺 RU',de:'🇩🇪 DE',en:'🇬🇧 EN',fr:'🇫🇷 FR',es:'🇪🇸 ES',it:'🇮🇹 IT',pt:'🇵🇹 PT',ja:'🇯🇵 JA',zh:'🇨🇳 ZH',ar:'🇸🇦 AR',hi:'🇮🇳 HI',fa:'🇮🇷 FA'};
+  if(badge)badge.textContent=langFlags[safeLang]||safeLang.toUpperCase();
+  // Special chars per language
+  const SPECIAL={'de': ['Ä', 'Ö', 'Ü', 'ä', 'ö', 'ü', 'ß'], 'fr': ['À', 'Â', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Î', 'Ï', 'Ô', 'Œ', 'Ù', 'Û', 'Ü', 'Ÿ', 'à', 'â', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'î', 'ï', 'ô', 'œ', 'ù', 'û', 'ü', 'ÿ'], 'es': ['Ñ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'á', 'é', 'í', 'ó', 'ú', 'ü'], 'it': ['À', 'È', 'É', 'Ì', 'Î', 'Ó', 'Ò', 'Ù', 'Ú', 'à', 'è', 'é', 'ì', 'î', 'ó', 'ò', 'ù', 'ú'], 'pt': ['Á', 'À', 'Â', 'Ã', 'Ç', 'É', 'Ê', 'Í', 'Ó', 'Ô', 'Õ', 'Ú', 'á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'], 'ru': ['Ё', 'ё', 'Ъ', 'ъ', 'Ы', 'ы', 'Ь', 'ь']};
+  const specials=new Set(SPECIAL[safeLang]||[]);
+  el.innerHTML='';
+  letters.forEach(ch=>{
+    const b=document.createElement('button');
+    b.textContent=ch;b.title=ch;
+    b.className='abt'+(specials.has(ch)?' special':'');
+    b.onclick=()=>{
+      const focused=document.activeElement;
+      if(focused&&(focused.tagName==='INPUT'||focused.tagName==='TEXTAREA')){
+        const s=focused.selectionStart||0,e=focused.selectionEnd||0,v=focused.value;
+        focused.value=v.slice(0,s)+ch+v.slice(e);
+        focused.selectionStart=focused.selectionEnd=s+ch.length;
+        focused.focus();
+        focused.dispatchEvent(new Event('input',{bubbles:true}));
+      } else {
+        navigator.clipboard.writeText(ch).then(()=>showToast('⌨️ '+ch+' скопировано'));
+      }
     };
-
-    addBtn.onclick = () => addRow();
-    addRow("Gehen", "Идти"); // Начальный пример
+    el.appendChild(b);
+  });
 }
 
-// 3. Генератор Iframe (Собирает ВСЕ данные)
-function updateIframe() {
-    const baseUrl = `https://${document.getElementById('project-id').value}.github.io/Tamagotchi-for-Lexik/`;
-    
-    // Собираем объект настроек (как в вашем оригинале)
-    const config = {
-        t: document.getElementById('game-title').value,
-        bg: document.getElementById('bg-url').value,
-        c: document.getElementById('theme-color').value,
-        op: document.getElementById('ui-opacity').value,
-        msgOk: document.getElementById('msg-correct').value,
-        msgErr: document.getElementById('msg-wrong').value,
-        rew: document.getElementById('coin-reward').value,
-        pr: document.getElementById('item-price').value,
-        words: Array.from(document.querySelectorAll('.word-row')).map(row => ({
-            q: row.querySelector('.q-val').value,
-            a: row.querySelector('.a-val').value
-        }))
+function buildTopics(){
+  // Build 3 levels x 4 themes
+  for(let lv=1;lv<=3;lv++){
+    const g=document.getElementById('topics-grid-'+lv);
+    if(!g)continue;
+    g.innerHTML='';
+    const startIdx=(lv-1)*4;
+    for(let ti=0;ti<4;ti++){
+      const i=startIdx+ti;
+      const t=CFG.topics[i]||{name:'Тема '+(i+1),icon:TOPIC_ICONS[i%12],color:TOPIC_COLORS[i%12],words:[],pairs:[],proverbs:[],desc:'',subject:''};
+      const T=getT();
+      const d=document.createElement('div');
+      d.className='topic-card';
+      d.style.cssText='background:var(--card);border:1px solid var(--bdr,var(--border));border-radius:14px;padding:14px;';
+      d.innerHTML=`
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-family:var(--fp);font-size:8px;color:var(--cy2);letter-spacing:1px;">${T.lv_prefix||'УР.'} ${lv} · ${T.theme_word||'ТЕМА'} ${ti+1}</span>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <input type="text" value="${t.icon||TOPIC_ICONS[i%12]}" style="width:34px;text-align:center;padding:3px;font-size:15px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;color:var(--tx);"
+              oninput="CFG.topics[${i}].icon=this.value">
+            <input type="color" value="${t.color||TOPIC_COLORS[i%12]}" style="width:30px;height:26px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;"
+              oninput="CFG.topics[${i}].color=this.value">
+          </div>
+        </div>
+        <div class="fgrp" style="margin-bottom:7px;">
+          <label style="font-size:10px;color:var(--tx2);font-weight:700;display:block;margin-bottom:2px;">${T.lbl_theme_name||'Название темы'}</label>
+          <input type="text" value="${escHtml(t.name)}" placeholder="${T.ph_theme_name||'напр. Семья и дом'}"
+            oninput="CFG.topics[${i}].name=this.value" style="font-weight:700;">
+        </div>
+        <div class="fgrp" style="margin-bottom:7px;">
+          <label style="font-size:10px;color:var(--cy2);font-weight:700;display:block;margin-bottom:2px;">🏷️ ${T.lbl_theme_subject||'Тема / Предмет задания'}</label>
+          <input type="text" value="${escHtml(t.subject||'')}" placeholder="${T.ph_theme_subject||'напр. Nouns · семья'}"
+            oninput="CFG.topics[${i}].subject=this.value"
+            style="border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.04);">
+        </div>
+        <div class="fgrp" style="margin-bottom:6px;">
+          <label style="font-size:10px;color:var(--tx2);font-weight:700;display:block;margin-bottom:2px;">${T.lbl_theme_words||'Слова (через запятую)'}</label>
+          <textarea placeholder="${T.ph_words||'слово1, слово2, слово3...'}"
+            oninput="CFG.topics[${i}].words=this.value.split(',').map(s=>s.trim()).filter(Boolean)"
+            style="min-height:52px;">${escHtml(t.words.join(', '))}</textarea>
+        </div>
+        <div class="fgrp" style="margin-bottom:6px;">
+          <label style="font-size:10px;color:var(--tx2);font-weight:700;display:block;margin-bottom:2px;">${T.lbl_theme_pairs||'Пары (слово:перевод)'}</label>
+          <textarea placeholder="${T.ph_pairs||'слово:перевод, ...'}"
+            oninput="CFG.topics[${i}].pairs=parsePairs(this.value)"
+            style="min-height:44px;">${escHtml(pairsToStr(t.pairs))}</textarea>
+        </div>
+        <div class="fgrp" style="margin-bottom:6px;">
+          <label style="font-size:10px;color:var(--tx2);font-weight:700;display:block;margin-bottom:2px;">📜 ${T.lbl_theme_proverbs||'Пословицы (_____ = пропуск | ответ)'}</label>
+          <textarea placeholder="${T.ph_proverbs||'Повторение — мать _____. | учения'}"
+            oninput="CFG.topics[${i}].proverbs=parseProverbs(this.value)"
+            style="min-height:60px;">${escHtml(proverbsToStr(t.proverbs))}</textarea>
+        </div>
+        <div class="fgrp" style="margin-bottom:8px;">
+          <label style="font-size:10px;color:var(--tx2);font-weight:700;display:block;margin-bottom:2px;">${T.lbl_theme_note||'Примечание'}</label>
+          <input type="text" placeholder="..." oninput="CFG.topics[${i}].desc=this.value" value="${escHtml(t.desc||'')}">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="clearTopicConfirm(${i})" style="background:rgba(239,68,68,.15);border:1px solid var(--re);border-radius:8px;color:#fca5a5;cursor:pointer;font-size:10px;font-weight:700;padding:5px 10px;">🗑 ${T.btn_clear||'Очистить'}</button>
+          <button onclick="copyTopicToClipboard(${i})" style="background:rgba(74,222,128,.12);border:1px solid var(--pu2,#4ade80);border-radius:8px;color:var(--pu2,#4ade80);cursor:pointer;font-size:10px;font-weight:700;padding:5px 10px;">📋 ${T.btn_copy_topic||'Копировать'}</button>
+        </div>`;
+      g.appendChild(d);
+    }
+  }
+}
+
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function showLvTab(el,lv){
+  for(let i=1;i<=3;i++){
+    const tab=document.getElementById('lv-tab-'+i);
+    const panel=document.getElementById('lv-themes-'+i);
+    if(tab&&panel){
+      panel.style.display=i===lv?'block':'none';
+      tab.style.background=i===lv
+        ?(i===1?'linear-gradient(135deg,#0891b2,#06b6d4)'
+          :i===2?'linear-gradient(135deg,#16a34a,#059669)'
+          :'linear-gradient(135deg,#f43f5e,#f97316)')
+        :'var(--card)';
+      tab.style.color=i===lv?'#fff':'var(--tx2)';
+      tab.style.borderColor=i===lv?'transparent':'var(--border)';
+    }
+  }
+  // scroll to top
+  const main=document.getElementById('main');
+  if(main)main.scrollTop=0;
+}
+
+function clearTopicConfirm(i){
+  const T=getT();
+  if(!confirm((T.confirm_clear||'Очистить тему?')+' '+(i+1)+'?'))return;
+  CFG.topics[i]={...CFG.topics[i],words:[],pairs:[],proverbs:[],desc:'',subject:''};
+  buildTopics();
+  showToast('🗑 '+(T.toast_cleared||'Тема очищена'));
+}
+
+function updateTopicLabel(){}
+
+function updateTopicLabel(i,name){
+  const btn=document.querySelector(`[data-panel="content"] .sb-label`);
+}
+
+function clearTopic(i){
+  if(!confirm('Очистить всё содержимое темы ' + (i+1) + '?')) return;
+  CFG.topics[i].words=[];CFG.topics[i].pairs=[];CFG.topics[i].proverbs=[];
+  CFG.topics[i].desc='';CFG.topics[i].subject='';
+  buildTopics();showToast('🗑 Тема ' + (i+1) + ' очищена');
+}
+
+function copyTopicToClipboard(i){
+  const t=CFG.topics[i];
+  const txt=`Тема: ${t.name}\nПредмет: ${t.subject||''}\nСлова: ${t.words.join(', ')}\nПары: ${pairsToStr(t.pairs)}\nПословицы:\n${proverbsToStr(t.proverbs)}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Тема скопирована!')).catch(()=>showToast('⚠ Скопируйте вручную'));
+}
+function parsePairs(s){return s.split(',').map(p=>{const[a,b]=p.split(':');return a&&b?{s:a.trim(),e:b.trim()}:null;}).filter(Boolean);}
+function pairsToStr(arr){return arr.map(p=>`${p.s}:${p.e}`).join(', ');}
+function parseProverbs(s){return s.split('\n').map(line=>{const[p,a]=line.split('|');return p&&a?{p:p.trim(),a:a.trim()}:null;}).filter(Boolean);}
+function proverbsToStr(arr){return arr.map(p=>`${p.p} | ${p.a}`).join('\n');}
+
+// ════════════════════════════════════════════════════════
+//  TAMA GRID
+// ════════════════════════════════════════════════════════
+function buildTamaGrid(){
+  const g=document.getElementById('tama-grid');g.innerHTML='';
+  TAMAS_BASE.forEach((t,i)=>{
+    const d=document.createElement('div');
+    // className set below
+    const isPrimary=CFG.tamas.active[0]===i;
+    d.className='tama-slot'+(CFG.tamas.active.includes(i)?' sel':'')+(isPrimary?' primary':'');
+    d.innerHTML=`<span class="primary-badge">★</span><span class="tama-emoji">${t.e}</span><div class="tama-name">${t.n}</div><span class="sel-badge">✓</span><div style="font-size:8px;color:var(--tx2);margin-top:2px;">${isPrimary?'⭐ Основной':'кликни дважды→'}</div>`;
+    d.onclick=()=>{
+      // First click: add to active (if not already primary)
+      // Second click on already-selected: set as PRIMARY (index 0)
+      if(CFG.tamas.active.includes(i)){
+        // Make this the PRIMARY tama (put at index 0)
+        CFG.tamas.active=CFG.tamas.active.filter(x=>x!==i);
+        CFG.tamas.active.unshift(i);
+        // Show "primary" badge feedback
+        showToast('🐾 '+(TAMAS_BASE[i]?.n||'Тамагочи')+' — основной питомец!');
+      } else {
+        CFG.tamas.active.push(i);
+      }
+      // Rebuild grid to refresh primary badge
+      buildTamaGrid();
+      updatePreview();
     };
-
-    // Кодируем данные в безопасный формат для URL
-    const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(config))));
-    const finalUrl = `${baseUrl}?data=${encodedData}`;
-
-    const width = document.getElementById('if-w').value;
-    const height = document.getElementById('if-h').value;
-
-    const iframeCode = `<iframe src="${finalUrl}" width="${width}" height="${height}" frameborder="0" allowfullscreen style="border-radius:20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);"></iframe>`;
-    
-    document.getElementById('iframe-output').value = iframeCode;
+    g.appendChild(d);});
+  const u=document.getElementById('tama-uploads');u.innerHTML='';
+  for(let i=0;i<6;i++){
+    const d=document.createElement('div');
+    d.innerHTML=`<div class="upload-zone" onclick="this.querySelector('input').click()">
+      <div class="upload-icon">🐾</div>
+      <div class="upload-text">Слот ${i+1}<br>PNG прозрачный</div>
+      <input type="file" accept="image/*" onchange="addCustomTama(${i},event)"></div>
+    <div id="ctama-${i}" style="font-size:10px;color:var(--gr2);margin-top:4px;text-align:center;"></div>`;
+    u.appendChild(d);}
+}
+function addCustomTama(i,e){
+  const f=e.target.files[0];if(!f)return;
+  const url=URL.createObjectURL(f);
+  CFG.tamas.custom[i]={name:f.name,url};
+  document.getElementById(`ctama-${i}`).innerHTML=`<img src="${url}" style="max-width:80px;max-height:60px;border-radius:8px;">`;
 }
 
-// Слушатели обновлений
-function initIframeSync() {
-    const inputs = document.querySelectorAll('.clean-input, .clean-textarea, input[type="color"], input[type="range"]');
-    inputs.forEach(input => input.addEventListener('input', updateIframe));
+// ════════════════════════════════════════════════════════
+//  EFFECTS / ANIMATIONS
+// ════════════════════════════════════════════════════════
+function buildEffects(){
+  const render=(containerId,key)=>{
+    const c=document.getElementById(containerId);c.innerHTML='';
+    FX_LIST.forEach(f=>{
+      const d=document.createElement('div');
+      d.className='fx-card'+(CFG.effects[key].includes(f.id)?' on':'');
+      d.innerHTML=`<span class="fx-icon">${f.ic}</span><div class="fx-label">${f.n}</div>`;
+      d.onclick=()=>{const idx=CFG.effects[key].indexOf(f.id);
+        if(idx>=0)CFG.effects[key].splice(idx,1); else CFG.effects[key].push(f.id);
+        d.classList.toggle('on');};
+      c.appendChild(d);});};
+  render('fx-correct','correct');
+  render('fx-win','win');
+  render('fx-fail','fail');
+}
 
-    document.getElementById('copy-code').onclick = () => {
-        const area = document.getElementById('iframe-output');
-        area.select();
-        navigator.clipboard.writeText(area.value);
-        const btn = document.getElementById('copy-code');
-        btn.textContent = "✅ Скопировано!";
-        setTimeout(() => btn.textContent = "📋 Копировать код", 2000);
+function buildAnimGrid(){
+  const c=document.getElementById('anim-grid');c.innerHTML='';
+  ANIM_LIST.forEach(a=>{
+    const d=document.createElement('div');d.className='anim-card on';
+    d.innerHTML=`<span class="anim-demo">${a.ic}</span><div class="anim-label">${a.n}</div>`;
+    d.onclick=()=>d.classList.toggle('on');
+    c.appendChild(d);});
+}
+
+// ════════════════════════════════════════════════════════
+//  PHRASES
+// ════════════════════════════════════════════════════════
+function renderPhrases(){
+  const lv=CFG.activeLv;
+  // Use language-aware base phrases
+  const okList=getLangPhrases('ok',lv);
+  const errList=getLangPhrases('err',lv);
+  renderPhraseList('ok-phrases-list',okList,'ok',lv);
+  renderPhraseList('err-phrases-list',errList,'err',lv);
+  const th=document.getElementById('themed-phrases');th.innerHTML='';
+  const themes={'Питание':['Ням-ням! Вкусно! 😋','Я сыт!'],'Сон':['Сладких снов! 😴','Zzzz...'],
+    'Учёба':['Знания — сила! 📚','Умнею! 🧠'],'Праздник':['Ура! Праздник! 🎉','Гуляем! 🎊']};
+  Object.entries(themes).forEach(([k,arr])=>{
+    const d=document.createElement('div');
+    d.innerHTML=`<div style="font-family:var(--fp);font-size:8px;color:var(--pu2);margin-bottom:5px;letter-spacing:1px;">${k.toUpperCase()}</div>`;
+    arr.forEach(ph=>{
+      const p=document.createElement('div');p.className='phrase-item';
+      p.innerHTML=`<span class="phrase-tag">${k}</span><span class="phrase-text">${ph}</span>`;
+      d.appendChild(p);});
+    th.appendChild(d);});
+}
+
+function renderPhraseList(id,arr,type,lv){
+  const c=document.getElementById(id);c.innerHTML='';
+  arr.forEach((ph,i)=>{
+    const d=document.createElement('div');d.className='phrase-item';
+    d.innerHTML=`<span class="phrase-tag">Ур.${lv}</span>
+      <span class="phrase-text">${ph}</span>
+      <span class="phrase-del" onclick="removePhrase('${type}',${lv},${i})">✕</span>`;
+    c.appendChild(d);});
+}
+function addPhrase(type){
+  const inp=document.getElementById(`new-${type}-phrase`);
+  const v=inp.value.trim();if(!v)return;
+  const lv=CFG.activeLv;
+  if(!CFG.phrases[type][lv])CFG.phrases[type][lv]=[];
+  CFG.phrases[type][lv].push(v);
+  inp.value='';renderPhrases();
+}
+function removePhrase(type,lv,i){
+  const base=type==='ok'?BASE_PHRASES_OK:BASE_PHRASES_ERR;
+  const customIdx=i-base[lv].length;
+  if(customIdx>=0&&CFG.phrases[type][lv])CFG.phrases[type][lv].splice(customIdx,1);
+  renderPhrases();
+}
+
+// ════════════════════════════════════════════════════════
+//  AI PHRASE GENERATOR
+// ════════════════════════════════════════════════════════
+async function genPhrases(type){
+  const ctx=document.getElementById('ai-context').value||'учёба';
+  const count=document.getElementById('ai-count').value||10;
+  const lv=CFG.activeLv;
+  const example=type==='ok'?BASE_PHRASES_OK[1].slice(0,3).join(', '):BASE_PHRASES_ERR[1].slice(0,3).join(', ');
+  const prompt=`Создай ${count} коротких реплик для Тамагочи (питомца) по теме "${ctx}".
+Реплики при ${type==='ok'?'ПРАВИЛЬНОМ ответе (радость)':'НЕВЕРНОМ ответе (расстройство)'}.
+Уровень ${lv}: ${lv===1?'базовый':lv===2?'повышенный':'высокий (пословицы)'}.
+Стиль: ${example}
+Каждая 3-8 слов, с эмодзи. Только нумерованный список.`;
+  const out=document.getElementById('ai-phrases-output');
+  out.innerHTML=`<div style="color:var(--cy2);font-size:12px;">✦ Генерирую реплики...</div>`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'Ошибка';
+    const phrases=txt.split('\n').map(l=>l.replace(/^\d+\.\s*/,'')).filter(l=>l.trim().length>2);
+    if(!CFG.phrases[type][lv])CFG.phrases[type][lv]=[];
+    CFG.phrases[type][lv].push(...phrases.slice(0,parseInt(count)));
+    renderPhrases();
+    out.innerHTML=`<div style="color:var(--gr2);font-size:12px;">✓ Добавлено ${phrases.length} реплик!</div>`;
+    showToast('✓ Реплики сгенерированы!');
+  }catch(e){out.innerHTML=`<div style="color:var(--re);font-size:12px;">Ошибка: ${e.message}</div>`;}
+}
+async function aiGenAllPhrases(){await genPhrases('ok');setTimeout(()=>genPhrases('err'),1000);}
+async function aiGenThemed(){
+  const ctx=document.getElementById('ai-context').value||'учёба';
+  const out=document.getElementById('ai-phrases-output');
+  out.innerHTML=`<div style="color:var(--cy2);font-size:12px;">✦ Генерирую тематические реплики...</div>`;
+  const prompt=`Создай тематические реплики Тамагочи по теме "${ctx}".
+Для каждой подтемы (5-6) — 3 реплики радости и 2 расстройства.
+Формат: ТЕМА | реплика1 | реплика2 | реплика3. С эмодзи. Без пояснений.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'';
+    out.innerHTML=`<div style="background:var(--card);border-radius:10px;padding:12px;font-size:11px;color:var(--tx2);white-space:pre-line;line-height:1.8;">${txt}</div>`;
+  }catch(e){out.innerHTML=`<div style="color:var(--re);font-size:12px;">${e.message}</div>`;}
+}
+
+// ════════════════════════════════════════════════════════
+//  AUDIO PLAYER
+// ════════════════════════════════════════════════════════
+let apTracks=[],apIdx=0,apLooping=false,apShuffling=false;
+const apAudio=()=>document.getElementById('ap-audio');
+function apRender(){
+  const l=document.getElementById('ap-list');l.innerHTML='';
+  apTracks.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='ap-track'+(i===apIdx?' active':'');
+    d.innerHTML=`<span style="font-size:11px;color:var(--tx2);">${i+1}</span>
+      <span class="ap-track-n">${t.name}</span>
+      <span class="ap-track-rm" onclick="apRemove(${i})">✕</span>`;
+    d.onclick=(e)=>{if(!e.target.classList.contains('ap-track-rm')){apPlay(i);}};
+    l.appendChild(d);});
+}
+function apAddFiles(e){[...e.target.files].forEach(f=>{apTracks.push({name:f.name.replace(/\.[^.]+$/,''),url:URL.createObjectURL(f)});});apRender();if(apTracks.length===1)apPlay(0);}
+function apAddUrl(){const u=document.getElementById('ap-url').value.trim();if(!u)return;const name=u.split('/').pop().split('?')[0]||'Трек';apTracks.push({name,url:u});document.getElementById('ap-url').value='';apRender();}
+function apRemove(i){apTracks.splice(i,1);if(apIdx>=apTracks.length)apIdx=0;apRender();}
+function apPlay(i){apIdx=i;const a=apAudio();a.src=apTracks[i]?.url||'';a.play().catch(()=>{});
+  document.getElementById('ap-track-name').textContent=apTracks[i]?.name||'—';
+  document.getElementById('ap-play').textContent='⏸';apRender();}
+function apToggle(){const a=apAudio();a.paused?a.play().catch(()=>{}):a.pause();document.getElementById('ap-play').textContent=a.paused?'▶':'⏸';}
+function apPrev(){apPlay((apIdx-1+apTracks.length)%Math.max(apTracks.length,1));}
+function apNext(){apPlay(apShuffling?Math.floor(Math.random()*apTracks.length):(apIdx+1)%Math.max(apTracks.length,1));}
+function apEnded(){if(apLooping)apPlay(apIdx); else apNext();}
+function apToggleLoop(){apLooping=!apLooping;document.getElementById('ap-loop').style.color=apLooping?'var(--cy2)':'var(--tx2)';}
+function apToggleShuffle(){apShuffling=!apShuffling;document.getElementById('ap-shuffle').style.color=apShuffling?'var(--cy2)':'var(--tx2)';}
+function apSeek(){const a=apAudio();if(a.duration)a.currentTime=a.duration*document.getElementById('ap-seek').value/100;}
+function apVol(){apAudio().volume=document.getElementById('ap-vol').value;}
+function apUpdate(){const a=apAudio();if(!a.duration)return;document.getElementById('ap-seek').value=a.currentTime/a.duration*100;const fmt=s=>Math.floor(s/60)+':'+(Math.floor(s%60)).toString().padStart(2,'0');document.getElementById('ap-time').textContent=fmt(a.currentTime)+' / '+fmt(a.duration);}
+
+// ════════════════════════════════════════════════════════
+//  BACKGROUNDS / MEDIA
+// ════════════════════════════════════════════════════════
+function setBackground(key,e){const f=e.target.files[0];if(!f)return;CFG.visuals.backgrounds[key]=URL.createObjectURL(f);const el=document.getElementById(`bg-${key}-preview`);if(el)el.innerHTML=`✓ ${f.name}`;}
+function addMedia(type,e){[...e.target.files].forEach(f=>{const url=URL.createObjectURL(f);CFG.media[type].push({name:f.name,url});addToGallery(url,f.name);});}
+function addMediaUrl(){const u=document.getElementById('media-url').value.trim();if(!u)return;CFG.media.gifs.push({name:'URL',url:u});addToGallery(u,'URL');document.getElementById('media-url').value='';}
+function addToGallery(url,name){const g=document.getElementById('media-gallery');if(g.children.length===1&&g.children[0].tagName==='DIV')g.innerHTML='';const d=document.createElement('div');d.style.cssText='position:relative;';d.innerHTML=`<img src="${url}" title="${name}" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">`;g.appendChild(d);}
+
+// ════════════════════════════════════════════════════════
+//  PREVIEW / UPDATE
+// ════════════════════════════════════════════════════════
+function updatePreview(){
+  const t=document.getElementById('g-title')?.value||'';
+  const lvEl=document.querySelector('#lang-level-chips .chip.on');
+  const lv=lvEl?lvEl.dataset.v:'A1';
+  const heroEmoji=TAMAS_BASE?.[CFG?.tamas?.active?.[0]||0]?.e||'🐱';
+  // topbar preview pill — just show name
+  const cp=document.getElementById('config-preview');
+  if(cp)cp.innerHTML=heroEmoji+' '+(t||'Тамагочи');
+  // settings preview card
+  const icon=document.getElementById('preview-tama-icon');
+  if(icon)icon.textContent=heroEmoji;
+  const big=document.getElementById('preview-title-big');
+  if(big)big.textContent=t||'—';
+  const lvBadge=document.getElementById('preview-level-badge');
+  if(lvBadge)lvBadge.textContent=lv;
+  const topics=CFG?CFG.topics.filter(tp=>tp.words.length>0).length:0;
+  const tc=document.getElementById('preview-topics-count');
+  if(tc){const T=getT();tc.textContent=topics+' '+(T.topics_count||'тем');}
+}
+// ════════════════════════════════════════════════════════
+//  SAVE / LOAD
+// ════════════════════════════════════════════════════════
+function saveConfig(){
+  try{
+    // Capture language from selectors before saving
+    const sel=document.getElementById('tb-lang-quick')||document.getElementById('ui-lang');
+    if(sel&&sel.value){CFG.uiLang=sel.value;CFG.gameLocale=sel.value;CFG.exportLang=sel.value;}
+    // Capture title
+    const tEl=document.getElementById('g-title');if(tEl&&tEl.value)CFG.title=tEl.value;
+    localStorage.setItem('tama-editor-cfg',JSON.stringify(CFG));
+    const T=getT();
+    showToast('💾 '+(T.btn_save||'Saved')+'!');
+    const ss=document.getElementById('save-status');
+    if(ss)ss.textContent='✓ '+new Date().toLocaleTimeString().slice(0,5);
+  }catch(e){showToast('⚠ '+e.message);}
+}
+function loadConfig(){
+  try{
+    const s=localStorage.getItem('tama-editor-cfg');
+    if(s){
+      const c=JSON.parse(s);
+      Object.assign(CFG,c);
+      // Restore form fields
+      const gTitle=document.getElementById('g-title');if(gTitle)gTitle.value=CFG.title||'';
+      // Restore game language chip selection
+      const glEl=CFG.gameLang||CFG.gameLocale||'ru';
+      if(glEl&&glEl!=='ru'){
+        document.querySelectorAll('#lang-chips .chip').forEach(ch=>{
+          ch.classList.toggle('on',ch.dataset.v===glEl);
+        });
+        const disp=document.getElementById('lang-selected-display');
+        const on=document.querySelector('#lang-chips .chip.on');
+        if(disp&&on)disp.textContent=on.textContent.trim();
+      }
+      const gAuthor=document.getElementById('g-author');if(gAuthor)gAuthor.value=CFG.author||'';
+      const gAud=document.getElementById('g-audience');if(gAud)gAud.value=CFG.audience||'';
+      const gYear=document.getElementById('g-year');if(gYear)gYear.value=CFG.year||'';
+      // Restore level values
+      [1,2,3].forEach(lv=>{
+        const nm=document.getElementById('lv'+lv+'-name');if(nm)nm.value=CFG.levels[lv]?.name||'';
+        const q=document.getElementById('lv'+lv+'-q');if(q)q.value=CFG.levels[lv]?.q||10;
+        const t=document.getElementById('lv'+lv+'-t');if(t)t.value=CFG.levels[lv]?.timer||30;
+        const l=document.getElementById('lv'+lv+'-lives');if(l)l.value=CFG.levels[lv]?.lives||3;
+        const e=document.getElementById('lv'+lv+'-emoji');if(e)e.value=CFG.levels[lv]?.emoji||['🐣','🐥','🌟'][lv-1];
+      });
+      document.getElementById('save-status').textContent='✓ Загружено';
+    }
+  }catch(e){console.warn('loadConfig error:',e);}
+}
+
+// ════════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════════
+let toastTO=null;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTO);toastTO=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT
+// ════════════════════════════════════════════════════════
+function collectConfig(){
+  CFG.title=document.getElementById('g-title')?.value||CFG.title;
+  CFG.author=document.getElementById('g-author')?.value||'';
+  CFG.audience=document.getElementById('g-audience')?.value||'';
+  CFG.year=document.getElementById('g-year')?.value||'';
+  const lvEl=document.querySelector('#lang-level-chips .chip.on');
+  CFG.langLevel=lvEl?lvEl.dataset.v:'A1';
+  CFG.targetLang=document.getElementById('target-lang')?.value||'';
+  // UI language (editor interface) from topbar selector
+  const _uiSel=document.getElementById('tb-lang-quick')||document.getElementById('ui-lang');
+  if(_uiSel&&_uiSel.value) CFG.uiLang=_uiSel.value;
+
+  // ★ GAME language (what is being LEARNED) from lang-chips
+  const _gameLangEl=document.querySelector('#lang-chips .chip.on');
+  if(_gameLangEl){
+    const gv=_gameLangEl.dataset.v||'ru';
+    CFG.gameLang  = gv==='custom'?'custom':gv;
+    CFG.gameLocale= gv==='custom'?'ru':gv;
+    CFG.exportLang= CFG.gameLocale;
+    CFG.lang      = CFG.gameLocale;
+    CFG.gameLangName=_gameLangEl.textContent.trim();
+  }
+  const curLang=CFG.gameLocale||CFG.lang||'ru';
+  // Embed full phrase set for chosen GAME language
+  const _basePh=LANG_PHRASES[curLang]||LANG_PHRASES.ru;
+  CFG.langPhrases=_basePh;
+  [1,2,3].forEach(lv=>{
+    CFG.levels[lv].name=document.getElementById('lv'+lv+'-name')?.value||CFG.levels[lv].name;
+    CFG.levels[lv].q=+(document.getElementById('lv'+lv+'-q')?.value)||CFG.levels[lv].q;
+    CFG.levels[lv].timer=+(document.getElementById('lv'+lv+'-t')?.value)||CFG.levels[lv].timer;
+    CFG.levels[lv].lives=+(document.getElementById('lv'+lv+'-lives')?.value)||CFG.levels[lv].lives;
+    CFG.levels[lv].emoji=document.getElementById('lv'+lv+'-emoji')?.value||CFG.levels[lv].emoji;
+  });
+  ['timer','coins','lives','progress','shop','growth','hint','items','results','restart']
+    .forEach(k=>{const el=document.getElementById('m-'+k);if(el)CFG.mechanics[k]=el.checked;});
+  return CFG;
+}
+function exportConfig(){
+  collectConfig();
+  const blob=new Blob([JSON.stringify(CFG,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`tama-config-${Date.now()}.json`;a.click();showToast('✓ Конфиг скачан!');}
+
+function exportGame(){
+  collectConfig();
+  const cfg=JSON.stringify(CFG);
+  const html=buildGameHTML(cfg);
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const name=(CFG.title||'tamagotchi').toLowerCase().replace(/[^a-zа-яё0-9]/gi,'-');
+  a.download=`${name}.html`;a.click();showToast('🎮 Игра экспортирована!');}
+
+function buildGameHTML(cfgJson){
+  collectConfig();
+  const C=CFG;
+  // ★ Use GAME language (what the user is learning), NOT the editor UI language
+  const lang=C.gameLang==='custom'?'custom':(C.gameLang||C.gameLocale||C.exportLang||C.lang||'ru');
+  const safeLang=lang==='custom'?'ru':lang;
+  const T2=UI_T[safeLang]||UI_T.ru;
+  const hero=TAMAS_BASE[C.tamas.active[0]||0]?.e||'🦊';
+  const filledTopics=C.topics.filter(t=>t.words.length>0||t.pairs.length>0);
+  const basePh=LANG_PHRASES[safeLang]||LANG_PHRASES.ru;
+  const allOk={
+    1:[...(basePh.ok[1]||[]),...(C.phrases?.ok?.[1]||[])],
+    2:[...(basePh.ok[2]||[]),...(C.phrases?.ok?.[2]||[])],
+    3:[...(basePh.ok[3]||[]),...(C.phrases?.ok?.[3]||[])]
+  };
+  const allErr={
+    1:[...(basePh.err[1]||[]),...(C.phrases?.err?.[1]||[])],
+    2:[...(basePh.err[2]||[]),...(C.phrases?.err?.[2]||[])],
+    3:[...(basePh.err[3]||[]),...(C.phrases?.err?.[3]||[])]
+  };
+  const ALPHABETS={"de": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Ä", "Ö", "Ü", "ß"], "en": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], "fr": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "À", "Â", "Ç", "É", "È", "Ê", "Î", "Ô", "Ù", "Û"], "es": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], "ru": ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ы", "Э", "Ю", "Я"], "it": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Z", "À", "È", "É", "Ì", "Ò", "Ù"], "pt": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Á", "À", "Â", "Ã", "Ç", "É", "Ê", "Í", "Ó", "Ô", "Õ", "Ú"], "ja": ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", "ん"], "zh": ["你", "好", "是", "的", "我", "了", "在", "人", "有", "大", "来", "中", "国", "到", "他", "们", "时", "年", "也", "就"], "ar": ["ا", "ب", "ت", "ث", "ج", "ح", "خ", "د", "ذ", "ر", "ز", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ك", "ل", "م", "ن", "ه", "و", "ي"], "hi": ["अ", "आ", "इ", "ई", "उ", "ऊ", "ए", "ओ", "क", "ख", "ग", "घ", "च", "छ", "ज", "झ", "ट", "ड", "त", "थ", "द", "ध", "न", "प", "फ", "ब", "भ", "म", "य", "र", "ल", "व", "श", "स", "ह"], "fa": ["ا", "ب", "پ", "ت", "ث", "ج", "چ", "ح", "خ", "د", "ر", "ز", "ژ", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ک", "گ", "ل", "م", "ن", "و", "ه", "ی"]};
+  const alphaKeys=ALPHABETS[safeLang]||ALPHABETS['de'];
+  const UI={
+    welcome:{ru:'Привет! Назови своего питомца!',de:'Hallo! Nenn dein Haustier!',en:"Hi! Name your pet!",fr:"Salut! Nomme ton animal!",es:'¡Hola! ¡Nombra tu mascota!',ja:'こんにちは！ペットに名前を！',zh:'你好！给宠物起名字！',ar:'مرحباً! سمِّ حيوانك!',hi:'नमस्ते! पालतू का नाम दें!',fa:'سلام! به حیوانت نام بده!',it:'Ciao! Dai un nome al tuo animale!',pt:'Olá! Dá um nome ao teu animal!'}[safeLang]||"Hi! Name your pet!",
+    enterName:{ru:'Введи имя',de:'Name eingeben',en:'Enter name',fr:'Entrez le nom',es:'Ingresa nombre',ja:'名前を入力',zh:'输入名字',ar:'أدخل الاسم',hi:'नाम दर्ज करें',fa:'نام وارد کنید',it:'Inserisci nome',pt:'Digite o nome'}[safeLang]||'Name',
+    startGame:{ru:'🚀 Начать игру!',de:'🚀 Spiel starten!',en:'🚀 Start game!',fr:'🚀 Commencer!',es:'🚀 ¡Iniciar!',ja:'🚀 スタート！',zh:'🚀 开始游戏！',ar:'🚀 ابدأ!',hi:'🚀 खेल शुरू करें!',fa:'🚀 شروع!',it:'🚀 Inizia!',pt:'🚀 Iniciar!'}[safeLang]||'🚀 Start!',
+    kbdLabel:{ru:'⌨️ Клавиатура',de:'⌨️ Tastatur · DE',en:'⌨️ Keyboard',fr:'⌨️ Clavier · FR',es:'⌨️ Teclado · ES',ja:'⌨️ キーボード',zh:'⌨️ 键盘',ar:'⌨️ لوحة المفاتيح',hi:'⌨️ कीबोर्ड',fa:'⌨️ صفحه کلید',it:'⌨️ Tastiera · IT',pt:'⌨️ Teclado · PT'}[safeLang]||('⌨️ '+safeLang.toUpperCase()),
+    lv1:C.levels[1]?.name||{ru:'Базовый',de:'Basis',en:'Basic',fr:'Basique',es:'Básico',ja:'初級',zh:'基础',ar:'أساسي',hi:'बुनियादी',fa:'پایه',it:'Base',pt:'Básico'}[safeLang]||'Lv.1',
+    lv2:C.levels[2]?.name||{ru:'Повышенный',de:'Mittel',en:'Intermediate',fr:'Intermédiaire',es:'Intermedio',ja:'中級',zh:'中级',ar:'متوسط',hi:'मध्यम',fa:'متوسط',it:'Intermedio',pt:'Médio'}[safeLang]||'Lv.2',
+    lv3:C.levels[3]?.name||{ru:'Высокий',de:'Fortgeschritten',en:'Advanced',fr:'Avancé',es:'Avanzado',ja:'上級',zh:'高级',ar:'متقدم',hi:'उन्नत',fa:'پیشرفته',it:'Avanzato',pt:'Avançado'}[safeLang]||'Lv.3',
+    gameTitle:{ru:'Тамагочи',de:'Tamagotchi',en:'Tamagotchi',fr:'Tamagotchi',es:'Tamagotchi',ja:'たまごっち',zh:'电子宠物',ar:'تاماغوتشي',hi:'तमागोत्ची',fa:'تاماگوتچی',it:'Tamagotchi',pt:'Tamagotchi'}[safeLang]||'Tamagotchi',
+    correct:{ru:'✅ Richtig!',de:'✅ Richtig!',en:'✅ Correct!',fr:'✅ Correct!',es:'✅ ¡Correcto!',ja:'✅ 正解！',zh:'✅ 正确！',ar:'✅ صحيح!',hi:'✅ सही!',fa:'✅ درست!',it:'✅ Corretto!',pt:'✅ Correto!'}[safeLang]||'✅ OK',
+    wrong:{ru:'❌ Falsch!',de:'❌ Falsch!',en:'❌ Wrong!',fr:'❌ Faux!',es:'❌ ¡Incorrecto!',ja:'❌ 不正解！',zh:'❌ 错误！',ar:'❌ خطأ!',hi:'❌ गलत!',fa:'❌ اشتباه!',it:'❌ Sbagliato!',pt:'❌ Errado!'}[safeLang]||'❌',
+    timeUp:{ru:'⏱ Время!',de:'⏱ Zeit um!',en:'⏱ Time up!',fr:'⏱ Temps!',es:'⏱ ¡Tiempo!',ja:'⏱ タイムアップ！',zh:'⏱ 时间到！',ar:'⏱ انتهى الوقت!',hi:'⏱ समय!',fa:'⏱ وقت تمام!',it:'⏱ Tempo!',pt:'⏱ Tempo!'}[safeLang]||'⏱',
+    chooseAnswer:{ru:'Выбери правильный ответ:',de:'Wähle die richtige Antwort:',en:'Choose the correct answer:',fr:'Choisissez la bonne réponse:',es:'Elige la respuesta correcta:',ja:'正解を選んでください:',zh:'选择正确答案:',ar:'اختر الإجابة الصحيحة:',hi:'सही उत्तर चुनें:',fa:'جواب درست را انتخاب کن:',it:'Scegli la risposta corretta:',pt:'Escolha a resposta correta:'}[safeLang]||'?',
+    typeWord:{ru:'Напиши слово:',de:'Schreibe das Wort:',en:'Write the word:',fr:'Écris le mot:',es:'Escribe la palabra:',ja:'言葉を書いて:',zh:'写出单词:',ar:'اكتب الكلمة:',hi:'शब्द लिखो:',fa:'کلمه را بنویس:',it:'Scrivi la parola:',pt:'Escreve a palavra:'}[safeLang]||'...',
+    findPair:{ru:'Найди пары:',de:'Finde die Paare:',en:'Find the pairs:',fr:'Trouvez les paires:',es:'Encuentra los pares:',ja:'ペアを見つけよう:',zh:'找配对:',ar:'ابحث عن الأزواج:',hi:'जोड़े बनाओ:',fa:'جفت‌ها را پیدا کن:',it:'Trova le coppie:',pt:'Encontra os pares:'}[safeLang]||'?',
+    fillGap:{ru:'Заполни пропуск:',de:'Fülle die Lücke:',en:'Fill the gap:',fr:'Remplis le blanc:',es:'Rellena el espacio:',ja:'空欄を埋めよう:',zh:'填空:',ar:'أكمل الفراغ:',hi:'रिक्त भरो:',fa:'جای خالی را پر کن:',it:'Riempi il vuoto:',pt:'Preenche o espaço:'}[safeLang]||'...',
+    check:{ru:'Проверить',de:'Prüfen',en:'Check',fr:'Vérifier',es:'Comprobar',ja:'確認',zh:'检查',ar:'تحقق',hi:'जाँचो',fa:'بررسی',it:'Verificare',pt:'Verificar'}[safeLang]||'OK',
+    nextQ:{ru:'Далее →',de:'Weiter →',en:'Next →',fr:'Suivant →',es:'Siguiente →',ja:'次へ →',zh:'下一题 →',ar:'← التالي',hi:'आगे →',fa:'بعدی ←',it:'Avanti →',pt:'Próximo →'}[safeLang]||'→',
+    result:{ru:'Результат',de:'Ergebnis',en:'Result',fr:'Résultat',es:'Resultado',ja:'結果',zh:'结果',ar:'النتيجة',hi:'परिणाम',fa:'نتیجه',it:'Risultato',pt:'Resultado'}[safeLang]||'Result',
+    playAgain:{ru:'🔄 Ещё раз',de:'🔄 Nochmal',en:'🔄 Play again',fr:'🔄 Rejouer',es:'🔄 Otra vez',ja:'🔄 もう一度',zh:'🔄 再玩',ar:'🔄 مرة أخرى',hi:'🔄 फिर खेलो',fa:'🔄 دوباره',it:'🔄 Di nuovo',pt:'🔄 De novo'}[safeLang]||'🔄',
+    openGame:T2.btn_dl_game||'🎮 Play',
+    openEditor:T2.lbl_editor_link||'🖊️ Editor',
+  };
+  const topicCards=filledTopics.slice(0,9).map(t=>`<div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.15);border-radius:9px;padding:7px 10px;font-size:11px;"><b>${t.icon||'📌'}</b> ${t.name}${t.subject?' <span style="opacity:.6">· '+t.subject+'</span>':''}<div style="font-size:9px;color:#86efac;margin-top:2px;">${t.words.length}w${t.pairs.length?' · '+t.pairs.length+'p':''}</div></div>`).join('');
+  const exportCFG={...C,lang:safeLang,uiLang:safeLang,gameLang:safeLang,gameLocale:safeLang,exportLang:safeLang,phrases:{ok:allOk,err:allErr},alphaKeys,UI,exportedAt:new Date().toISOString(),editorVersion:'v3.1'};
+  const isRTL=['ar','fa','he'].includes(safeLang);
+  // ── Full self-contained game engine ────────────────────────────────
+  return `<!DOCTYPE html>
+<html lang="${safeLang}" dir="${isRTL?'rtl':'ltr'}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${C.title||UI.gameTitle||'Tamagotchi'} · ${safeLang.toUpperCase()}</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script>
+window.TAMA_CFG=${JSON.stringify(exportCFG).replace(/<\/script>/g,'<\\/script>')};
+<\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;scroll-behavior:smooth;}
+body{font-family:'Outfit',system-ui,sans-serif;background:linear-gradient(135deg,#050e0a 0%,#0d1f17 60%,#071410 100%);color:#d4f7e7;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 12px 40px;direction:${isRTL?'rtl':'ltr'};}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:rgba(74,222,128,.35);border-radius:3px;}
+.scr{max-width:520px;width:100%;display:none;flex-direction:column;align-items:center;gap:12px;padding-top:16px;}
+.scr.on{display:flex;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;}}
+@keyframes bob{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) translateY(-10px) scale(1.08);}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4);}50%{box-shadow:0 0 0 12px rgba(74,222,128,0);}}
+@keyframes popIn{from{transform:scale(.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+.tama{font-size:clamp(60px,14vw,88px);display:block;margin:0 auto 6px;animation:bob 2.5s ease-in-out infinite;cursor:pointer;text-align:center;user-select:none;}
+h1{font-size:clamp(18px,5vw,24px);font-weight:900;background:linear-gradient(90deg,#4ade80,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px;}
+.sub{color:#86efac;font-size:12px;text-align:center;}
+.card{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.16);border-radius:18px;padding:18px;width:100%;}
+/* Name screen */
+.name-disp{font-size:30px;font-weight:900;color:#4ade80;letter-spacing:4px;min-height:46px;text-align:center;text-shadow:0 0 14px rgba(74,222,128,.5);padding:4px 0 8px;}
+.name-inp{background:rgba(255,255,255,.07);border:1.5px solid rgba(74,222,128,.3);border-radius:10px;color:#ecfdf5;font-size:16px;padding:10px 16px;width:100%;outline:none;text-align:center;font-family:inherit;margin:6px 0 8px;}
+.name-inp:focus{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.12);}
+.kbd-lbl{font-size:10px;color:#86efac;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:6px;}
+.alpha{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:10px;max-height:180px;overflow-y:auto;padding:2px;}
+.ak{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);border-radius:7px;color:#4ade80;cursor:pointer;font-size:14px;font-weight:700;padding:6px 9px;min-width:34px;text-align:center;transition:all .12s;user-select:none;-webkit-tap-highlight-color:transparent;}
+.ak:hover,.ak:active{background:rgba(74,222,128,.3);transform:scale(1.12);}
+.ak.del{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.ak.spc{min-width:80px;}
+.btn-go{display:block;width:100%;border:none;border-radius:12px;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;padding:15px 28px;margin-top:10px;transition:all .2s;animation:glow 2s ease-in-out infinite;-webkit-tap-highlight-color:transparent;}
+.btn-go:hover{filter:brightness(1.1);transform:translateY(-2px);}
+/* Level select */
+.lvs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;}
+.lvc{border-radius:12px;padding:13px 8px;text-align:center;cursor:pointer;transition:all .2s;border:1.5px solid transparent;}
+.lvc:nth-child(1){background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.25);}
+.lvc:nth-child(2){background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.25);}
+.lvc:nth-child(3){background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.25);}
+.lvc:hover{transform:translateY(-3px);filter:brightness(1.15);}
+.lv-em{font-size:22px;display:block;margin-bottom:4px;}
+.lv-n{font-size:12px;font-weight:800;margin-bottom:2px;}
+.lv-i{font-size:10px;opacity:.65;}
+/* HUD */
+.hud{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%;}
+.hud-p{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:18px;padding:5px 12px;font-size:12px;font-weight:700;}
+#hud-t{min-width:36px;text-align:center;font-size:16px;font-weight:900;color:#67e8f9;}
+.prog{width:100%;height:7px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.prog-f{height:100%;background:linear-gradient(90deg,#16a34a,#06b6d4);border-radius:4px;transition:width .3s;}
+/* Question */
+.qlbl{font-size:11px;color:#67e8f9;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:6px;}
+.qword{font-size:clamp(18px,5vw,28px);font-weight:900;text-align:center;padding:12px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:12px;margin-bottom:12px;min-height:54px;display:flex;align-items:center;justify-content:center;word-break:break-word;color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4);}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+.ob{background:rgba(74,222,128,.09);border:1.5px solid rgba(74,222,128,.25);border-radius:12px;color:#c8f7dc;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;padding:11px 8px;text-align:start;transition:all .15s;word-break:break-word;-webkit-tap-highlight-color:transparent;}
+.ob:hover:not(:disabled){border-color:#67e8f9;background:rgba(103,232,249,.1);}
+.ob.ok{border-color:#4ade80!important;background:rgba(74,222,128,.18)!important;color:#4ade80!important;}
+.ob.err{border-color:#f43f5e!important;background:rgba(244,63,94,.12)!important;color:#fda4af!important;}
+.qinp{width:100%;background:rgba(255,255,255,.09);border:1.5px solid rgba(74,222,128,.3);border-radius:11px;color:#c8f7dc;font-family:inherit;font-size:16px;padding:11px 14px;outline:none;text-align:center;}
+.qinp:focus{border-color:#4ade80;}
+.btn-chk{background:linear-gradient(135deg,#16a34a,#059669);border:none;border-radius:11px;color:#fff;cursor:pointer;font-family:inherit;font-size:14px;font-weight:800;padding:12px 28px;width:100%;transition:all .2s;margin-top:6px;}
+.btn-chk:hover{filter:brightness(1.1);}
+.gap-t{font-size:15px;line-height:2.4;text-align:center;padding:10px;word-break:break-word;}
+/* Feedback toast */
+.fb{border-radius:12px;font-size:14px;font-weight:800;padding:11px 16px;text-align:center;width:100%;display:none;animation:popIn .25s ease;}
+.fb.ok{background:rgba(74,222,128,.18);border:1px solid rgba(74,222,128,.5);color:#4ade80;}
+.fb.err{background:rgba(244,63,94,.13);border:1px solid rgba(244,63,94,.4);color:#fda4af;}
+/* Game alpha (for type questions) */
+.g-alpha{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-height:160px;overflow-y:auto;}
+.g-alpha.hide{display:none;}
+/* Result */
+.res-card{background:rgba(74,222,128,.07);border:1.5px solid rgba(74,222,128,.2);border-radius:18px;padding:22px;width:100%;text-align:center;}
+.stars{font-size:30px;margin-bottom:8px;letter-spacing:4px;}
+.pct{font-size:36px;font-weight:900;background:linear-gradient(90deg,#4ade80,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.btn-r{display:block;width:100%;border:none;border-radius:11px;color:#fff;cursor:pointer;font-family:inherit;font-size:14px;font-weight:800;padding:13px 24px;margin-top:8px;transition:all .2s;background:linear-gradient(135deg,#16a34a,#059669);}
+.btn-r:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-r.sec{background:rgba(74,222,128,.12);border:1.5px solid rgba(74,222,128,.3);color:#4ade80;}
+/* Stars particle */
+#bg{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden;}
+.sp{position:absolute;border-radius:50%;opacity:.35;animation:tw var(--d,3s) ease-in-out var(--dl,0s) infinite alternate;}
+@keyframes tw{from{opacity:.08;transform:scale(.5);}to{opacity:.65;transform:scale(1.5);}}
+@media(max-width:380px){.lvs{grid-template-columns:1fr;}.opts{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<!-- ① NAME SCREEN -->
+<div class="scr on" id="s-name">
+  <span class="tama" id="tama0">${hero}</span>
+  <h1>${C.title||UI.gameTitle}</h1>
+  <p class="sub">${C.audience||''} ${C.year?'· '+C.year:''}</p>
+  <div class="card" style="text-align:center;">
+    <p style="font-size:13px;color:#86efac;margin-bottom:10px;">${UI.welcome}</p>
+    <div class="name-disp" id="nd">?</div>
+    <input type="text" class="name-inp" id="ni" maxlength="14" placeholder="${UI.enterName}"
+      oninput="document.getElementById('nd').textContent=this.value||'?'">
+    <div class="kbd-lbl">${UI.kbdLabel}</div>
+    <div class="alpha" id="nalpha"></div>
+    <button class="btn-go" id="go-btn" onclick="doStart()">${UI.startGame}</button>
+  </div>
+  <div style="display:flex;gap:8px;font-size:11px;color:#86efac;margin-top:4px;flex-wrap:wrap;justify-content:center;">
+    <span style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:3px 10px;">🌐 ${safeLang.toUpperCase()}</span>
+    <span style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:3px 10px;">📊 ${C.langLevel||'A1'}</span>
+    <span style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:3px 10px;">📚 ${filledTopics.length}/12</span>
+  </div>
+</div>
+
+<!-- ② LEVEL SELECT -->
+<div class="scr" id="s-lv">
+  <span class="tama" id="tama1">${hero}</span>
+  <h1 id="lv-greeting">—</h1>
+  <div class="lvs">
+    <div class="lvc" onclick="startLv(1)">
+      <span class="lv-em">${C.levels[1].emoji||'🐣'}</span>
+      <div class="lv-n">${UI.lv1}</div>
+      <div class="lv-i">⏱${C.levels[1].timer}s ❤${C.levels[1].lives} 📝${C.levels[1].q}</div>
+    </div>
+    <div class="lvc" onclick="startLv(2)">
+      <span class="lv-em">${C.levels[2].emoji||'🐥'}</span>
+      <div class="lv-n">${UI.lv2}</div>
+      <div class="lv-i">⏱${C.levels[2].timer}s ❤${C.levels[2].lives} 📝${C.levels[2].q}</div>
+    </div>
+    <div class="lvc" onclick="startLv(3)">
+      <span class="lv-em">${C.levels[3].emoji||'🌟'}</span>
+      <div class="lv-n">${UI.lv3}</div>
+      <div class="lv-i">⏱${C.levels[3].timer}s ❤${C.levels[3].lives} 📝${C.levels[3].q}</div>
+    </div>
+  </div>
+  ${filledTopics.length===0?'<div style="background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:12px;padding:12px 16px;font-size:13px;color:#fda4af;text-align:center;width:100%;">⚠️ '+({ru:'Добавь слова в темы',de:'Wörter zu Themen hinzufügen',en:'Add words to topics',fr:'Ajoutez des mots',es:'Añade palabras',ja:'テーマに言葉を',zh:'添加词语',ar:'أضف كلمات',hi:'शब्द जोड़ें',fa:'کلمه اضافه کن',it:'Aggiungi parole',pt:'Adicione palavras'}[safeLang]||'Add content')+'</div>':''}
+</div>
+
+<!-- ③ GAME SCREEN -->
+<div class="scr" id="s-game">
+  <div class="hud">
+    <span class="hud-p" id="hud-l">❤️❤️❤️</span>
+    <span class="hud-p" id="hud-t">30</span>
+    <span class="hud-p" id="hud-c">🪙 0</span>
+  </div>
+  <div class="prog"><div class="prog-f" id="prog" style="width:0%"></div></div>
+  <div id="qa" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;"></div>
+  <div id="fb" class="fb"></div>
+  <div class="g-alpha hide" id="g-alpha"></div>
+</div>
+
+<!-- ④ RESULT SCREEN -->
+<div class="scr" id="s-res">
+  <span class="tama">${hero}</span>
+  <div class="res-card">
+    <div class="stars" id="r-stars">★★★</div>
+    <div style="font-size:15px;font-weight:700;color:#86efac;margin-bottom:8px;" id="r-msg"></div>
+    <div class="pct" id="r-pct">0%</div>
+    <div style="font-size:13px;color:#6ee7b7;margin:6px 0;" id="r-detail"></div>
+    <button class="btn-r" onclick="go('s-lv')">${UI.playAgain}</button>
+    <button class="btn-r sec" onclick="go('s-name')" style="margin-top:6px;">🏠</button>
+  </div>
+</div>
+
+<script>
+(function(){
+const CFG=window.TAMA_CFG||{};
+const ALPHA=CFG.alphaKeys||[];
+const OK=CFG.phrases?.ok||{1:[],2:[],3:[]};
+const ERR=CFG.phrases?.err||{1:[],2:[],3:[]};
+const SC=CFG.score||{5:90,4:75,3:60,coins:1};
+const UI=CFG.UI||{};
+const LANG=CFG.lang||'${safeLang}';
+
+// ── helpers ──────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── state ─────────────────────────────────────────────────────
+let ST={lv:1,name:'',qIdx:0,qs:[],correct:0,lives:3,coins:0,timer:0,tInt:null};
+
+// ── screens ───────────────────────────────────────────────────
+function go(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  $(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// ── starfield ─────────────────────────────────────────────────
+(function(){
+  const bg=$('bg');
+  const colors=['#4ade80','#67e8f9','#fcd34d','#fda4af'];
+  for(let i=0;i<55;i++){
+    const s=document.createElement('div');s.className='sp';
+    const sz=(0.6+Math.random()*2.5)+'px';
+    s.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+sz+';height:'+sz+';background:'+colors[i%4]+';--d:'+(2+Math.random()*4)+'s;--dl:'+(Math.random()*5)+'s;';
+    bg.appendChild(s);
+  }
+})();
+
+// ── name-screen alphabet ──────────────────────────────────────
+(function(){
+  const g=$('nalpha');
+  ALPHA.forEach(ch=>{
+    const b=document.createElement('button');b.className='ak';b.textContent=ch;
+    b.onclick=()=>{const inp=$('ni');if(inp.value.length<14){inp.value+=ch;$('nd').textContent=inp.value||'?';}};
+    g.appendChild(b);
+  });
+  // Backspace
+  const bk=document.createElement('button');bk.className='ak del';bk.textContent='⌫';
+  bk.onclick=()=>{const inp=$('ni');inp.value=inp.value.slice(0,-1);$('nd').textContent=inp.value||'?';};
+  g.appendChild(bk);
+  // Clear
+  const cl=document.createElement('button');cl.className='ak del';cl.textContent='✕';
+  cl.onclick=()=>{$('ni').value='';$('nd').textContent='?';};
+  g.appendChild(cl);
+})();
+
+// ── game alphabet (for type/gap questions) ────────────────────
+(function(){
+  const g=$('g-alpha');
+  ALPHA.forEach(ch=>{
+    const b=document.createElement('button');b.className='ak';b.textContent=ch;
+    b.onclick=()=>{
+      const t=$('qinp')||$('ginp');
+      if(t){const s=t.selectionStart||0,e=t.selectionEnd||0;t.value=t.value.slice(0,s)+ch+t.value.slice(e);t.selectionStart=t.selectionEnd=s+ch.length;t.focus();t.dispatchEvent(new Event('input',{bubbles:true}));}
     };
-    
-    updateIframe(); // Первый запуск
+    g.appendChild(b);
+  });
+  const bk=document.createElement('button');bk.className='ak del';bk.textContent='⌫';
+  bk.onclick=()=>{const t=$('qinp')||$('ginp');if(t){t.value=t.value.slice(0,-1);t.dispatchEvent(new Event('input',{bubbles:true}));}};
+  g.appendChild(bk);
+})();
+
+// ── hero click phrase ─────────────────────────────────────────
+document.querySelectorAll('.tama').forEach(el=>el.addEventListener('click',()=>{
+  el.style.transform='scale(1.5) rotate(20deg)';
+  setTimeout(()=>el.style.transform='',220);
+  const ph=rand([...(OK[1]||[]),'👋','😊','🌟']);
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;top:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border-radius:12px;padding:10px 22px;font-size:14px;font-weight:700;z-index:999;animation:popIn .25s ease;';
+  d.textContent=ph;document.body.appendChild(d);setTimeout(()=>d.remove(),2400);
+}));
+
+// ── start: name → level select ────────────────────────────────
+window.doStart=function(){
+  const inp=$('ni');
+  ST.name=(inp?.value?.trim())||'🎮';
+  $('lv-greeting').textContent=ST.name+' 👋';
+  go('s-lv');
+};
+// Enter key
+$('ni')?.addEventListener('keydown',e=>{if(e.key==='Enter')window.doStart();});
+
+// ── build question pool ───────────────────────────────────────
+function buildQs(lv){
+  const topics=(CFG.topics||[]).filter(t=>(t.words?.length>0||t.pairs?.length>0));
+  if(!topics.length)return[];
+  const qs=[];
+  const allW=shuf(topics.flatMap(t=>t.words||[]).filter(Boolean));
+  const allP=shuf(topics.flatMap(t=>t.pairs||[]).filter(Boolean));
+  const allPr=topics.flatMap(t=>t.proverbs||[]).filter(p=>p.p&&p.a);
+  const maxQ=CFG.levels?.[lv]?.q||10;
+  // Multiple choice
+  if(allW.length>=2){
+    allW.slice(0,maxQ).forEach(w=>{
+      const opts=shuf([w,...shuf(allW.filter(x=>x!==w)).slice(0,3)]).slice(0,4);
+      if(opts.length>=2)qs.push({t:'choice',w:esc(w),opts:opts.map(esc),ans:esc(w)});
+    });
+  }
+  // Pairs
+  if(allP.length>=2){
+    const batch=allP.slice(0,Math.min(6,allP.length));
+    batch.forEach(p=>{
+      const src=esc(p.s||p.src||'');const trg=esc(p.e||p.trg||'');
+      const opts=shuf(batch.map(x=>esc(x.e||x.trg||'')));
+      if(src&&trg)qs.push({t:'pair',w:src,ans:trg,opts});
+    });
+  }
+  // Type the word
+  if(allW.length>=1){
+    allW.slice(0,4).forEach(w=>qs.push({t:'type',w:esc(w),ans:w.toLowerCase()}));
+  }
+  // Gap fill
+  allPr.slice(0,4).forEach(pr=>qs.push({t:'gap',txt:esc(pr.p),ans:pr.a.toLowerCase(),hint:pr.a}));
+  return shuf(qs).slice(0,maxQ);
 }
+
+// ── start level ───────────────────────────────────────────────
+window.startLv=function(lv){
+  ST.lv=lv;ST.qIdx=0;ST.correct=0;ST.coins=0;
+  ST.lives=CFG.levels?.[lv]?.lives||3;
+  ST.qs=buildQs(lv);
+  if(!ST.qs.length){
+    $('qa').innerHTML='<p style="color:#fda4af;padding:20px;text-align:center;">⚠️ '+(UI.noContent||'Add content!')+' </p>';
+    go('s-game');return;
+  }
+  go('s-game');updHud();renderQ();
+};
+
+// ── render question ───────────────────────────────────────────
+function renderQ(){
+  if(ST.qIdx>=ST.qs.length){showResult();return;}
+  const q=ST.qs[ST.qIdx];
+  const qa=$('qa');if(!qa)return;
+  updHud();
+  if(CFG.mechanics?.timer!==false)startTimer();
+  const gAlpha=$('g-alpha');
+  if(gAlpha)gAlpha.className='g-alpha'+(q.t==='type'||q.t==='gap'?'':' hide');
+  if(q.t==='choice'||q.t==='pair'){
+    qa.innerHTML='<div class="qlbl">'+(q.t==='pair'?(UI.findPair||'Match'):(UI.chooseAnswer||'?'))+'</div>'+
+      '<div class="qword">'+q.w+'</div>'+
+      '<div class="opts" id="opts">'+
+      q.opts.map((o,i)=>'<button class="ob" onclick="chkOpt(\''+o+'\',\''+q.ans+'\',this)">'+'ABCD'[i]+'. '+o+'</button>').join('')+
+      '</div>';
+  } else if(q.t==='type'){
+    qa.innerHTML='<div class="qlbl">'+(UI.typeWord||'Write')+'</div>'+
+      '<div class="qword">'+q.w+'</div>'+
+      '<input id="qinp" class="qinp" type="text" placeholder="..." autocomplete="off" onkeydown="if(event.key===\'Enter\')chkType()">'+
+      '<button class="btn-chk" onclick="chkType()">'+(UI.check||'OK')+'</button>';
+    setTimeout(()=>$('qinp')?.focus(),60);
+  } else if(q.t==='gap'){
+    const txt=q.txt.replace('_____','<input id="ginp" class="qinp" style="display:inline-block;width:140px;margin:0 4px;" type="text" placeholder="..." autocomplete="off" onkeydown="if(event.key===\'Enter\')chkGap()">');
+    qa.innerHTML='<div class="qlbl">'+(UI.fillGap||'Fill')+'</div>'+
+      '<div class="gap-t">'+txt+'</div>'+
+      '<button class="btn-chk" onclick="chkGap()">'+(UI.check||'OK')+'</button>';
+  }
+}
+
+// ── check answers ─────────────────────────────────────────────
+function chkOpt(chosen,ans,btn){
+  stopT();
+  document.querySelectorAll('.ob').forEach(b=>b.disabled=true);
+  const ok=chosen===ans;
+  btn.className='ob '+(ok?'ok':'err');
+  if(!ok)document.querySelectorAll('.ob').forEach(b=>{if(b.textContent.slice(3)===ans)b.className='ob ok';});
+  if(ok){ST.correct++;ST.coins+=SC.coins||1;}
+  showFb(ok);
+  if(ok)setTimeout(nextQ,900); else lifeDown(nextQ);
+}
+function chkType(){
+  stopT();
+  const inp=$('qinp');if(!inp)return;
+  const val=inp.value.trim().toLowerCase().normalize('NFC');
+  const ans=ST.qs[ST.qIdx].ans.normalize('NFC');
+  const ok=val===ans;
+  inp.style.borderColor=ok?'#4ade80':'#f43f5e';
+  if(ok){ST.correct++;ST.coins+=SC.coins||1;}
+  showFb(ok,ok?null:('→ '+ST.qs[ST.qIdx].ans));
+  if(ok)setTimeout(nextQ,900); else lifeDown(nextQ);
+}
+function chkGap(){
+  stopT();
+  const inp=$('ginp');if(!inp)return;
+  const val=inp.value.trim().toLowerCase();
+  const ans=ST.qs[ST.qIdx].ans;
+  const ok=val===ans;
+  inp.style.borderColor=ok?'#4ade80':'#f43f5e';
+  if(ok){ST.correct++;ST.coins+=SC.coins||1;}
+  showFb(ok,ok?null:('→ '+ST.qs[ST.qIdx].hint));
+  if(ok)setTimeout(nextQ,900); else lifeDown(nextQ);
+}
+function nextQ(){ST.qIdx++;renderQ();}
+function lifeDown(cb){
+  if(CFG.mechanics?.lives!==false){
+    ST.lives=Math.max(0,ST.lives-1);updHud();
+    if(ST.lives<=0){setTimeout(showResult,1200);return;}
+  }
+  setTimeout(cb,1200);
+}
+function showFb(ok,extra){
+  const fbEl=$('fb');if(!fbEl)return;
+  const pool=ok?OK[ST.lv]:ERR[ST.lv];
+  const msg=extra??(pool?.length?rand(pool):(ok?(UI.correct||'✅'):(UI.wrong||'❌')));
+  fbEl.textContent=msg;fbEl.className='fb '+(ok?'ok':'err');
+  fbEl.style.display='block';setTimeout(()=>fbEl.style.display='none',1100);
+}
+function showResult(){
+  stopT();
+  const tot=ST.qs.length;
+  const pct=tot?Math.round(ST.correct/tot*100):0;
+  const s=pct>=(SC[5]||90)?5:pct>=(SC[4]||75)?4:pct>=(SC[3]||60)?3:pct>=40?2:1;
+  $('r-stars').textContent='⭐'.repeat(s);
+  $('r-pct').textContent=pct+'%';
+  $('r-detail').textContent=ST.correct+'/'+tot+' · 🪙 '+ST.coins+' · ❤️ '+ST.lives;
+  const rMsgs={
+    ru:['Попробуй ещё раз 💪','Неплохо 😊','Хорошо! 👍','Отлично! 🌟','Превосходно! 🏆'],
+    de:['Versuche es nochmal 💪','Nicht schlecht 😊','Gut! 👍','Ausgezeichnet! 🌟','Hervorragend! 🏆'],
+    en:['Try again 💪','Not bad 😊','Good! 👍','Excellent! 🌟','Outstanding! 🏆'],
+    fr:['Réessaie 💪','Pas mal 😊','Bien! 👍','Excellent! 🌟','Remarquable! 🏆'],
+    es:['Inténtalo 💪','No está mal 😊','¡Bien! 👍','¡Excelente! 🌟','¡Sobresaliente! 🏆'],
+    it:['Riprova 💪','Non male 😊','Bene! 👍','Ottimo! 🌟','Eccellente! 🏆'],
+    pt:['Tenta de novo 💪','Não está mau 😊','Bem! 👍','Excelente! 🌟','Extraordinário! 🏆'],
+    ja:['もう一度！💪','悪くない😊','良い！👍','素晴らしい！🌟','完璧！🏆'],
+    zh:['再试一次💪','不错😊','好！👍','优秀！🌟','完美！🏆'],
+    ar:['حاول مرة أخرى💪','ليس سيئاً😊','جيد!👍','ممتاز!🌟','رائع!🏆'],
+    hi:['फिर कोशिश करो💪','बुरा नहीं😊','अच्छा!👍','शानदार!🌟','अद्भुत!🏆'],
+    fa:['دوباره تلاش کن💪','بد نیست😊','خوب!👍','عالی!🌟','فوق‌العاده!🏆'],
+  };
+  const rMsgArr=rMsgs[LANG]||rMsgs.ru;
+  $('r-msg').textContent=rMsgArr[s-1]||'';
+  go('s-res');
+}
+
+// ── timer ─────────────────────────────────────────────────────
+function startTimer(){
+  stopT();ST.timer=CFG.levels?.[ST.lv]?.timer||30;updT();
+  ST.tInt=setInterval(()=>{
+    ST.timer--;updT();
+    if(ST.timer<=0){stopT();showFb(false,UI.timeUp||'⏱');lifeDown(nextQ);}
+  },1000);
+}
+function stopT(){clearInterval(ST.tInt);}
+function updT(){const e=$('hud-t');if(e){e.textContent=ST.timer;e.style.color=ST.timer<=5?'#f43f5e':ST.timer<=10?'#f97316':'#67e8f9';}}
+function updHud(){
+  const tl=$('hud-l');if(tl)tl.textContent='❤️'.repeat(Math.max(0,ST.lives));
+  const tc=$('hud-c');if(tc)tc.textContent='🪙 '+ST.coins;
+  const tp=$('prog');if(tp)tp.style.width=(ST.qs.length?Math.round(ST.qIdx/ST.qs.length*100):0)+'%';
+}
+})();
+<\/script>
+</body></html>`
+}
+
+function copyGameLink(){
+  const url='https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/';
+  navigator.clipboard.writeText(url).then(()=>showToast('✓ Ссылка скопирована!'));}
+
+// ════════════════════════════════════════════════════════
+//  IFRAME GENERATOR
+// ════════════════════════════════════════════════════════
+let currentPlatformIF='genially';
+
+function getIframeParams(){
+  const wSel=document.getElementById('iframe-w')?.value;
+  const hSel=document.getElementById('iframe-h')?.value;
+  const w=wSel==='custom'?(document.getElementById('iframe-w-custom')?.value||'760px'):wSel||'760px';
+  const h=hSel==='custom'?(document.getElementById('iframe-h-custom')?.value||'700px'):hSel||'700px';
+  const radius=document.getElementById('iframe-radius')?.value||'16px';
+  const shadowType=document.getElementById('iframe-shadow')?.value||'box';
+  const scroll=document.getElementById('iframe-scroll')?.value||'no';
+  const allowType=document.getElementById('iframe-allow')?.value||'full';
+  const url=(document.getElementById('iframe-url')?.value||'https://irinschensmagen-alt.github.io/Tamagotchi-for-Lexik/').trim();
+  const shadows={box:`box-shadow:0 0 0 2px #7C3AED, 0 0 30px rgba(124,58,237,.5), 0 8px 32px rgba(0,0,0,.4);`,soft:`box-shadow:0 8px 40px rgba(0,0,0,.3);`,none:``,border:`border:2px solid #7C3AED;`};
+  const allows={full:`autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture`,audio:`autoplay; encrypted-media`,minimal:`encrypted-media`};
+  return {w,h,radius,shadow:shadows[shadowType]||'',scroll,allow:allows[allowType]||allows.full,url};
+}
+
+function buildIframeTag(p,extra=''){
+  let iSrc=p.url||'';
+  const iLang=CFG.uiLang||CFG.gameLocale||'';
+  if(iSrc&&iLang){iSrc+=iSrc.includes('?')?'&lang='+iLang:'?lang='+iLang;}
+  return `<iframe
+  src="${iSrc}"
+  width="${p.w}"
+  height="${p.h}"
+  frameborder="0"
+  scrolling="${p.scroll||'auto'}"
+  allow="${p.allow}"
+  allowfullscreen
+  loading="lazy"
+  style="border:none; border-radius:${p.radius}; display:block; ${p.shadow}${extra}"
+  title="${CFG.title||'Tamagotchi'} [${iLang.toUpperCase()}]">
+</iframe>`;}
+
+function buildResponsiveWrapper(p){
+  return `<!-- Адаптивная обёртка -->
+<div style="position:relative; width:100%; max-width:${p.w}; margin:0 auto;">
+${buildIframeTag(p,'max-width:100%;')}
+</div>`;}
+
+function buildAllCodes(){
+  const p=getIframeParams();
+  const wSel=document.getElementById('iframe-w')?.value;
+  const hSel=document.getElementById('iframe-h')?.value;
+  const cr=document.getElementById('custom-size-row');
+  if(cr)cr.style.display=(wSel==='custom'||hSel==='custom')?'grid':'none';
+  ['code-url-only','code-google-url','code-notion-url','code-ispring-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=p.url;});
+  const gEl=document.getElementById('code-genially-html');if(gEl)gEl.value=buildIframeTag(p);
+  const htmlEl=document.getElementById('code-html-full');if(htmlEl)htmlEl.value=buildResponsiveWrapper(p);
+  const mEl=document.getElementById('code-moodle-html');if(mEl)mEl.value=buildResponsiveWrapper(p);
+  const tEl=document.getElementById('code-tilda-html');if(tEl)tEl.value=buildIframeTag(p,'width:100%;');
+  const wpEl=document.getElementById('code-wordpress-html');if(wpEl)wpEl.value=`<!-- Вставьте в блок «Пользовательский HTML» -->\n${buildResponsiveWrapper(p)}`;
+  const isEl=document.getElementById('code-ispring-html');if(isEl)isEl.value=buildIframeTag(p);
+}
+
+function switchPlatform(el,platform){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentPlatformIF=platform;
+  ['genially','html','moodle','google','notion','tilda','wordpress','ispring']
+    .forEach(p=>{const block=document.getElementById('code-'+p);if(block)block.style.display=p===platform?'block':'none';});
+}
+
+function copyCode(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.select();
+  navigator.clipboard.writeText(el.value)
+    .then(()=>showToast('⎘ Код скопирован!'))
+    .catch(()=>{document.execCommand('copy');showToast('⎘ Скопировано!');});
+}
+
+function previewIframe(){
+  const p=getIframeParams();
+  const c=document.getElementById('iframe-preview-container');
+  const f=document.getElementById('iframe-preview');
+  if(!c||!f)return;
+  f.src=p.url;
+  c.style.display='block';
+  document.getElementById('btn-close-preview').style.display='';
+  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+  showToast('▶ Загружаю предпросмотр...');
+}
+
+function closePreview(){
+  const c=document.getElementById('iframe-preview-container');
+  const f=document.getElementById('iframe-preview');
+  if(c){c.style.display='none';}
+  if(f){f.src='';}
+  document.getElementById('btn-close-preview').style.display='none';
+}
+
+function openInTab(){
+  const url=(document.getElementById('iframe-url')?.value||'').trim();
+  if(url)window.open(url,'_blank');
+  else showToast('⚠ Введите URL игры');
+}
+
+function applyTimerPreset(secs){
+  document.getElementById('lv1-t').value=secs;
+  document.getElementById('lv2-t').value=Math.max(5,secs-5);
+  document.getElementById('lv3-t').value=Math.max(5,secs-10);
+  showToast(`⏱ Таймер: ${secs}с / ${Math.max(5,secs-5)}с / ${Math.max(5,secs-10)}с`);
+}
+
+function updateTimerModeUI(){
+  const mode=document.getElementById('timer-mode')?.value;
+  const extra=document.getElementById('timer-extra-settings');
+  if(extra) extra.style.display=mode==='off'?'none':'grid';
+}
+
+// ════════════════════════════════════════════════════════
+//  IFRAME SAVE MODAL
+// ════════════════════════════════════════════════════════
+function openIframeSaveModal(){
+  updateIframeSavePreview();
+  const m=document.getElementById('iframe-save-modal');
+  m.style.display='flex';
+}
+function updateIframeSavePreview(){
+  const platform=document.getElementById('iframe-save-platform')?.value||'html';
+  const p=getIframeParams();
+  let code='';
+  if(platform==='html'||platform==='moodle'||platform==='tilda'||platform==='wordpress'){
+    code=buildResponsiveWrapper(p);
+  } else if(platform==='genially'){
+    code=buildIframeTag(p);
+  } else {
+    code=p.url;
+  }
+  const prev=document.getElementById('iframe-save-preview');
+  if(prev)prev.value=code;
+}
+function copyIframeSaveCode(){
+  const el=document.getElementById('iframe-save-preview');
+  if(!el)return;
+  navigator.clipboard.writeText(el.value).then(()=>showToast('⊕ iframe-код скопирован!'));
+}
+function downloadIframeFile(){
+  const name=(document.getElementById('iframe-save-name')?.value||'tamagotchi-embed').replace(/[^a-z0-9_\-]/gi,'_');
+  const platform=document.getElementById('iframe-save-platform')?.value||'html';
+  const p=getIframeParams();
+  let content='';
+  const isUrl=platform==='google';
+  if(isUrl){
+    content=p.url;
+  } else {
+    const code=platform==='genially'?buildIframeTag(p):buildResponsiveWrapper(p);
+    content=`<!DOCTYPE html>\n<html lang="ru">\n<head><meta charset="UTF-8"><title>${CFG.title||'Тамагочи'} — embed</title>\n<style>*{margin:0;padding:0;}body{background:#0a0a1a;display:flex;align-items:center;justify-content:center;min-height:100vh;}</style>\n</head>\n<body>\n${code}\n</body></html>`;
+  }
+  const blob=new Blob([content],{type:isUrl?'text/plain;charset=utf-8':'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`${name}.${isUrl?'txt':'html'}`;
+  a.click();
+  showToast('⬇ Файл скачан!');
+  document.getElementById('iframe-save-modal').style.display='none';
+}
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  LIVE PREVIEW
+// ═══════════════════════════════════════════════════
+function refreshPreview(){
+  collectConfig();
+  // hero
+  const heroEl=document.getElementById('preview-hero');
+  const heroEmoji=TAMAS_BASE[CFG.tamas.active[0]||0]?.e||'🦊';
+  if(heroEl)heroEl.textContent=heroEmoji;
+  // title
+  const titleEl=document.getElementById('preview-game-title');
+  if(titleEl)titleEl.textContent=CFG.title||'Моя игра';
+  // meta — show language label in current UI lang
+  const metaEl=document.getElementById('preview-game-meta');
+  const langEl=document.querySelector('#lang-chips .chip.on');
+  const langCode=langEl?.dataset?.v||'';
+  const T2=getT();
+  // Language name in current UI lang
+  const langNames = T2.lang_names || {};
+  const displayLang = langNames[langCode] || (langEl?langEl.textContent.trim():'');
+  if(metaEl)metaEl.textContent=(langCode?langCode.toUpperCase()+' ':'')+displayLang+(displayLang?' · ':' · ')+(CFG.langLevel||'A1');
+  // badges
+  const badgesEl=document.getElementById('preview-badges-row');
+  if(badgesEl){
+    const lvNames=[CFG.levels[1].name,CFG.levels[2].name,CFG.levels[3].name];
+    badgesEl.innerHTML=lvNames.map((n,i)=>`<span style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;">${CFG.levels[i+1].emoji||['🐣','🐥','🌟'][i]} ${n}</span>`).join('');
+  }
+  // question sample
+  const allWords=CFG.topics.filter(t=>t.words.length>0);
+  const filledCount=allWords.length;
+  const fcEl=document.getElementById('prev-topics-filled');
+  if(fcEl)fcEl.textContent=filledCount;
+  const qEl=document.getElementById('preview-question-text');
+  const aEl=document.getElementById('preview-answers-grid');
+  if(filledCount>0&&qEl&&aEl){
+    const topic=allWords[Math.floor(Math.random()*Math.min(allWords.length,3))];
+    const words=topic.words.slice(0,4);
+    if(words.length>=2){
+      const correct=words[0];
+      const T=getT();
+      qEl.textContent=(T.q_translate||'Как переводится:')+' «'+correct+'»?';
+      const shuffled=[...words].sort(()=>Math.random()-.5);
+      aEl.innerHTML=shuffled.map((w,idx)=>`
+        <div style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;"
+          onmouseover="this.style.borderColor='var(--a2)'" onmouseout="this.style.borderColor='var(--border)'">
+          ${String.fromCharCode(65+idx)}. ${w}</div>`).join('');
+    } else {
+      qEl.textContent=T.no_content||'Добавьте слова в темы для предпросмотра заданий';
+      aEl.innerHTML='';
+    }
+  } else if(qEl){
+    const T=getT();
+    qEl.textContent=T.no_content||'Добавьте слова в темы для предпросмотра';
+    if(aEl)aEl.innerHTML='';
+  }
+  // timer display
+  const timerEl=document.getElementById('preview-timer-display');
+  if(timerEl)timerEl.textContent=CFG.levels[1].timer||30;
+  // lives
+  const livesEl=document.getElementById('preview-lives');
+  if(livesEl)livesEl.textContent='❤️'.repeat(Math.min(CFG.levels[1].lives||3,5));
+  // random phrase
+  const phraseEl=document.getElementById('preview-phrase');
+  if(phraseEl){
+    const okPhrases=getLangPhrases('ok',1);
+    phraseEl.textContent=okPhrases[Math.floor(Math.random()*okPhrases.length)]||'🌿 Привет!';
+  }
+  // topics overview
+  const overviewEl=document.getElementById('preview-topics-overview');
+  if(overviewEl){
+    const T=getT();
+    const lvColors=['rgba(6,182,212,.15)','rgba(22,163,74,.15)','rgba(244,63,94,.15)'];
+    const lvBorders=['rgba(6,182,212,.4)','rgba(74,222,128,.4)','rgba(244,63,94,.4)'];
+    overviewEl.innerHTML=CFG.topics.map((t,i)=>{
+      const lv=Math.floor(i/4);
+      return`<div style="background:${lvColors[lv]||'var(--card)'};border:1px solid ${lvBorders[lv]||'var(--border)'};border-radius:10px;padding:10px;">
+        <div style="font-size:9px;font-family:var(--fp);color:var(--cy2);letter-spacing:1px;margin-bottom:4px;">${T.lv_prefix||'УР.'} ${lv+1} · ${T.theme_word||'ТМ.'} ${(i%4)+1}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px;">${t.icon||'📌'} ${escHtml(t.name)}</div>
+        ${t.subject?`<div style="font-size:9px;color:var(--tx2);">🏷️ ${escHtml(t.subject)}</div>`:''}
+        <div style="font-size:10px;color:var(--pu2);margin-top:4px;">${t.words.length} ${T.words_label||'слов'} · ${t.pairs.length} ${T.pairs_label||'пар'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Start screen preview in chosen language ────────────────────────
+  const _ssEl=document.getElementById('preview-start-screen');
+  if(_ssEl){
+    const _pl=CFG.uiLang||'ru';
+    const _ph=TAMAS_BASE[CFG.tamas.active[0]||0]?.e||'🦊';
+    const _wMap={ru:'Привет! Назови питомца!',de:'Hallo! Nenn dein Haustier!',en:"Hi! Name your pet!",fr:'Salut! Nomme ton animal!',es:'¡Hola! ¡Nombra tu mascota!',ja:'ペットに名前を！',zh:'给宠物起名字！',ar:'!سمِّ حيوانك',hi:'पालतू का नाम दें!',fa:'!به حیوانت نام بده'};
+    const _sMap={ru:'🚀 Начать!',de:'🚀 Starten!',en:'🚀 Start!',fr:'🚀 Commencer!',es:'🚀 ¡Iniciar!',ja:'🚀 スタート！',zh:'🚀 开始！',ar:'!🚀 ابدأ',hi:'🚀 शुरू!',fa:'!🚀 شروع'};
+    const _ALPHA={de:['A','B','C','Ä','Ö','Ü','ß'],en:['A','B','C','D','E'],fr:['A','B','À','Â','É'],es:['A','B','C','Ñ'],ru:['А','Б','В','Г','Д'],ja:['あ','い','う','え','お'],zh:['你','好','是','的'],ar:['ا','ب','ت'],hi:['अ','आ','इ'],fa:['ا','ب','پ']};
+    const _ak=(_ALPHA[_pl]||_ALPHA['en']).map(c=>`<span style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);border-radius:6px;padding:4px 7px;font-size:12px;font-weight:700;color:#4ade80;margin:2px;">${c}</span>`).join('')+'<span style="opacity:.4;font-size:11px;margin:2px;"> …⌫</span>';
+    _ssEl.innerHTML=`<div style="font-size:36px;margin-bottom:6px;">${_ph}</div><div style="font-size:12px;color:#86efac;margin-bottom:10px;">${_wMap[_pl]||_wMap.en}</div><div style="background:rgba(0,0,0,.25);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:6px 12px;font-size:12px;color:rgba(255,255,255,.35);margin-bottom:8px;">?</div><div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:8px;">${_ak}</div><div style="background:linear-gradient(135deg,#16a34a,#059669);border-radius:9px;padding:8px 16px;font-size:12px;font-weight:800;color:#fff;display:inline-block;">${_sMap[_pl]||_sMap.en}</div><div style="margin-top:5px;font-size:9px;color:rgba(134,239,172,.5);">⌨️ ${_pl.toUpperCase()} alphabet · ${(_ALPHA[_pl]||[]).length}+ keys</div>`;
+  }
+
+    showToast('👁️ '+(getT().preview_updated||'Предпросмотр обновлён!'));
+}
+
+let _previewInterval=null;
+function startPreviewTimer(){
+  let secs=parseInt(document.getElementById('preview-timer-display')?.textContent||30);
+  if(_previewInterval)clearInterval(_previewInterval);
+  _previewInterval=setInterval(()=>{
+    secs--;
+    const el=document.getElementById('preview-timer-display');
+    const bar=document.getElementById('preview-progress-bar');
+    if(el)el.textContent=secs;
+    if(bar){const pct=Math.max(0,(secs/(CFG.levels[1].timer||30))*100);bar.style.width=pct+'%';}
+    if(secs<=0){clearInterval(_previewInterval);}
+  },1000);
+}
+
+
+// ═══ DESIGN PANEL FUNCTIONS ═══════════════════════════════════════════
+function applyEditorTheme(theme, el){
+  // Highlight the design panel button
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    b.classList.remove('on');
+    b.style.border='2px solid var(--border)';
+  });
+  if(el && el.classList.contains('theme-btn')){
+    el.classList.add('on');
+    el.style.border='2px solid var(--pu2)';
+  }
+  // Remove all theme classes
+  const body=document.body;
+  const allThemes=['theme-light','theme-cosmic','theme-ocean','theme-candy',
+    'theme-neon','theme-sunset','theme-garden','theme-mirror','theme-ice',
+    'theme-sakura','theme-desert','theme-retro'];
+  allThemes.forEach(t=>body.classList.remove(t));
+  if(theme!=='forest') body.classList.add('theme-'+theme);
+  // Stars visibility
+  const sb=document.getElementById('stars-bg');
+  if(sb) sb.style.opacity=['light','ice'].includes(theme)?'0':'1';
+  CFG.editorTheme=theme;
+  localStorage.setItem('tama-editor-theme',theme);
+  // Sync design panel buttons
+  syncDesignBtn(theme);
+  // Sync visuals chips
+  document.querySelectorAll('#theme-chips .chip').forEach(c=>{
+    c.classList.toggle('on', c.dataset.v===theme);
+  });
+  const names={forest:'🌲 Лес',light:'☀️ Светлый',cosmic:'🌌 Космос',
+    ocean:'🌊 Океан',candy:'🍭 Неон',neon:'⚡ Киберпанк',sunset:'🌅 Закат',
+    garden:'🌿 Сад',mirror:'🪞 Тёмный',ice:'❄️ Лёд',
+    sakura:'🌸 Сакура',desert:'🏜️ Пустыня',retro:'🎭 Ретро'};
+  showToast('🎨 '+(names[theme]||theme));
+}
+
+// Sync the design panel theme-btn highlight
+function syncDesignBtn(theme){
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    const onc = b.getAttribute('onclick')||'';
+    const isActive = onc.includes("'"+theme+"'");
+    b.classList.toggle('on', isActive);
+    b.style.border = isActive ? '2px solid var(--pu2)' : '2px solid var(--border)';
+  });
+}
+
+function toggleAnimations(on){
+  const style=document.getElementById('anim-toggle-style')||document.createElement('style');
+  style.id='anim-toggle-style';
+  style.textContent=on?'':'.card,.tama-slot,.fx-card,.anim-card,.chip,.sb-btn{transition:none!important;animation:none!important;}@keyframes forestBob,@keyframes cosmicBob{0%,100%{transform:none;}}';
+  document.head.appendChild(style);
+  CFG.editorAnimations=on;
+}
+function toggleBlur(on){
+  const els=document.querySelectorAll('#topbar,#sidebar');
+  els.forEach(e=>e.style.backdropFilter=on?'blur(16px)':'none');
+  CFG.editorBlur=on;
+}
+function applyCardRadius(v){
+  document.documentElement.style.setProperty('--card-radius',v+'px');
+  document.querySelectorAll('.card,.topic-card,.tama-slot').forEach(el=>el.style.borderRadius=v+'px');
+  CFG.editorCardRadius=v;
+}
+function saveDesignSettings(){
+  const data={
+    theme:CFG.editorTheme||'forest',
+    font:CFG.editorFont||'',
+    fontSize:CFG.editorFontSize||13,
+    animations:CFG.editorAnimations!==false,
+    blur:CFG.editorBlur!==false,
+    glow:CFG.editorGlow!==false,
+    particles:CFG.editorParticles!==false,
+  };
+  localStorage.setItem('tama-design-cfg',JSON.stringify(data));
+  showToast('💾 Дизайн сохранён!');
+}
+function loadDesignSettings(){
+  try{
+    // Check both storage keys
+    const directTheme = localStorage.getItem('tama-editor-theme');
+    const raw = localStorage.getItem('tama-design-cfg');
+    const d = raw ? JSON.parse(raw) : {};
+    // Apply theme
+    const theme = d.theme || directTheme || 'forest';
+    applyEditorTheme(theme, null);
+    syncDesignBtn(theme);
+    // Apply font
+    if(d.font) applyFontFamily(d.font);
+    if(d.fontSize) applyFontSize(d.fontSize);
+    // Apply effects
+    if(d.animations===false) toggleAnimations(false);
+    if(d.blur===false) toggleBlur(false);
+    if(d.glow===false) toggleGlow(false);
+    if(d.particles===false) toggleParticles(false);
+  }catch(e){console.warn('loadDesignSettings error:',e);}
+}
+
+function resetDesign(){
+  localStorage.removeItem('tama-design-cfg');
+  document.body.className='';
+  document.documentElement.style.cssText='';
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
+  const fb=document.querySelector('.theme-btn');if(fb)fb.classList.add('on');
+  showToast('↩ Дизайн сброшен');
+}
+
+function applyFontFamily(font){
+  document.documentElement.style.setProperty('--fn',font);
+  CFG.editorFont=font;
+}
+function applyFontSize(size){
+  document.documentElement.style.setProperty('--fs',size+'px');
+  const el=document.getElementById('fs-val');if(el)el.textContent=size;
+  CFG.editorFontSize=size;
+}
+function applyBorderWidth(bw, el){
+  document.querySelectorAll('[onclick*="applyBorderWidth"]').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  document.documentElement.style.setProperty('--bw',bw);
+  CFG.editorBorderWidth=bw;
+}
+function toggleParticles(on){
+  const el=document.getElementById('stars-bg');
+  if(el)el.style.opacity=on?'1':'0';
+  CFG.editorParticles=on;
+}
+function toggleGlow(on){
+  const style=document.getElementById('glow-style')||document.createElement('style');
+  style.id='glow-style';
+  style.textContent=on?'':'.card,.sb-btn,.tbbtn{box-shadow:none!important;text-shadow:none!important;}';
+  document.head.appendChild(style);
+  CFG.editorGlow=on;
+}
+function setEditorMusic(e){
+  const f=e.target.files[0];if(!f)return;
+  const m=document.getElementById('editor-bg-music');
+  m.src=URL.createObjectURL(f);m.play().catch(()=>{});
+  document.getElementById('editor-music-play').textContent='⏸ Пауза';
+  showToast('🎵 Музыка загружена');
+}
+function setEditorMusicUrl(){
+  const url=document.getElementById('editor-music-url')?.value?.trim();
+  if(!url)return;
+  const m=document.getElementById('editor-bg-music');
+  m.src=url;m.play().catch(()=>{});
+  showToast('🎵 Музыка: URL');
+}
+function toggleEditorMusic(){
+  const m=document.getElementById('editor-bg-music');
+  const btn=document.getElementById('editor-music-play');
+  if(m.paused){m.play().catch(()=>{});if(btn)btn.textContent='⏸ Пауза';}
+  else{m.pause();if(btn)btn.textContent='▶ Играть';}
+}
+function stopEditorMusic(){
+  const m=document.getElementById('editor-bg-music');
+  m.pause();m.currentTime=0;
+  const btn=document.getElementById('editor-music-play');
+  if(btn)btn.textContent='▶ Играть';
+}
+function playPresetMusic(type){
+  const urls={
+    lofi:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    jazz:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    nature:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    classic:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+  };
+  const m=document.getElementById('editor-bg-music');
+  if(urls[type]){m.src=urls[type];m.volume=document.getElementById('editor-music-vol')?.value||0.3;m.play().catch(()=>{});}
+  showToast('🎵 '+type.toUpperCase());
+}
+function copyToClipboard(inputId){
+  const el=document.getElementById(inputId);if(!el)return;
+  el.select();
+  navigator.clipboard.writeText(el.value).then(()=>showToast('📋 Скопировано!')).catch(()=>{document.execCommand('copy');showToast('📋 Скопировано!');});
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  // ── 1. Restore saved config (language + all settings) ──────────────────
+  loadConfig();
+
+  // ── 2. Sync all three language fields ─────────────────────────────────
+  const savedLang = CFG.uiLang || CFG.gameLocale || 'ru';
+  CFG.uiLang = savedLang;
+  CFG.gameLocale = savedLang;
+  CFG.exportLang = savedLang;
+
+  // ── 3. Build dynamic components ──────────────────────────────────────
+  buildTopics();
+  buildTamaGrid();
+  setTimeout(renderAlphabetEditor,200);
+  buildEffects();
+  buildAnimGrid();
+
+  // ── 4. Apply language to ALL elements (always, even 'ru') ────────────
+  applyUiLang(savedLang);
+
+  // ── 5. Init iframe codes ──────────────────────────────────────────────
+  setTimeout(buildAllCodes, 500);
+
+  // ── 6. Load dictionaries ──────────────────────────────────────────────
+  if(typeof renderDict==='function') renderDict();
+  if(typeof renderProverbs==='function') renderProverbs();
+
+  // ── 7. Load design settings ───────────────────────────────────────────
+  if(typeof loadDesignSettings==='function') loadDesignSettings();
+
+  // ── 8. UI chrome ──────────────────────────────────────────────────────
+  const bback=document.getElementById('btn-back');
+  if(bback)bback.style.display='none';
+  window._currentPanel='settings';
+  window._lastPanel='settings';
+  const pname=document.getElementById('tb-panel-name');
+  const firstBtn=document.querySelector('[data-panel="settings"] .sb-label');
+  if(pname&&firstBtn)pname.textContent=firstBtn.textContent;
+
+  // ── 9. iframe size change listeners ──────────────────────────────────
+  ['iframe-w','iframe-h'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('change',buildAllCodes);
+  });
+
+  // ── 10. Auto-save on input (2s debounce) ──────────────────────────────
+  let _st=null;
+  document.getElementById('main')?.addEventListener('input',()=>{
+    clearTimeout(_st); _st=setTimeout(saveConfig,2000);
+  });
+
+  // ── 11. Auto-save every 30s ───────────────────────────────────────────
+  setInterval(saveConfig, 30000);
+
+  // ── 12. Preview panel auto-refresh ───────────────────────────────────
+  document.querySelectorAll('.sb-btn[data-panel="preview"]').forEach(btn=>{
+    btn.addEventListener('click',()=>setTimeout(refreshPreview,120));
+  });
+});
